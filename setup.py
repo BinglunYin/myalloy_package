@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(
-name='myalloy_pkg',
+name='myalloy-pkg',
 version='0.1',
 author='B. Yin',
 url='#',

@@ -108,7 +108,7 @@ def check_misfit_precision_uncertainty(data1, data2, cn):
     for i in range(0, nrand, 1):
         temp=np.append(temp, mtot[i][1] )
     
-    f.write("# delta \n")
+    f.write("# delta: \n")
     f.write("%12.8f %12.8f %12.8f \n\n"  \
     %(temp.mean(), temp.std(),  temp.std()/temp.mean()  ) )
     
@@ -118,7 +118,7 @@ def check_misfit_precision_uncertainty(data1, data2, cn):
     for i in range(0, nrand, 1):
         temp=np.append(temp, stot[i] )
     
-    f.write("# sigmay \n")
+    f.write("# sigmay: \n")
     f.write("%12.8f %12.8f %12.8f \n\n"  \
     %(temp.mean(), temp.std(),  temp.std()/temp.mean()  ) )
     
