@@ -3,9 +3,6 @@ import numpy as np
 
 
 
-
-
-
 def run_linear_reg_for_misfit(data1, data2, cn):
 
     distri=0
@@ -16,13 +13,25 @@ def run_linear_reg_for_misfit(data1, data2, cn):
     
     write_output(data1, data2, cn, beta, R2, misfit)
    
+
+
+
+
+def check_linear_reg_results(data1, data2):
    
+    import statsmodels.api as sm
+
+    distri = 0
+    y, X = create_input(data1, data2, distri)
+    results = sm.OLS(y, X).fit()
+
+    print( results.summary() )
 
 
 
 
 
-def run_linear_reg_for_precision_uncertainty(data1, data2, cn):
+def check_misfit_precision_uncertainty(data1, data2, cn):
 
     distri=0
 
@@ -58,7 +67,6 @@ def run_linear_reg_for_precision_uncertainty(data1, data2, cn):
     print(ytot.shape, Xtot.shape, mtot.shape, stot.shape)
 
 
-
     f = open("misfit_precision_uncertainty.txt","w+")
     
     f.write("# inputs: c_1 to c_N-1, a\n")
@@ -73,7 +81,6 @@ def run_linear_reg_for_precision_uncertainty(data1, data2, cn):
                 temp=np.append(temp, Xtot[i][j1][j2])
     
             f.write("%12.8f %12.8f \n"  %(temp.mean(), temp.std()) )
-    
     
         temp=np.array([])
         for i in range(0, nrand, 1):
@@ -105,7 +112,6 @@ def run_linear_reg_for_precision_uncertainty(data1, data2, cn):
     %(temp.mean(), temp.std(),  temp.std()/temp.mean()  ) )
     
     
-   
     # check sigmay
     temp=np.array([])
     for i in range(0, nrand, 1):
@@ -115,12 +121,7 @@ def run_linear_reg_for_precision_uncertainty(data1, data2, cn):
     f.write("%12.8f %12.8f %12.8f \n\n"  \
     %(temp.mean(), temp.std(),  temp.std()/temp.mean()  ) )
     
- 
     f.close()
-
-
-
-
 
 
 
@@ -129,7 +130,6 @@ def run_linear_reg_for_precision_uncertainty(data1, data2, cn):
 #=====================
 # functions
 #=====================
-
 
 
 def a2v(a):
@@ -188,6 +188,7 @@ def linear_reg(y, X):
     R2= 1-SSres/SStot
 
     return beta, R2
+
 
 
 
@@ -322,9 +323,3 @@ def cal_sigmay(misfit):
 
     return sigmay 
 
-
-
-
-
-
- 
