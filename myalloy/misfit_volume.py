@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 import numpy as np
 
@@ -25,13 +24,6 @@ def run_linear_reg_for_misfit(data1, data2, cn):
 
 def run_linear_reg_for_precision_uncertainty(data1, data2, cn):
 
-    nrand=100000
-   
-    nsamples=data1.shape[0]
-    nelem   =data1.shape[1]
-
-
-
     distri=0
 
     y, X = create_input(data1, data2, distri)
@@ -39,12 +31,16 @@ def run_linear_reg_for_precision_uncertainty(data1, data2, cn):
     misfit = cal_misfit(beta, cn)
     sigmay = cal_sigmay(misfit)
 
-
     ytot=np.array([y])
     Xtot=np.array([X])
     mtot=np.array([misfit])
     stot=np.array([sigmay])
-    
+   
+    #---------------------
+    nrand=10000
+   
+    nsamples=data1.shape[0]
+    nelem   =data1.shape[1]
 
     distri=1
     
@@ -67,6 +63,8 @@ def run_linear_reg_for_precision_uncertainty(data1, data2, cn):
     
     f.write("# inputs: c_1 to c_N-1, a\n")
     
+
+    # check X and y
     for j1 in range(0, nsamples, 1):
         for j2 in range(1, nelem, 1):
     
@@ -79,17 +77,16 @@ def run_linear_reg_for_precision_uncertainty(data1, data2, cn):
     
         temp=np.array([])
         for i in range(0, nrand, 1):
-            temp=np.append(temp, v2a([ ytot[i][j1] ]) )
+            temp=np.append(temp, v2a( ytot[i][j1] ) )
     
         f.write("%12.8f %12.8f \n"  %(temp.mean(), temp.std()) )
         f.write(" \n")
     
     
     # check a0
-
     temp=np.array([])
     for i in range(0, nrand, 1):
-        temp=np.append(temp, v2a([ mtot[i][0] ]) )
+        temp=np.append(temp, v2a( mtot[i][0] ) )
 
     print(temp.shape)
 
@@ -99,7 +96,6 @@ def run_linear_reg_for_precision_uncertainty(data1, data2, cn):
 
  
     # check delta
-    
     temp=np.array([])
     for i in range(0, nrand, 1):
         temp=np.append(temp, mtot[i][1] )
@@ -111,7 +107,6 @@ def run_linear_reg_for_precision_uncertainty(data1, data2, cn):
     
    
     # check sigmay
-    
     temp=np.array([])
     for i in range(0, nrand, 1):
         temp=np.append(temp, stot[i] )
@@ -138,7 +133,7 @@ def run_linear_reg_for_precision_uncertainty(data1, data2, cn):
 
 
 def a2v(a):
-    V = a**3/4
+    V = a**3 /4
     return V
 
 
@@ -146,12 +141,8 @@ def a2v(a):
 
 
 def v2a(V):
-    a=np.array([])
-    for i in range(0, len(V), 1):
-        a=np.append(a, (V[i]*4)**(1/3) )
+    a = (V*4)**(1/3) 
     return a
-
-
 
 
 
@@ -163,13 +154,9 @@ def create_input(data1, data2, distri):
 
     nsamples=data1.shape[0]
     nelem=data1.shape[1]
-
-#    print("nsamples, nelem:")
-#    print(nsamples, nelem)
    
     data12 = np.copy( data1 )
  
-
     if distri==1:
         for i in range(0, nsamples, 1):
             for j in range(0, nelem, 1):
@@ -187,19 +174,16 @@ def create_input(data1, data2, distri):
 
 
 
-
-
 def linear_reg(y, X):
     a= X.transpose() @ X
     b= X.transpose() @ y
    
     beta=np.linalg.solve( a, b )
 
-
     f=X@beta
 
     SSres=np.sum( np.square(y-f) )
-    SStot=np.sum( np.square(y- np.mean(y)) )
+    SStot=np.sum( np.square(y-np.mean(y)) )
    
     R2= 1-SSres/SStot
 
@@ -217,7 +201,6 @@ def cal_misfit(beta, cn):
     # atomic volume at cn
     V0= qX @ beta
 
-    
     # derivatives
     k=np.hstack( (beta[1:], 0))
     
@@ -246,13 +229,12 @@ def write_output(data1, data2, cn, beta, R2, misfit):
 
     cn=np.append(cn, 1-np.sum(cn))
    
-    
-    f = open("misfit_results.txt","w")
 
+    f = open("misfit_results.txt","w")
 
     f.write("%12s %12s %12s \n" %('V0', 'delta', 'a0_fcc' ) )
     f.write("%12.8f %12.8f %12.8f \n\n" \
-    %(misfit[0], misfit[1], v2a([misfit[0]]) ) )
+    %(misfit[0], misfit[1], v2a( misfit[0] ) ) )
 
     f.write("# dV: \n" )
     for j in range(0, nelem, 1):
@@ -266,21 +248,19 @@ def write_output(data1, data2, cn, beta, R2, misfit):
     f.write("\n\n\n" )
 
 
-
-
-
     f.write("# beta: \n" )
     for j in range(0, nelem, 1):
         f.write("%12.8f " %( beta[j] ) )
     f.write("\n\n" )
 
+
     f.write("%12s \n" %('R2' ) )
     f.write("%12.8f \n\n\n" %(R2) )
 
 
-
     f.write("%12s %12s \n" %('nsamples', 'nelem' ) )
     f.write("%12d %12d \n\n" %(nsamples, nelem ) )
+
 
     f.write("# data1, c_N, a : \n" )
     for i in range(0, nsamples, 1):
@@ -289,10 +269,11 @@ def write_output(data1, data2, cn, beta, R2, misfit):
 
         f.write("  %12.8f " %( 1-np.sum(data1[i, 0:-1]) ) )
 
-        f.write("%12.8f " %( v2a([ data1[i][-1] ]) ) )
+        f.write("%12.8f " %( v2a( data1[i][-1] ) ) )
 
         f.write("\n" )
     f.write("\n" )
+
 
     f.write("# data2: \n" )
     for i in range(0, nsamples, 1):
@@ -301,16 +282,11 @@ def write_output(data1, data2, cn, beta, R2, misfit):
         f.write("\n" )
     f.write("\n" )
 
+
     f.write("# cn: \n" )
     for j in range(0, nelem, 1):
         f.write("%12.8f " %( cn[j] ) )
     f.write("\n\n" )
-
-
-
-
-
-
 
 
 
@@ -325,7 +301,7 @@ def cal_sigmay(misfit):
     T=300
     et=1e-3
     
-    b=v2a( [misfit[0]] ) /np.sqrt(2)
+    b=v2a( misfit[0] ) /np.sqrt(2)
     delta=misfit[1]
 
     mu111 = 78.4
