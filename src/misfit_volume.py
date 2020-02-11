@@ -326,3 +326,6 @@ def cal_sigmay(misfit):
 
     return sigmay 
 
+
+
+
