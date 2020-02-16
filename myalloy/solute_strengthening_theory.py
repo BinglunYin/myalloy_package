@@ -180,11 +180,11 @@ class alloy_class:
             f.write('%16.8f %16.1E \n\n' \
             %(alpha, et0) )
 
-            f.write('%16s %16s %16s \n' \
-            %('T (K)', 'et (/s)', 'delta*100') )
+            f.write('%16s %16s \n' \
+            %('T (K)', 'et (/s)') )
 
-            f.write('%16.1f %16.1E %16.8f \n\n' \
-            %(T, et, delta*100) )
+            f.write('%16.1f %16.1E \n\n' \
+            %(T, et) )
 
 
             f.write('%16s %16s %16s \n' \
@@ -199,6 +199,13 @@ class alloy_class:
 
             f.write('%16.8f %16.8f %16.8f \n\n' \
             %(b, b*np.sqrt(2), b*2/np.sqrt(3)) )
+
+  
+            f.write('%16s \n' \
+            %('delta*100') )
+
+            f.write('%16.8f \n\n' \
+            %(delta*100) )
 
 
             f.write('%16s %16s %16s \n' \
