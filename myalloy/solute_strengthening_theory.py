@@ -111,10 +111,12 @@ class alloy_class:
         nelem = self.polyelem.shape[0]
         print(nelem)
 
+        Belem=np.array([])    
         for i in np.arange(nelem):
-            self.polyelem[i,2] = self.calc_B_from_mu_nu(self.polyelem[i,0], self.polyelem[i,1])
+            Belem = np.append(Belem, \
+                self.calc_B_from_mu_nu(self.polyelem[i,0], self.polyelem[i,1]) )
 
-        B  = self.cn @ self.polyelem[:,2]
+        B  = self.cn @ Belem
         mu = self.cn @ self.polyelem[:,0]
         nu = self.calc_nu_from_B_mu(B, mu)
 
