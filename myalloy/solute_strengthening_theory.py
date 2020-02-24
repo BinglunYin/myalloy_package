@@ -252,6 +252,12 @@ class alloy_class:
 
 #==============================
 
+
+def a2v(a):
+    v=a**3/4
+    return v
+
+
 def fcc_database():
     # Vapp, mu, nu
     data1=np.array([
@@ -282,11 +288,6 @@ def fcc_Vegard_strength(cn, data1 = fcc_database()):
 
 
 
-
-
-def a2v(a):
-    v=a**3/4
-    return v
 
 
 
