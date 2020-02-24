@@ -9,7 +9,8 @@ class alloy_class:
         self.cn = cn / cn.sum()
         self.brav_latt = brav_latt
 
-     
+        self.nelem = self.cn.shape[0]
+
 
 
     # print
@@ -108,13 +109,11 @@ class alloy_class:
 
 
     def calc_from_polyelem(self):
-        nelem = self.polyelem.shape[0]
-        print(nelem)
-
+        
         Belem=np.array([])    
-        for i in np.arange(nelem):
+        for i in np.arange(self.nelem):
             Belem = np.append(Belem, \
-                self.calc_B_from_mu_nu(self.polyelem[i,0], self.polyelem[i,1]) )
+            self.calc_B_from_mu_nu(self.polyelem[i,0], self.polyelem[i,1]) )
 
         B  = self.cn @ Belem
         mu = self.cn @ self.polyelem[:,0]
@@ -217,6 +216,17 @@ class alloy_class:
             f.write('%16.8f %16.8f %16.8f %16.8f \n\n' \
             %(b, b*np.sqrt(2), b*2/np.sqrt(3), delta*100) )
 
+
+            if hasattr(self, 'dV'):
+                f.write('%16s %16s %16s \n' \
+                %('cn', 'dV (Ang^3)', 'Vapp (Ang^3)') )
+
+                for i in np.arange(self.nelem):
+                    f.write('%16.8f %16.8f %16.8f \n' \
+                    %(self.cn[i], self.dV[i], self.dV[i]+self.V0) )
+                 
+                f.write(' \n')
+
   
             f.write('%16s %16s %16s \n' \
             %('mu111 (GPa)', 'muV (GPa)', 'nuV') )
@@ -276,7 +286,7 @@ def fcc_database():
 
 
 
-def fcc_Vegard_strength(cn, data1 = fcc_database()):
+def fcc_Vegard_strength(cn, filename = 'fcc_Vegard_strength', data1 = fcc_database()):
         
     alloy1 = alloy_class('fcc_Vegard_strength', cn)
     
@@ -286,7 +296,7 @@ def fcc_Vegard_strength(cn, data1 = fcc_database()):
     alloy1.polyelem = data1[:, 1:3]
     alloy1.calc_from_polyelem()
 
-    alloy1.calc_yield_strength({'model_type': 'iso', 'filename':'fcc_Vegard_strength'})
+    alloy1.calc_yield_strength({'model_type': 'iso', 'filename': filename})
 
 
 
