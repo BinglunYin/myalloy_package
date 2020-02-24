@@ -9,6 +9,8 @@ class alloy_class:
         self.cn = cn / cn.sum()
         self.brav_latt = brav_latt
 
+     
+
 
     # print
     def print_alloy(self):
@@ -44,6 +46,10 @@ class alloy_class:
     def calc_nu_from_B_mu(self, B, mu):
         nu = (3*B -2*mu)/(3*B +mu)/2
         return nu
+
+    def calc_B_from_mu_nu(self, mu, nu):
+        B = 2*mu*(1+nu)/(1-2*nu)/3
+        return B
 
 
     def calc_modulus(self):
@@ -99,6 +105,21 @@ class alloy_class:
             'B_H': B_H, 'mu_H': mu_H, 'nu_H': nu_H, \
         })
  
+
+
+    def calc_from_polyelem(self):
+        nelem = self.polyelem.shape[0]
+        print(nelem)
+
+        for i in np.arange(nelem):
+            self.polyelem[i,2] = self.calc_B_from_mu_nu(self.polyelem[i,0], self.polyelem[i,1])
+
+        B  = self.cn @ self.polyelem[:,2]
+        mu = self.cn @ self.polyelem[:,0]
+        nu = self.calc_nu_from_B_mu(B, mu)
+
+        self.poly = {'mu':mu, 'nu':nu}
+
 
 
     # solute strengthening theory
@@ -218,7 +239,54 @@ class alloy_class:
 
 
             f.close() 
+    
 
+  
+
+
+
+
+
+
+
+
+#==============================
+
+def fcc_database():
+    # Vapp, mu, nu
+    data1=np.array([
+        [a2v(3.803),  150.4,  0.26  ], 
+        [a2v(3.839),    210,  0.26  ],
+        [a2v(3.891),     44,  0.39  ], 
+        [a2v(3.924),     61,  0.38  ],
+        [a2v(3.524),     76,  0.31  ], 
+        [a2v(3.615),     48,  0.34  ],
+        [a2v(4.085),     30,  0.37  ], 
+        [a2v(4.078),     27,  0.44  ],
+        ])
+    return data1
+
+
+
+def fcc_Vegard_strength(cn, data1 = fcc_database()):
+        
+    alloy1 = alloy_class('fcc_Vegard_strength', cn)
+    
+    alloy1.Vapp = data1[:,0]
+    alloy1.calc_from_Vapp()
+
+    alloy1.polyelem = data1[:, 1:3]
+    alloy1.calc_from_polyelem()
+
+    alloy1.calc_yield_strength({'model_type': 'iso', 'filename':'fcc_Vegard_strength'})
+
+
+
+
+
+def a2v(a):
+    v=a**3/4
+    return v
 
 
 
