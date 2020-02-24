@@ -174,19 +174,13 @@ class alloy_class:
 
             f.write('# solute strengthening theory: \n' )
 
-            f.write('%16s %16s \n' \
-            %('alpha', 'et0 (/s)' ) )
+            f.write('%16s %16s %16s %16s \n' \
+            %('alpha', 'et0 (/s)', 'T (K)', 'et (/s)' ) )
 
-            f.write('%16.8f %16.1E \n\n' \
-            %(alpha, et0) )
+            f.write('%16.8f %16.1E %16.1f %16.1E \n\n' \
+            %(alpha, et0, T, et) )
 
-            f.write('%16s %16s \n' \
-            %('T (K)', 'et (/s)') )
-
-            f.write('%16.1f %16.1E \n\n' \
-            %(T, et) )
-
-
+        
             f.write('%16s %16s %16s \n' \
             %('A', 'At', 'AE') )
 
@@ -194,20 +188,13 @@ class alloy_class:
             %(A, At, AE) )
 
 
-            f.write('%16s %16s %16s \n' \
-            %('b (Ang)', 'a_fcc (Ang)', 'a_bcc (Ang)') )
+            f.write('%16s %16s %16s %16s \n' \
+            %('b (Ang)', 'a_fcc (Ang)', 'a_bcc (Ang)', 'delta*100') )
 
-            f.write('%16.8f %16.8f %16.8f \n\n' \
-            %(b, b*np.sqrt(2), b*2/np.sqrt(3)) )
+            f.write('%16.8f %16.8f %16.8f %16.8f \n\n' \
+            %(b, b*np.sqrt(2), b*2/np.sqrt(3), delta*100) )
 
   
-            f.write('%16s \n' \
-            %('delta*100') )
-
-            f.write('%16.8f \n\n' \
-            %(delta*100) )
-
-
             f.write('%16s %16s %16s \n' \
             %('mu111 (GPa)', 'muV (GPa)', 'nuV') )
 
