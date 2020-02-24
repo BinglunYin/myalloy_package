@@ -32,9 +32,9 @@ class alloy_class:
             self.V0 = self.a **3/2 
 
 
-    def calc_from_Vapp(self):
-        self.V0 = self.cn @ self.Vapp
-        self.dV = self.Vapp - self.V0
+    def calc_from_Velem(self):
+        self.V0 = self.cn @ self.Velem
+        self.dV = self.Velem - self.V0
 
 
     def calc_delta(self):
@@ -238,7 +238,7 @@ class alloy_class:
 
             if hasattr(self, 'dV'):
                 f.write('%16s %16s %16s \n' \
-                %('cn', 'dV (Ang^3)', 'Vapp (Ang^3)') )
+                %('cn', 'dV (Ang^3)', 'Velem (Ang^3)') )
 
                 for i in np.arange(self.nelem):
                     f.write('%16.8f %16.8f %16.8f \n' \
@@ -290,7 +290,7 @@ def a2v(a):
 
 
 def fcc_database():
-    # Vapp, mu, nu
+    # Velem, mu, nu
     data1=np.array([
         [a2v(3.803),  150.4,  0.26  ],  # Rh
         [a2v(3.839),    210,  0.26  ],  # Ir
@@ -308,7 +308,7 @@ def fcc_database():
 
 
 
-def fcc_Vegard_strength(cn, filename1 = 'fcc_Vegard_strength'):
+def fcc_Vegard_strength(cn, param = {}):
     data1 = fcc_database()
     
     n0 = data1.shape[0] - cn.shape[0]
@@ -316,13 +316,14 @@ def fcc_Vegard_strength(cn, filename1 = 'fcc_Vegard_strength'):
 
     alloy1 = alloy_class('fcc_Vegard_strength', cn)
     
-    alloy1.Vapp = data1[:,0]
-    alloy1.calc_from_Vapp()
+    alloy1.Velem = data1[:,0]
+    alloy1.calc_from_Velem()
 
     alloy1.polyelem = data1[:, 1:3]
     alloy1.calc_from_polyelem()
-
-    alloy1.calc_yield_strength({'model_type': 'iso', 'filename': filename1})
+ 
+    param.update({'model_type': 'iso'})
+    alloy1.calc_yield_strength(param)
 
 
 
