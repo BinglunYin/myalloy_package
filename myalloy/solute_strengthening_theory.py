@@ -177,7 +177,7 @@ class alloy_class:
             f.write('%16s %16s %16s %16s \n' \
             %('alpha', 'et0 (/s)', 'T (K)', 'et (/s)' ) )
 
-            f.write('%16.8f %16.1E %16.1f %16.1E \n\n' \
+            f.write('%16.8f %16.1e %16.1f %16.1e \n\n' \
             %(alpha, et0, T, et) )
 
         
