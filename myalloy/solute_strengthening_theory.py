@@ -48,9 +48,19 @@ class alloy_class:
         nu = (3*B -2*mu)/(3*B +mu)/2
         return nu
 
+    def calc_nu_from_E_mu(self, E, mu):
+        nu = E/(2*mu) -1
+        return nu
+
+
     def calc_B_from_mu_nu(self, mu, nu):
         B = 2*mu*(1+nu)/(1-2*nu)/3
         return B
+
+    def calc_E_from_mu_nu(self, mu, nu):
+        E = 2*mu*(1+nu)
+        return E
+
 
 
     def calc_modulus(self):
@@ -110,14 +120,23 @@ class alloy_class:
 
     def calc_from_polyelem(self):
         
-        Belem=np.array([])    
+        Belem = np.array([]) 
+        Eelem = np.array([])   
+
         for i in np.arange(self.nelem):
             Belem = np.append(Belem, \
             self.calc_B_from_mu_nu(self.polyelem[i,0], self.polyelem[i,1]) )
 
-        B  = self.cn @ Belem
+            Eelem = np.append(Eelem, \
+            self.calc_E_from_mu_nu(self.polyelem[i,0], self.polyelem[i,1]) )
+
         mu = self.cn @ self.polyelem[:,0]
-        nu = self.calc_nu_from_B_mu(B, mu)
+
+        # B  = self.cn @ Belem
+        # nu = self.calc_nu_from_B_mu(B, mu)
+
+        E  = self.cn @ Eelem
+        nu = self.calc_nu_from_B_mu(E, mu)
 
         self.poly = {'mu':mu, 'nu':nu}
 
