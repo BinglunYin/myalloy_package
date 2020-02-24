@@ -273,14 +273,17 @@ def a2v(a):
 def fcc_database():
     # Vapp, mu, nu
     data1=np.array([
-        [a2v(3.803),  150.4,  0.26  ], 
-        [a2v(3.839),    210,  0.26  ],
-        [a2v(3.891),     44,  0.39  ], 
-        [a2v(3.924),     61,  0.38  ],
-        [a2v(3.524),     76,  0.31  ], 
-        [a2v(3.615),     48,  0.34  ],
-        [a2v(4.085),     30,  0.37  ], 
-        [a2v(4.078),     27,  0.44  ],
+        [a2v(3.803),  150.4,  0.26  ],  # Rh
+        [a2v(3.839),    210,  0.26  ],  # Ir
+    
+        [a2v(3.891),     44,  0.39  ],  # Pd
+        [a2v(3.924),     61,  0.38  ],  # Pt
+       
+        [a2v(3.524),     76,  0.31  ],  # Ni 
+        [a2v(3.615),     48,  0.34  ],  # Cu
+    
+        [a2v(4.085),     30,  0.37  ],  # Ag
+        [a2v(4.078),     27,  0.44  ],  # Au
         ])
     return data1
 
@@ -289,6 +292,9 @@ def fcc_database():
 def fcc_Vegard_strength(cn, filename1 = 'fcc_Vegard_strength'):
     data1 = fcc_database()
     
+    n0 = data1.shape[0] - cn.shape[0]
+    cn = np.append(cn, np.zeros(n0) )
+
     alloy1 = alloy_class('fcc_Vegard_strength', cn)
     
     alloy1.Vapp = data1[:,0]
