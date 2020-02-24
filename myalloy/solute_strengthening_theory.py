@@ -185,15 +185,18 @@ class alloy_class:
             alpha = 0.0833
             b = (self.V0*2)**(1/3) *np.sqrt(3)/2
 
+      
+        if 'alpha' in param: alpha = param['alpha']
 
         if 'et0' in param: et0 = param['et0']
         else:              et0 = 1e4
         
-        if 'et' in param: et = param['et']
-        else:             et = 1e-3
-        
         if 'T' in param: T = param['T']
         else:            T = 300
+       
+        if 'et' in param: et = param['et']
+        else:             et = 1e-3
+            
 
         #-------------------
         Gamma = alpha * mu111 * b**2
