@@ -286,8 +286,9 @@ def fcc_database():
 
 
 
-def fcc_Vegard_strength(cn, filename = 'fcc_Vegard_strength', data1 = fcc_database()):
-        
+def fcc_Vegard_strength(cn, filename1 = 'fcc_Vegard_strength'):
+    data1 = fcc_database()
+    
     alloy1 = alloy_class('fcc_Vegard_strength', cn)
     
     alloy1.Vapp = data1[:,0]
@@ -296,7 +297,7 @@ def fcc_Vegard_strength(cn, filename = 'fcc_Vegard_strength', data1 = fcc_databa
     alloy1.polyelem = data1[:, 1:3]
     alloy1.calc_from_polyelem()
 
-    alloy1.calc_yield_strength({'model_type': 'iso', 'filename': filename})
+    alloy1.calc_yield_strength({'model_type': 'iso', 'filename': filename1})
 
 
 
