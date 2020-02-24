@@ -136,7 +136,7 @@ class alloy_class:
         # nu = self.calc_nu_from_B_mu(B, mu)
 
         E  = self.cn @ Eelem
-        nu = self.calc_nu_from_B_mu(E, mu)
+        nu = self.calc_nu_from_E_mu(E, mu)
 
         self.poly = {'mu':mu, 'nu':nu}
 
