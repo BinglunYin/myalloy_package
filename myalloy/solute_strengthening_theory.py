@@ -203,6 +203,8 @@ class alloy_class:
         if 'et' in param: et = param['et']
         else:             et = 1e-3
             
+        if 'A' in param: A = param['A']
+
 
         #-------------------
         Gamma = alpha * mu111 * b**2
