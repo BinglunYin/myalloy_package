@@ -321,9 +321,16 @@ def fcc_database_poly():
 def fcc_database_Cij():
     # Velem, Cijelem
     data1=np.array([
-        [10.920,  275.5,  160.1,  126.3  ],  # Ni from Shang 2010
-        [10.901,  296.6,  171.9,  144.0  ],  # Co
-        [13.941,  479.1,  223.7,  242.5  ],  # Ru
+        [a2v(3.824),  415,  181,  186  ],  # Rh-DFT
+        [a2v(3.872),  587,  231,  257  ],  # Ir
+        [a2v(3.518),  276,  154,  125  ],  # Ni
+
+        [a2v(3.943),  197,  150,   71  ],  # Pd
+        [a2v(3.967),  302,  224,   58  ],  # Pt
+        [a2v(3.635),  179,  119,   88  ],  # Cu
+
+        [10.901,  296.6,  171.9,  144.0  ],  # Co (Shang et al. 2010)
+        [13.941,  479.1,  223.7,  242.5  ],  # Ru (Shang et al. 2010)
         ])
     return data1
 
@@ -349,7 +356,6 @@ def fcc_Vegard_strength( ROMtype, cn, param = {}):
         alloy1.polyelem = data1[:, 1:3]
         alloy1.calc_from_polyelem()
         param.update({'model_type': 'iso'})
-
 
     elif ROMtype is 'Cijelem':
         alloy1.Cijelem = data1[:, 1:4]
