@@ -142,6 +142,12 @@ class alloy_class:
 
 
 
+    def calc_from_Cijelem(self):
+        self.Cij = self.cn @ self.Cijelem
+        
+
+
+
     # solute strengthening theory
     def calc_yield_strength(self, param={}):
         if hasattr(self, 'a'):
@@ -292,7 +298,9 @@ def a2v(a):
     return v
 
 
-def fcc_database():
+
+
+def fcc_database_poly():
     # Velem, mu, nu
     data1=np.array([
         [a2v(3.803),  150.4,  0.26  ],  # Rh
@@ -310,24 +318,45 @@ def fcc_database():
     return data1
 
 
+def fcc_database_Cij():
+    # Velem, Cijelem
+    data1=np.array([
+        [10.920,  275.5,  160.1,  126.3  ],  # Ni from Shang 2010
+        [10.901,  296.6,  171.9,  144.0  ],  # Co
+        [13.941,  479.1,  223.7,  242.5  ],  # Ru
+        ])
+    return data1
 
-def fcc_Vegard_strength(cn, param = {}):
-    data1 = fcc_database()
+
+
+
+
+def fcc_Vegard_strength( ROMtype, cn, param = {}):
     
+    if ROMtype is 'polyelem':
+        data1 = fcc_database_poly()
+    elif ROMtype is 'Cijelem':
+        data1 = fcc_database_Cij()
+
     n0 = data1.shape[0] - cn.shape[0]
     cn = np.append(cn, np.zeros(n0) )
 
     alloy1 = alloy_class('fcc_Vegard_strength', cn)
-    
     alloy1.Velem = data1[:,0]
     alloy1.calc_from_Velem()
 
-    alloy1.polyelem = data1[:, 1:3]
-    alloy1.calc_from_polyelem()
- 
-    param.update({'model_type': 'iso'})
-    alloy1.calc_yield_strength(param)
+    if ROMtype is 'polyelem':
+        alloy1.polyelem = data1[:, 1:3]
+        alloy1.calc_from_polyelem()
+        param.update({'model_type': 'iso'})
 
+
+    elif ROMtype is 'Cijelem':
+        alloy1.Cijelem = data1[:, 1:4]
+        alloy1.calc_from_Cijelem()
+        param.update({'model_type': 'aniso'})
+
+    alloy1.calc_yield_strength(param)
 
 
 
