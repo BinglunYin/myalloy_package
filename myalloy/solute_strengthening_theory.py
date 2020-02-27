@@ -246,17 +246,6 @@ class alloy_class:
             f.write('%16.8f %16.8f %16.8f %16.8f \n\n' \
             %(b, b*np.sqrt(2), b*2/np.sqrt(3), delta*100) )
 
-
-            if hasattr(self, 'dV'):
-                f.write('%16s %16s %16s \n' \
-                %('cn', 'dV (Ang^3)', 'Velem (Ang^3)') )
-
-                for i in np.arange(self.nelem):
-                    f.write('%16.8f %16.8f %16.8f \n' \
-                    %(self.cn[i], self.dV[i], self.dV[i]+self.V0) )
-                 
-                f.write(' \n')
-
   
             f.write('%16s %16s %16s \n' \
             %('mu111 (GPa)', 'muV (GPa)', 'nuV') )
@@ -278,6 +267,25 @@ class alloy_class:
 
             f.write('%16.4f %16.4f \n\n' \
             %(ty, sigmay) )
+
+
+            if hasattr(self, 'dV'):
+                f.write('%16s %16s %16s \n' \
+                %('cn', 'dV (Ang^3)', 'Velem (Ang^3)') )
+
+                for i in np.arange(self.nelem):
+                    f.write('%16.8f %16.8f %16.8f \n' \
+                    %(self.cn[i], self.dV[i], self.dV[i]+self.V0) )
+                 
+                f.write(' \n')
+
+
+            if hasattr(self, 'Cij'):
+                f.write('%16s \n' \
+                %('Cij_alloy (GPa)') )
+
+                f.write('%16.8f %16.8f %16.8f \n\n' \
+                %(self.Cij[0], self.Cij[1], self.Cij[2]) )
 
 
             f.close() 
