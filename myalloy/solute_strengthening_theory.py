@@ -312,7 +312,7 @@ class alloy_class:
 
 def fcc_Vegard_strength( ROMtype, cn, param = {}):
     
-    import alloy_database as adb 
+    from myalloy import alloy_database as adb 
 
     if ROMtype is 'polyelem':
         data1 = adb.fcc_elem_poly()
