@@ -288,6 +288,12 @@ class alloy_class:
                  
                 f.write(' \n')
 
+                f.write('%16s \n' \
+                %('cn @ dV') )
+
+                f.write('%16.8f \n\n' \
+                %(self.cn @ self.dV) )
+
 
             if hasattr(self, 'Cij'):
                 f.write('%16s \n' \
