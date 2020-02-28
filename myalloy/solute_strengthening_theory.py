@@ -304,7 +304,7 @@ class alloy_class:
                 %('mu (GPa)', 'nu') )
 
                 for i in np.arange(self.nelem):
-                    f.write('%16.8f %16.8f \n' \
+                    f.write('%16.1f %16.4f \n' \
                     %(self.polyelem[i,0], self.polyelem[i,1]) )
                 f.write(' \n')
 
@@ -313,7 +313,7 @@ class alloy_class:
                 f.write(' elemental Cij: \n')
 
                 for i in np.arange(self.nelem):
-                    f.write('%16.8f %16.8f %16.8f \n' \
+                    f.write('%16.1f %16.1f %16.1f \n' \
                     %(self.Cijelem[i,0], self.Cijelem[i,1], self.Cijelem[i,2]) )
                 f.write(' \n')
 
