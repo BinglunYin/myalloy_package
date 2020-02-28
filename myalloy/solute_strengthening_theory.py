@@ -293,7 +293,7 @@ class alloy_class:
                 f.write('%16s \n' \
                 %('Cij_alloy (GPa)') )
 
-                f.write('%16.8f %16.8f %16.8f \n\n' \
+                f.write('%16.1f %16.1f %16.1f \n\n' \
                 %(self.Cij[0], self.Cij[1], self.Cij[2]) )
 
 
