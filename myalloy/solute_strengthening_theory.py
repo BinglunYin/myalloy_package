@@ -271,7 +271,7 @@ class alloy_class:
 
 
             if hasattr(self, 'V0'):
-                f.write('%16s \n' \
+                f.write('\n%16s \n' \
                 %('V0_alloy (Ang^3)') )
 
                 f.write('%16.8f \n\n' \
@@ -295,6 +295,27 @@ class alloy_class:
 
                 f.write('%16.1f %16.1f %16.1f \n\n' \
                 %(self.Cij[0], self.Cij[1], self.Cij[2]) )
+
+
+            if hasattr(self, 'polyelem'):
+                f.write(' elemental poly: \n')
+
+                f.write('%16s %16s \n' \
+                %('mu (GPa)', 'nu') )
+
+                for i in np.arange(self.nelem):
+                    f.write('%16.8f %16.8f \n' \
+                    %(self.polyelem[i,0], self.polyelem[i,1]) )
+                f.write(' \n')
+
+
+            if hasattr(self, 'Cijelem'):
+                f.write(' elemental Cij: \n')
+
+                for i in np.arange(self.nelem):
+                    f.write('%16.8f %16.8f %16.8f \n' \
+                    %(self.Cijelem[i,0], self.Cijelem[i,1], self.Cijelem[i,2]) )
+                f.write(' \n')
 
 
             f.close() 
