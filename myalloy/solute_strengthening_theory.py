@@ -178,6 +178,8 @@ class alloy_class:
             muV   = self.poly['mu']
             nuV   = self.poly['nu']
 
+        if 'A' in param: A = param['A']
+
 
         if self.brav_latt is 'fcc':
             At = 0.04865* (1- (A-1)/40 )
@@ -203,7 +205,6 @@ class alloy_class:
         if 'et' in param: et = param['et']
         else:             et = 1e-3
             
-        if 'A' in param: A = param['A']
 
 
         #-------------------
