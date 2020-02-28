@@ -2,9 +2,11 @@
 import numpy as np
 
 
+
 def a2v(a):
     v=a**3/4
     return v
+
 
 
 
@@ -22,14 +24,17 @@ def fcc_elem_poly():
     
         [a2v(4.085),     30,  0.37  ],  # Ag
         [a2v(4.078),     27,  0.44  ],  # Au
+      
         ])
     return data1
+
+
 
 
 def fcc_elem_Cij():
     # Velem, Cijelem
     data1=np.array([
-        [a2v(3.824),  415,  181,  186  ],  # Rh-DFT
+        [a2v(3.824),  415,  181,  186  ],  # Rh-PBE
         [a2v(3.872),  587,  231,  257  ],  # Ir
         [a2v(3.518),  276,  154,  125  ],  # Ni
 
@@ -38,7 +43,9 @@ def fcc_elem_Cij():
         [a2v(3.635),  179,  119,   88  ],  # Cu
 
         [10.901,  296.6,  171.9,  144.0  ],  # Co (Shang et al. 2010)
-        [13.941,  479.1,  223.7,  242.5  ],  # Ru (Shang et al. 2010)
+     
+        [a2v(3.801),  480,  225,  252  ],  # Ru-PBE
+      
         ])
     return data1
 
