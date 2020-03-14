@@ -49,8 +49,8 @@ class alloy_class:
 
 
     # elasticity
-    def calc_modulus_from_Cij(self):      
-        self.modulus = calc_modulus_from_Cij(self.Cij)
+    def calc_Cijavg_from_Cij(self):      
+        self.Cijavg = calc_Cijavg_from_Cij(self.Cij)
 
 
 
@@ -98,12 +98,12 @@ class alloy_class:
 
         if (model_type is 'aniso') and (self.brav_latt is 'fcc'):
             print('==>  applying fcc ANISOtropic model, sigmay [MPa]')
-            self.calc_modulus_from_Cij()
+            self.calc_Cijavg_from_Cij()
 
-            A = self.modulus['A']
-            mu111 = self.modulus['mu_111']  
-            muV = self.modulus['mu_V']
-            nuV = self.modulus['nu_V']
+            A = self.Cijavg['A']
+            mu111 = self.Cijavg['mu_111']  
+            muV = self.Cijavg['mu_V']
+            nuV = self.Cijavg['nu_V']
         
         elif model_type is 'iso':
             print('==>  applying ISOtropic model, sigmay [MPa]')
@@ -306,13 +306,13 @@ def calc_E_from_mu_nu(mu, nu):
 
 
 
-def calc_modulus_from_Cij(Cij, brav_latt='fcc'):
-    modulus={}
+def calc_Cijavg_from_Cij(Cij, brav_latt='fcc'):
+    Cijavg={}
     if (brav_latt is 'fcc') or (brav_latt is 'bcc'):
         [C11, C12, C44] = Cij
         # fcc slip
         mu_111 = C44 - ( 2*C44 +C12 -C11 )/3
-        modulus['mu_111'] = mu_111
+        Cijavg['mu_111'] = mu_111
         CIJ=np.array([
             [C11, C12, C12, 0, 0, 0],
             [C12, C11, C12, 0, 0, 0],
@@ -322,7 +322,7 @@ def calc_modulus_from_Cij(Cij, brav_latt='fcc'):
             [0, 0, 0, 0, 0, C44],
         ])
     # Zener anisotropy
-    modulus['A'] = 2*CIJ[3,3]/(CIJ[0,0]-CIJ[0,1])
+    Cijavg['A'] = 2*CIJ[3,3]/(CIJ[0,0]-CIJ[0,1])
     # Voigt       
     c1 = CIJ[0,0] +CIJ[1,1] +CIJ[2,2]
     c2 = CIJ[0,1] +CIJ[0,2] +CIJ[1,2]
@@ -346,13 +346,13 @@ def calc_modulus_from_Cij(Cij, brav_latt='fcc'):
     mu_H = (mu_V + mu_R)/2
     nu_H = calc_nu_from_B_mu(B_H, mu_H)
     
-    modulus.update({ \
+    Cijavg.update({ \
         'B_V': B_V, 'mu_V': mu_V, 'nu_V': nu_V, \
         'B_R': B_R, 'mu_R': mu_R, 'nu_R': nu_R, \
         'B_H': B_H, 'mu_H': mu_H, 'nu_H': nu_H, \
     })
  
-    return modulus
+    return Cijavg
 
 
 
