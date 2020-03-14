@@ -155,6 +155,13 @@ class alloy_class:
         print(sigmay)
 
         #-------------------
+
+        wc = (np.pi/(2**(5/2) -1))**(1/3) *(dEb^2/(Gamma*b*ty0))**(1/3) *1e5  # [Ang]
+        zetac = np.pi *dEb /( 2 *wc *b *ty0) *1e-4   # [Ang]
+
+
+
+        #-------------------
         if 'filename' in param: 
         
             filen = 'sst_' + param['filename'] + '.txt'
@@ -203,6 +210,13 @@ class alloy_class:
 
             f.write('%16.4f %16.4f \n\n' \
             %(ty, sigmay) )
+
+
+            f.write('%16s %16s %16s %16s \n' \
+            %('wc (Ang)', 'wc/b', 'zetac (Ang)', 'zetac/b' ) )
+
+            f.write('%16.4f %16.4f  %16.4f %16.4f \n\n' \
+            %(wc, wc/b, zetac, zetac/b) )
 
 
             if hasattr(self, 'V0'):
