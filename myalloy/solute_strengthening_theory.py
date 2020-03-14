@@ -177,7 +177,7 @@ class alloy_class:
 
         
             f.write('%16s %16s %16s \n' \
-            %('A', 'At', 'AE') )
+            %('Zener A', 'At', 'AE') )
 
             f.write('%16.8f %16.8f %16.8f \n\n' \
             %(A, At, AE) )
@@ -215,7 +215,7 @@ class alloy_class:
             f.write('%16s %16s %16s %16s \n' \
             %('wc (Ang)', 'wc/b', 'zetac (Ang)', 'zetac/b' ) )
 
-            f.write('%16.4f %16.4f  %16.4f %16.4f \n\n' \
+            f.write('%16.4f %16.4f %16.4f %16.4f \n\n' \
             %(wc, wc/b, zetac, zetac/b) )
 
 
