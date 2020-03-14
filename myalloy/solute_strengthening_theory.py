@@ -156,7 +156,7 @@ class alloy_class:
 
         #-------------------
 
-        wc = (np.pi/(2**(5/2) -1))**(1/3) *(dEb^2/(Gamma*b*ty0))**(1/3) *1e5  # [Ang]
+        wc = (np.pi/(2**(5/2) -1))**(1/3) *(dEb**2/(Gamma*b*ty0))**(1/3) *1e5  # [Ang]
         zetac = np.pi *dEb /( 2 *wc *b *ty0) *1e-4   # [Ang]
 
 
