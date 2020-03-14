@@ -18,10 +18,12 @@ class alloy_class:
         print(self.name, self.cn)
 
 
+
     def dump(self):
         for attr in dir(self):
             if hasattr(self, attr):
                 print('self.%s = %s' % (attr, getattr(self, attr)))
+
 
 
     # volume
@@ -32,9 +34,11 @@ class alloy_class:
             self.V0 = self.a **3/2 
 
 
+
     def calc_from_Velem(self):
         self.V0 = self.cn @ self.Velem
         self.dV = self.Velem - self.V0
+
 
 
     def calc_delta(self):
@@ -43,79 +47,11 @@ class alloy_class:
         self.delta = np.sqrt( self.cn @ np.square(self.dV) ) /self.V0/3
 
 
+
     # elasticity
-    def calc_nu_from_B_mu(self, B, mu):
-        nu = (3*B -2*mu)/(3*B +mu)/2
-        return nu
+    def calc_modulus_from_Cij(self):      
+        self.modulus = calc_modulus_from_Cij(self.Cij)
 
-    def calc_nu_from_E_mu(self, E, mu):
-        nu = E/(2*mu) -1
-        return nu
-
-
-    def calc_B_from_mu_nu(self, mu, nu):
-        B = 2*mu*(1+nu)/(1-2*nu)/3
-        return B
-
-    def calc_E_from_mu_nu(self, mu, nu):
-        E = 2*mu*(1+nu)
-        return E
-
-
-
-    def calc_modulus(self):
-        self.modulus={}
-
-        if (self.brav_latt is 'fcc') or (self.brav_latt is 'bcc'):
-            [C11, C12, C44] = self.Cij
-
-            # fcc slip
-            mu_111 = C44 - ( 2*C44 +C12 -C11 )/3
-            self.modulus['mu_111'] = mu_111
-
-            CIJ=np.array([
-                [C11, C12, C12, 0, 0, 0],
-                [C12, C11, C12, 0, 0, 0],
-                [C12, C12, C11, 0, 0, 0],
-                [0, 0, 0, C44, 0, 0],
-                [0, 0, 0, 0, C44, 0],
-                [0, 0, 0, 0, 0, C44],
-            ])
-
-        # Zener anisotropy
-        self.modulus['A'] = 2*CIJ[3,3]/(CIJ[0,0]-CIJ[0,1])
-
-        # Voigt       
-        c1 = CIJ[0,0] +CIJ[1,1] +CIJ[2,2]
-        c2 = CIJ[0,1] +CIJ[0,2] +CIJ[1,2]
-        c3 = CIJ[3,3] +CIJ[4,4] +CIJ[5,5]
-        
-        B_V  = (c1 +2*c2)/9
-        mu_V = (c1 -c2 +3*c3)/15
-        nu_V = self.calc_nu_from_B_mu(B_V, mu_V)
-        
-        # Reuss
-        SIJ = np.linalg.inv(CIJ)
-
-        s1 = SIJ[0,0] +SIJ[1,1] +SIJ[2,2]
-        s2 = SIJ[0,1] +SIJ[0,2] +SIJ[1,2]
-        s3 = SIJ[3,3] +SIJ[4,4] +SIJ[5,5]
-
-        B_R  = 1/(s1 +2*s2)
-        mu_R = 15/(4*s1 -4*s2 +3*s3)
-        nu_R = self.calc_nu_from_B_mu(B_R, mu_R)
-        
-        # Hill
-        B_H  = (B_V + B_R)/2
-        mu_H = (mu_V + mu_R)/2
-        nu_H = self.calc_nu_from_B_mu(B_H, mu_H)
-        
-        self.modulus.update({ \
-            'B_V': B_V, 'mu_V': mu_V, 'nu_V': nu_V, \
-            'B_R': B_R, 'mu_R': mu_R, 'nu_R': nu_R, \
-            'B_H': B_H, 'mu_H': mu_H, 'nu_H': nu_H, \
-        })
- 
 
 
     def calc_from_polyelem(self):
@@ -125,10 +61,10 @@ class alloy_class:
 
         for i in np.arange(self.nelem):
             Belem = np.append(Belem, \
-            self.calc_B_from_mu_nu(self.polyelem[i,0], self.polyelem[i,1]) )
+            calc_B_from_mu_nu(self.polyelem[i,0], self.polyelem[i,1]) )
 
             Eelem = np.append(Eelem, \
-            self.calc_E_from_mu_nu(self.polyelem[i,0], self.polyelem[i,1]) )
+            calc_E_from_mu_nu(self.polyelem[i,0], self.polyelem[i,1]) )
 
         mu = self.cn @ self.polyelem[:,0]
 
@@ -136,7 +72,7 @@ class alloy_class:
         # nu = self.calc_nu_from_B_mu(B, mu)
 
         E  = self.cn @ Eelem
-        nu = self.calc_nu_from_E_mu(E, mu)
+        nu = calc_nu_from_E_mu(E, mu)
 
         self.poly = {'mu':mu, 'nu':nu}
 
@@ -145,7 +81,6 @@ class alloy_class:
     def calc_from_Cijelem(self):
         self.Cij = self.cn @ self.Cijelem
         
-
 
 
     # solute strengthening theory
@@ -163,7 +98,7 @@ class alloy_class:
 
         if (model_type is 'aniso') and (self.brav_latt is 'fcc'):
             print('==>  applying fcc ANISOtropic model, sigmay [MPa]')
-            self.calc_modulus()
+            self.calc_modulus_from_Cij()
 
             A = self.modulus['A']
             mu111 = self.modulus['mu_111']  
@@ -327,9 +262,83 @@ class alloy_class:
             f.close() 
     
 
-  
 
 
+
+
+#==============================
+
+def calc_nu_from_B_mu(B, mu):
+    nu = (3*B -2*mu)/(3*B +mu)/2
+    return nu
+
+
+    
+def calc_nu_from_E_mu(E, mu):
+    nu = E/(2*mu) -1
+    return nu
+
+
+
+def calc_B_from_mu_nu(mu, nu):
+    B = 2*mu*(1+nu)/(1-2*nu)/3
+    return B
+
+
+
+def calc_E_from_mu_nu(mu, nu):
+    E = 2*mu*(1+nu)
+    return E
+
+
+
+def calc_modulus_from_Cij(Cij, brav_latt='fcc'):
+    modulus={}
+    if (brav_latt is 'fcc') or (brav_latt is 'bcc'):
+        [C11, C12, C44] = Cij
+        # fcc slip
+        mu_111 = C44 - ( 2*C44 +C12 -C11 )/3
+        modulus['mu_111'] = mu_111
+        CIJ=np.array([
+            [C11, C12, C12, 0, 0, 0],
+            [C12, C11, C12, 0, 0, 0],
+            [C12, C12, C11, 0, 0, 0],
+            [0, 0, 0, C44, 0, 0],
+            [0, 0, 0, 0, C44, 0],
+            [0, 0, 0, 0, 0, C44],
+        ])
+    # Zener anisotropy
+    modulus['A'] = 2*CIJ[3,3]/(CIJ[0,0]-CIJ[0,1])
+    # Voigt       
+    c1 = CIJ[0,0] +CIJ[1,1] +CIJ[2,2]
+    c2 = CIJ[0,1] +CIJ[0,2] +CIJ[1,2]
+    c3 = CIJ[3,3] +CIJ[4,4] +CIJ[5,5]
+    
+    B_V  = (c1 +2*c2)/9
+    mu_V = (c1 -c2 +3*c3)/15
+    nu_V = calc_nu_from_B_mu(B_V, mu_V)
+    
+    # Reuss
+    SIJ = np.linalg.inv(CIJ)
+    s1 = SIJ[0,0] +SIJ[1,1] +SIJ[2,2]
+    s2 = SIJ[0,1] +SIJ[0,2] +SIJ[1,2]
+    s3 = SIJ[3,3] +SIJ[4,4] +SIJ[5,5]
+    B_R  = 1/(s1 +2*s2)
+    mu_R = 15/(4*s1 -4*s2 +3*s3)
+    nu_R = calc_nu_from_B_mu(B_R, mu_R)
+    
+    # Hill
+    B_H  = (B_V + B_R)/2
+    mu_H = (mu_V + mu_R)/2
+    nu_H = calc_nu_from_B_mu(B_H, mu_H)
+    
+    modulus.update({ \
+        'B_V': B_V, 'mu_V': mu_V, 'nu_V': nu_V, \
+        'B_R': B_R, 'mu_R': mu_R, 'nu_R': nu_R, \
+        'B_H': B_H, 'mu_H': mu_H, 'nu_H': nu_H, \
+    })
+ 
+    return modulus
 
 
 
