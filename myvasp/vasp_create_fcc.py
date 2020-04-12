@@ -91,13 +91,13 @@ def create_supercell(ncell, latt, motif):
 
 
 
-def write_poscar_with_a0(atoms, a0, filename='POSCAR'):
+def write_poscar_with_a0(atoms, a0, filename='POSCAR', vasp5=True):
    
     atoms.set_cell( atoms.cell[:]/a0 )
     atoms.set_positions( atoms.positions/a0, apply_constraint=False ) 
     
     write_vasp('POSCAR_temp', atoms,
-    label='system_name', direct=False, vasp5=True)
+    label='system_name', direct=False, vasp5=vasp5)
 
     with open('POSCAR_temp') as f:
         lines = f.readlines()
