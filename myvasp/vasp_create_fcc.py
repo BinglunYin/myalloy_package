@@ -109,6 +109,7 @@ def write_poscar_with_a0(atoms, a0, filename='POSCAR'):
 
     os.remove('POSCAR_temp')
 
+    # why to add this?
     atoms.set_cell( atoms.cell[:] *a0 )
     atoms.set_positions( atoms.positions *a0, apply_constraint=False ) 
     
