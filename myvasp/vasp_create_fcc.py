@@ -92,7 +92,8 @@ def create_supercell(ncell, latt, motif):
 
 
 def write_poscar_with_a0(atoms, a0, filename='POSCAR', vasp5=True):
-     
+    atoms = atoms.copy()
+
     atoms.set_cell( atoms.cell[:]/a0 )
     atoms.set_positions( atoms.positions/a0, apply_constraint=False ) 
     
