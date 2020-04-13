@@ -92,7 +92,7 @@ def create_supercell(ncell, latt, motif):
 
 
 def write_poscar_with_a0(atoms, a0, filename='POSCAR', vasp5=True):
-   
+     
     atoms.set_cell( atoms.cell[:]/a0 )
     atoms.set_positions( atoms.positions/a0, apply_constraint=False ) 
     
@@ -110,8 +110,8 @@ def write_poscar_with_a0(atoms, a0, filename='POSCAR', vasp5=True):
     os.remove('POSCAR_temp')
 
     # why to add this?
-    atoms.set_cell( atoms.cell[:] *a0 )
-    atoms.set_positions( atoms.positions *a0, apply_constraint=False ) 
+#    atoms.set_cell( atoms.cell[:] *a0 )
+#    atoms.set_positions( atoms.positions *a0, apply_constraint=False ) 
     
 
 
