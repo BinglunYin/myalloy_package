@@ -129,7 +129,7 @@ def calc_n_shell(shellmax, r, n):
                 break
 
     if np.abs( rc.shape[0] -(shellmax+1) ) > 1e-10 :
-        if np.abs( rc.shape[0] - shellmax ) > 1e-10:
+        if np.abs( rc.shape[0] - shellmax ) < 1e-10:
             rc = np.append(rc, len(ntot)+1)
         else:
             sys.exit('==> ABORT. wrong rc. {0}'.format(rc) )
