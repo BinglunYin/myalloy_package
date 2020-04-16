@@ -30,7 +30,7 @@ def calc_pairs_per_shell(shellmax = 4):
     r, n = post_rdf(V0, cn)
 
     while np.abs( n.sum() - nfcc[0:shellmax].sum() ) > 1e-10:
-        if n.sum() > nfcc[0:shellmax] :
+        if n.sum() > nfcc[0:shellmax].sum() :
             sys.exit('==> ABORT. impossible cutoff. ')
         cutoff = cutoff+0.1
         calc_ovito_rdf(cutoff)
