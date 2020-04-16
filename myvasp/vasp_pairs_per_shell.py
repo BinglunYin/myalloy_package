@@ -11,7 +11,10 @@ import sys, os
 def calc_pairs_per_shell(shellmax = 4):
     # up to shellmax nearest-neighbours
 
-    os.remove('y_post_n_shell.txt')
+    try:
+        os.remove('y_post_n_shell.txt')
+    except OSError:
+        pass
 
     rfcc, nfcc = fcc_shell()
 
