@@ -5,6 +5,7 @@ from ase.io.vasp import read_vasp
 from ovito.io import import_file
 from ovito.modifiers import CoordinationAnalysisModifier
 import sys, os
+import pandas as pd
 
 
 
@@ -52,13 +53,10 @@ def fcc_shell():
 def get_cn(atoms):
     natoms = atoms.positions.shape[0]
     atoms_an = atoms.get_atomic_numbers()
-    # print(atoms_an)
-    print(np.unique(atoms_an))
-    
+
     # number of atoms of each element
     natoms_elem = np.array([])
-    for i in np.unique(atoms_an):
-        print(i)
+    for i in pd.unique(atoms_an):
         mask = np.isin(atoms_an, i)
         natoms_elem = np.append( natoms_elem, \
             atoms_an[mask].shape[0] )
