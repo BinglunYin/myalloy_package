@@ -52,7 +52,8 @@ def fcc_shell():
 def get_cn(atoms):
     natoms = atoms.positions.shape[0]
     atoms_an = atoms.get_atomic_numbers()
-
+    print(atoms_an)
+    
     # number of atoms of each element
     natoms_elem = np.array([])
     for i in np.unique(atoms_an):
