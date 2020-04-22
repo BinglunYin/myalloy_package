@@ -9,7 +9,7 @@ url='#',
 description='Package_for_Computational_Metallurgy',
 license='#',
 packages=find_packages(),
-install_requires=['numpy', 'statsmodels'],
+install_requires=['numpy', 'scipy', 'sympy',  'statsmodels', 'ase', 'ovito'],
 )
 
 
