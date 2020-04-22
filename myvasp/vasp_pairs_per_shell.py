@@ -112,7 +112,7 @@ def post_rdf(V0, cn):
 
     n = n * cc_scale
 
-    if np.abs(cc_scaling.shape[0] - n.shape[1]) > 1e-10 :
+    if np.abs(cc_scale.shape[0] - n.shape[1]) > 1e-10 :
         sys.exit('==> ABORT. wrong scaling. ')
 
     return r, n
