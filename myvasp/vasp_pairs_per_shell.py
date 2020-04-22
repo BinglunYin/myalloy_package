@@ -10,10 +10,11 @@ import pandas as pd
 
 
 def calc_pairs_per_shell(shellmax = 4):
-    # up to shellmax nearest-neighbours
+    print('==> shellmax: ', shellmax)
 
     try:
         os.remove('y_post_n_shell.txt')
+        os.remove('y_post_dn_shell.txt')
     except OSError:
         pass
 
@@ -24,34 +25,36 @@ def calc_pairs_per_shell(shellmax = 4):
     V0 = atoms.get_volume() / natoms
     a0 = (V0*4)**(1/3)
     cn = get_cn(atoms)
-    print('==> a0 = {0}, cn = {1}'.format(a0, cn))
+    print('==> a0: ', a0, '; cn: ', cn )
+
+    cc_scale = calc_cc_scale(cn)
 
     cutoff = np.around( a0 * rfcc[shellmax-1], 1)
     calc_ovito_rdf(cutoff)
-    r, n = post_rdf(V0, cn)
+    r, n = post_rdf(V0, cc_scale)
 
     while np.abs( n.sum() - nfcc[0:shellmax].sum() ) > 1e-10:
         if n.sum() > nfcc[0:shellmax].sum() :
             sys.exit('==> ABORT. impossible cutoff. ')
         cutoff = cutoff+0.1
         calc_ovito_rdf(cutoff)
-        r, n = post_rdf(V0, cn)
+        r, n = post_rdf(V0, cc_scale)
 
-    calc_n_shell(shellmax, r, n)
     os.remove('y_post_ovito_rdf.txt')
+    calc_n_shell(shellmax, r, n, cc_scale)
+
 
 
 
 def fcc_shell():
-    rfcc = np.array([ 1/2, 1,  3/2, 2,  5/2, 3])
-    rfcc = np.sqrt(rfcc)   # in unit of a0
-    nfcc = np.array([ 12, 6,  24, 12,  24, 8])
+    rfcc = np.sqrt(  np.array([ 1/2, 1,   3/2, 2,   5/2, 3])  ) # in unit of a0
+    nfcc = np.array([ 12, 6,   24, 12,   24, 8])
     return rfcc, nfcc
 
 
 
 def get_cn(atoms):
-    natoms = atoms.positions.shape[0]
+    natoms = atoms.get_positions().shape[0]
     atoms_an = atoms.get_atomic_numbers()
 
     # number of atoms of each element
@@ -65,6 +68,25 @@ def get_cn(atoms):
         sys.exit('==> ABORT. wrong natoms_elem. ')
     cn = natoms_elem / natoms
     return cn
+
+
+
+def calc_cc_scale(cn):
+    # scaling factors, e.g., c1c1, 2c1c2, c2c2
+    cn2 = cn[np.newaxis, :].copy()
+    cn2prod = cn2.T @ cn2
+      
+    nelem = cn.shape[0]
+    cc_scale = np.array([])
+
+    for i in np.arange(nelem):
+        for j in np.arange(i, nelem):
+            temp = cn2prod[i, j]
+            if i != j :
+                temp = temp*2
+            cc_scale = np.append(cc_scale, temp)
+
+    return cc_scale
 
 
 
@@ -82,7 +104,7 @@ def calc_ovito_rdf(cutoff = 6.0):
 
 
     
-def post_rdf(V0, cn):
+def post_rdf(V0, cc_scale):
     data = np.loadtxt('y_post_ovito_rdf.txt')
 
     r = data[:,0].copy()
@@ -93,33 +115,18 @@ def post_rdf(V0, cn):
 
     n = data[:, 1:].copy()   # number of neighbours for each pair
 
-    for j in np.arange(n.shape[1]):
-        n[:,j]= 1/V0 * 4/3*np.pi * ((r+dr/2)**3 - (r-dr/2)**3) * n[:,j]
-
-    # scale n with ci*cj
-    cn2 = cn[np.newaxis, :].copy()
-    cn2prod = cn2.T @ cn2
-      
-    nelem = cn.shape[0]
-    cc_scale = np.array([])
-
-    for i in np.arange(nelem):
-        for j in np.arange(i, nelem):
-            temp = cn2prod[i, j]
-            if i != j :
-                temp = temp*2
-            cc_scale = np.append(cc_scale, temp)
-
-    n = n * cc_scale
+    temp = 1/V0 * 4/3*np.pi * ((r+dr/2)**3 - (r-dr/2)**3)
+    n = (n.T * temp).T
 
     if np.abs(cc_scale.shape[0] - n.shape[1]) > 1e-10 :
         sys.exit('==> ABORT. wrong scaling. ')
+    n = n * cc_scale
 
     return r, n
   
 
 
-def calc_n_shell(shellmax, r, n):
+def calc_n_shell(shellmax, r, n, cc_scale):
     rfcc, nfcc = fcc_shell()
 
     ntot = np.sum(n, axis=1)
@@ -144,11 +151,22 @@ def calc_n_shell(shellmax, r, n):
     for i in np.arange(shellmax):
         n_shell[i,:] = np.sum( n[rc[i]:rc[i+1], :], axis=0)
 
+    # for ideal random
+    n_shell_rand = np.tile( cc_scale, [shellmax, 1] )
+    n_shell_rand = ( n_shell_rand.T * nfcc[0:shellmax] ).T
+
+    dn_shell = n_shell - n_shell_rand
+
+
     if np.linalg.norm( np.sum(n_shell, axis=1) - nfcc[0:shellmax] )  > 1e-10:
         sys.exit('==> wrong n_shell')
       
-    print(n_shell)
-    np.savetxt("y_post_n_shell.txt", n_shell )
+    if np.linalg.norm( np.sum(dn_shell, axis=1)  )  > 1e-10:
+        sys.exit('==> wrong dn_shell')
+
+    # print(n_shell)
+    np.savetxt("y_post_n_shell.txt",   n_shell )
+    np.savetxt("y_post_dn_shell.txt", dn_shell )
 
 
 
