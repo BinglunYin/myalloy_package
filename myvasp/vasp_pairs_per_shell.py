@@ -14,6 +14,10 @@ def calc_pairs_per_shell(shellmax = 4):
 
     try:
         os.remove('y_post_n_shell.txt')
+    except OSError:
+        pass
+    
+    try:
         os.remove('y_post_dn_shell.txt')
     except OSError:
         pass
