@@ -101,14 +101,16 @@ def post_rdf(V0, cn):
     cn2prod = cn2.T @ cn2
       
     nelem = cn.shape[0]
-    k=-1
+    cc_scale = np.array([])
+
     for i in np.arange(nelem):
         for j in np.arange(i, nelem):
             temp = cn2prod[i, j]
             if i != j :
                 temp = temp*2
-            k=k+1
-            n[:, k] = n[:, k] * temp
+            cc_scale = np.append(cc_scale, temp)
+
+    n = n * cc_scale
 
     if np.abs(k+1 - n.shape[1]) > 1e-10 :
         sys.exit('==> ABORT. wrong scaling. ')
