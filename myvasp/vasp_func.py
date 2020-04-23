@@ -1,10 +1,36 @@
 #!/home/yin/opt/bin/python3
 
-
 import numpy as np
 from ase.io.vasp import read_vasp, read_vasp_out
 import matplotlib.pyplot as plt
+import os
 
+
+
+
+def mylinreg(X, y):
+    beta = np.linalg.inv(X.T @ X) @ X.T @ y 
+    SStot = np.sum( (y-y.mean())**2 )
+    SSres = np.sum( (y-X@beta)**2 )
+    R2 = 1- SSres/SStot
+    print('==> beta, R2:', beta, R2)
+    return beta, R2
+
+
+
+
+def run_cmd_in_jobn(mycmd, **args):
+    print('==> mycmd, args:', mycmd, args)
+    jobn, Etot, Eent, pres = vasp_read_post_data()
+    os.chdir('y_dir')
+    print( os.getcwd() )
+    for i in np.arange( len(jobn) ):
+        os.chdir( jobn[i] )
+        print( os.getcwd() )
+        mycmd(**args)
+        os.chdir('..')
+    os.chdir('..')
+    print( os.getcwd() )
 
 
 
