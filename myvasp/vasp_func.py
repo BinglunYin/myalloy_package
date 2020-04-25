@@ -29,8 +29,6 @@ def create_random_alloys(atoms_in, cn):
 
     max_elem = np.argmax( natoms_elem )
     temp = natoms_elem.sum() - natoms_elem[max_elem]
-    print(natoms_elem, max_elem, temp)
-
     natoms_elem[max_elem] = natoms - temp
     print(natoms_elem)
 
