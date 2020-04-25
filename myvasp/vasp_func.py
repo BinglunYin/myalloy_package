@@ -27,7 +27,7 @@ def create_random_alloys(atoms_in, cn):
     if natoms_elem.min() < 0.1:
         sys.exit('==> ABORT: natoms is too small. ')
 
-    max_elem = np.argmax( natoms_elem )[0]
+    max_elem = np.argmax( natoms_elem )
     temp = natoms_elem.sum() - natoms_elem[max_elem]
     print(natoms_elem, max_elem, temp)
 
