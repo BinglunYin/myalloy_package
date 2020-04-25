@@ -3,7 +3,45 @@
 import numpy as np
 from ase.io.vasp import read_vasp, read_vasp_out
 import matplotlib.pyplot as plt
-import os
+import os, sys
+
+
+
+
+def create_random_alloys(atoms_in, cn):
+    atoms = atoms_in.copy()
+    natoms = atoms.get_positions().shape[0]
+
+    # randomize pos
+    temp = np.hstack([ atoms.positions, \
+        np.random.random_sample([natoms, 1]) ])
+    ind = np.argsort(temp[:, -1])
+    temp2 = temp[ind, :]
+
+    atoms.set_positions(temp2[:, 0:3], apply_constraint=False)
+  
+    # calc natoms_elem
+    cn = cn/cn.sum()     
+    natoms_elem = np.around( cn * natoms )
+
+    if natoms_elem.min() < 0.1:
+        sys.exit('==> ABORT: natoms is too small. ')
+
+    max_elem = np.argmax( natoms_elem )[0]
+    temp = natoms_elem.sum() - natoms_elem[max_elem]
+    print(natoms_elem, max_elem, temp)
+
+    natoms_elem[max_elem] = natoms - temp
+    print(natoms_elem)
+
+    # new symbols
+    symb = np.array([])
+    for i in np.arange(natoms_elem.shape[0]):
+        for j in np.arange(natoms_elem[i]):
+            symb = np.append(symb, i+1)
+
+    atoms.set_chemical_symbols( symb )
+    return atoms
 
 
 
