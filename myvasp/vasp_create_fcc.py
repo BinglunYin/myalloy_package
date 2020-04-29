@@ -6,7 +6,7 @@ from ase import Atoms
 import os
 
 
-def vasp_create_fcc_111(ncell, bp, a0=1.0):
+def vasp_create_fcc_111(ncell, bp=0, a0=1.0):
     print('==> create fcc 111 plane: ')
     print(ncell, bp, a0)
 
@@ -33,9 +33,34 @@ def vasp_create_fcc_111(ncell, bp, a0=1.0):
 
 
 
+def vasp_create_fcc_111_ortho(ncell, bp=0, a0=1.0):
+    print('==> create fcc 111 plane (ortho): ')
+    print(ncell, bp, a0)
+
+    latt = np.array([
+        [1, 0, 0],
+        [0, np.sqrt(3), 0],   
+        [0, 0, np.sqrt(6)],
+    ]) * a0/np.sqrt(2)
+   
+    motif = np.array([
+        [  0,   0,   0],
+        [1/2, 1/2,   0],
+        [  0, 4/6, 1/3],
+        [1/2, 1/6, 1/3],
+        [  0, 2/6, 2/3],
+        [1/2, 5/6, 2/3],
+    ])
+
+    atoms = create_supercell(ncell, latt, motif)
+
+    write_poscar_with_a0(atoms, a0)
 
 
-def vasp_create_fcc_100(ncell, bp, a0=1.0):
+
+
+
+def vasp_create_fcc_100(ncell, bp=0, a0=1.0):
     print('==> create fcc 100 plane: ')
     print(ncell, bp, a0)
 
@@ -73,7 +98,7 @@ def create_supercell(ncell, latt, motif):
                 refp = i*latt[0,:] + j*latt[1,:] + k*latt[2,:] 
 
                 for m in np.arange(motif.shape[0]):
-                    atoms_pos = np.vstack([ atoms_pos, refp +motif[m,:]@latt ])
+                    atoms_pos = np.vstack([ atoms_pos, refp + motif[m,:] @ latt ])
                
     atoms_pos = np.delete(atoms_pos, 0, 0)       
        
@@ -110,10 +135,5 @@ def write_poscar_with_a0(atoms, a0, filename='POSCAR', vasp5=True):
 
     os.remove('POSCAR_temp')
 
-    # why to add this?
-#    atoms.set_cell( atoms.cell[:] *a0 )
-#    atoms.set_positions( atoms.positions *a0, apply_constraint=False ) 
     
-
-
 
