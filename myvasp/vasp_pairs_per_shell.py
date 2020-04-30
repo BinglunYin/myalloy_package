@@ -51,8 +51,12 @@ def calc_pairs_per_shell(shellmax = 4):
 
 
 def fcc_shell():
-    rfcc = np.sqrt(  np.array([ 1/2, 1,   3/2, 2,   5/2, 3])  ) # in unit of a0
-    nfcc = np.array([ 12, 6,   24, 12,   24, 8])
+    rfcc = np.sqrt(  np.array([ 
+        1/2, 1,   3/2, 2,   5/2, 3,    
+        7/2, 4,   9/2, 5,   11/2, 6,   13/2    ])  ) # in unit of a0
+    nfcc = np.array([ 
+        12, 6,   24, 12,   24, 8,
+        48, 6,   36, 24,   24, 24,    72   ])
     return rfcc, nfcc
 
 
