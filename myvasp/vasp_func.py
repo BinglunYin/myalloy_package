@@ -1,31 +1,22 @@
 #!/home/yin/opt/bin/python3
 
 import numpy as np
-from ase.io.vasp import read_vasp, read_vasp_out
+from ase.io.vasp import read_vasp, read_vasp_out, write_vasp
 import matplotlib.pyplot as plt
 import os, sys
 
 
 
-
-def create_random_alloys(atoms_in, cn):
+def create_random_alloys(atoms_in, cn, nsamples=1, id1=1, vasp5=False):
     atoms = atoms_in.copy()
     natoms = atoms.get_positions().shape[0]
-
-    # randomize pos
-    temp = np.hstack([ atoms.positions, \
-        np.random.random_sample([natoms, 1]) ])
-    ind = np.argsort(temp[:, -1])
-    temp2 = temp[ind, :]
-
-    atoms.set_positions(temp2[:, 0:3], apply_constraint=False)
-  
+   
     # calc natoms_elem
     cn = cn/cn.sum()     
     natoms_elem = np.around( cn * natoms )
 
     if natoms_elem.min() < 0.1:
-        sys.exit('==> ABORT: natoms is too small. ')
+        sys.exit('==> ABORT. natoms is too small. ')
 
     max_elem = np.argmax( natoms_elem )
     temp = natoms_elem.sum() - natoms_elem[max_elem]
@@ -37,14 +28,62 @@ def create_random_alloys(atoms_in, cn):
     for i in np.arange(natoms_elem.shape[0]):
         for j in np.arange(natoms_elem[i]):
             symb = np.append(symb, i+1)
-
     atoms.set_chemical_symbols( symb )
+
+    # randomize pos
+    for i in np.arange(nsamples):
+        temp = np.hstack([ atoms.positions, \
+            np.random.random_sample([natoms, 1]) ])
+        ind = np.argsort(temp[:, -1])
+        atoms.set_positions(temp[ind, 0:3], apply_constraint=False)
+  
+        filename = 'POSCAR_%03d' %( i + id1 )
+        yin_write_vasp(atoms, filename, vasp5=vasp5)
+
+
+
+
+def yin_read_vasp(filename):
+    atoms = read_vasp(filename)
+    with open(filename, 'r') as f:
+        atoms.a0 = float( f.readlines()[1] )
     return atoms
 
 
 
 
+def yin_write_vasp(atoms_in, filename='POSCAR', vasp5=True):
+    atoms = atoms_in.copy()
+    a0 = atoms_in.a0
+
+    atoms.set_cell( atoms.get_cell()/a0 )
+    atoms.set_positions( atoms.get_positions()/a0, apply_constraint=False ) 
+    
+    write_vasp('POSCAR_temp', atoms,
+    label='system_name', direct=False, vasp5=vasp5)
+
+    with open('POSCAR_temp', 'r') as f:
+        lines = f.readlines()
+    lines[1] = ' %.8f \n' % (a0)
+
+    with open(filename, "w") as f:
+        f.writelines(lines)
+    os.remove('POSCAR_temp')
+
+
+
+
+
 def mylinreg(X, y):
+    if X.shape[0] < X.shape[1]:
+        sys.exit('==> ABORT. too few data. ', \
+            X.shape[0], X.shape[1])
+
+    temp = np.linalg.matrix_rank(X)
+    if temp < X.shape[1]:
+        sys.exit('==> ABORT. linear regression ill-conditioned. ', \
+            temp, X.shape[1])
+
     beta = np.linalg.inv(X.T @ X) @ X.T @ y 
     SStot = np.sum( (y-y.mean())**2 )
     SSres = np.sum( (y-X@beta)**2 )
