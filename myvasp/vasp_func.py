@@ -1,7 +1,7 @@
 #!/home/yin/opt/bin/python3
 
 import numpy as np
-import os, sys
+import os, sys, copy
 import matplotlib.pyplot as plt
 from ase.io.vasp import read_vasp, read_vasp_out, write_vasp
 from ase import Atoms
@@ -10,7 +10,7 @@ from ase import Atoms
 
 
 def create_random_alloys(atoms_in, cn, nsamples=1, id1=1, vasp5=False):
-    atoms = atoms_in.copy()
+    atoms = copy.deepcopy(atoms_in)
     natoms = atoms.get_positions().shape[0]
    
     # calc natoms_elem
@@ -45,30 +45,29 @@ def create_random_alloys(atoms_in, cn, nsamples=1, id1=1, vasp5=False):
 
 
 
-class my_Atoms(Atoms):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.pos_a0 = 1.0      # a0 in the POSCAR
+# class my_Atoms(Atoms):
+#     def __init__(self, a0=1.0, *args, **kwargs):
+#         self.pos_a0 = a0      # a0 in the POSCAR
+#         super().__init__(*args, **kwargs)
    
-    def set_pos_a0(self, pos_a0):
-        self.pos_a0 = pos_a0
-    def get_pos_a0(self):
-        return self.pos_a0
+#     def set_pos_a0(self, pos_a0):
+#         self.pos_a0 = pos_a0
+#     def get_pos_a0(self):
+#         return self.pos_a0
 
 
 
 def my_read_vasp(filename):
     atoms = read_vasp(filename)
-    atoms2 = my_Atoms(atoms)
     with open(filename, 'r') as f:
-        atoms2.set_pos_a0(float( f.readlines()[1] ))
-    return atoms2
+        atoms.pos_a0 = float( f.readlines()[1] )
+    return atoms
 
 
 
 def my_write_vasp(atoms_in, filename='POSCAR', vasp5=True):
-    atoms = atoms_in.copy()
-    pos_a0 = atoms.get_pos_a0()
+    atoms = copy.deepcopy(atoms_in)
+    pos_a0 = atoms.pos_a0
 
     atoms.set_cell( atoms.get_cell()/pos_a0 )
     atoms.set_positions( atoms.get_positions()/pos_a0, apply_constraint=False ) 
