@@ -1,14 +1,16 @@
 #!/home/yin/opt/bin/python3
 
 import numpy as np
-from ase.io.vasp import read_vasp, read_vasp_out, write_vasp
+import os, sys
 import matplotlib.pyplot as plt
-import os, sys, copy
+from ase.io.vasp import read_vasp, read_vasp_out, write_vasp
+from ase import Atoms
+
 
 
 
 def create_random_alloys(atoms_in, cn, nsamples=1, id1=1, vasp5=False):
-    atoms = copy.deepcopy(atoms_in)
+    atoms = atoms_in.copy()
     natoms = atoms.get_positions().shape[0]
    
     # calc natoms_elem
@@ -38,33 +40,45 @@ def create_random_alloys(atoms_in, cn, nsamples=1, id1=1, vasp5=False):
         atoms.set_positions(temp[ind, 0:3], apply_constraint=False)
   
         filename = 'POSCAR_%03d' %( i + id1 )
-        yin_write_vasp(atoms, filename, vasp5=vasp5)
+        my_write_vasp(atoms, filename, vasp5=vasp5)
 
 
 
 
-def yin_read_vasp(filename):
+class my_Atoms(Atoms):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pos_a0 = 1.0      # a0 in the POSCAR
+   
+    def set_pos_a0(self, pos_a0):
+        self.pos_a0 = pos_a0
+    def get_pos_a0(self):
+        return self.pos_a0
+
+
+
+def my_read_vasp(filename):
     atoms = read_vasp(filename)
+    atoms2 = my_Atoms(atoms)
     with open(filename, 'r') as f:
-        atoms.a0 = float( f.readlines()[1] )
-    return atoms
+        atoms2.set_pos_a0(float( f.readlines()[1] ))
+    return atoms2
 
 
 
+def my_write_vasp(atoms_in, filename='POSCAR', vasp5=True):
+    atoms = atoms_in.copy()
+    pos_a0 = atoms.get_pos_a0()
 
-def yin_write_vasp(atoms_in, filename='POSCAR', vasp5=True):
-    atoms = copy.deepcopy(atoms_in)
-    a0 = atoms.a0
-
-    atoms.set_cell( atoms.get_cell()/a0 )
-    atoms.set_positions( atoms.get_positions()/a0, apply_constraint=False ) 
+    atoms.set_cell( atoms.get_cell()/pos_a0 )
+    atoms.set_positions( atoms.get_positions()/pos_a0, apply_constraint=False ) 
     
     write_vasp('POSCAR_temp', atoms,
     label='system_name', direct=False, vasp5=vasp5)
 
     with open('POSCAR_temp', 'r') as f:
         lines = f.readlines()
-    lines[1] = ' %.8f \n' % (a0)
+    lines[1] = ' %.8f \n' % (pos_a0)
 
     with open(filename, "w") as f:
         f.writelines(lines)
@@ -94,15 +108,15 @@ def mylinreg(X, y):
 
 
 
-def run_cmd_in_jobn(mycmd, **args):
-    print('==> mycmd, args:', mycmd, args)
+def run_cmd_in_jobn(mycmd, **kwargs):
+    print('==> mycmd, args:', mycmd, kwargs)
     jobn, Etot, Eent, pres = vasp_read_post_data()
     os.chdir('y_dir')
     print( os.getcwd() )
     for i in np.arange( len(jobn) ):
         os.chdir( jobn[i] )
         print( os.getcwd() )
-        mycmd(**args)
+        mycmd(**kwargs)
         os.chdir('..')
     os.chdir('..')
     print( os.getcwd() )
