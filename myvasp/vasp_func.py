@@ -3,12 +3,12 @@
 import numpy as np
 from ase.io.vasp import read_vasp, read_vasp_out, write_vasp
 import matplotlib.pyplot as plt
-import os, sys
+import os, sys, copy
 
 
 
 def create_random_alloys(atoms_in, cn, nsamples=1, id1=1, vasp5=False):
-    atoms = atoms_in.copy()
+    atoms = copy.deepcopy(atoms_in)
     natoms = atoms.get_positions().shape[0]
    
     # calc natoms_elem
@@ -53,8 +53,8 @@ def yin_read_vasp(filename):
 
 
 def yin_write_vasp(atoms_in, filename='POSCAR', vasp5=True):
-    atoms = atoms_in.copy()
-    a0 = atoms_in.a0
+    atoms = copy.deepcopy(atoms_in)
+    a0 = atoms.a0
 
     atoms.set_cell( atoms.get_cell()/a0 )
     atoms.set_positions( atoms.get_positions()/a0, apply_constraint=False ) 
