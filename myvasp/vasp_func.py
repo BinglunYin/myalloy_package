@@ -45,18 +45,6 @@ def create_random_alloys(atoms_in, cn, nsamples=1, id1=1, vasp5=False):
 
 
 
-# class my_Atoms(Atoms):
-#     def __init__(self, a0=1.0, *args, **kwargs):
-#         self.pos_a0 = a0      # a0 in the POSCAR
-#         super().__init__(*args, **kwargs)
-   
-#     def set_pos_a0(self, pos_a0):
-#         self.pos_a0 = pos_a0
-#     def get_pos_a0(self):
-#         return self.pos_a0
-
-
-
 def my_read_vasp(filename):
     atoms = read_vasp(filename)
     with open(filename, 'r') as f:
@@ -89,13 +77,11 @@ def my_write_vasp(atoms_in, filename='POSCAR', vasp5=True):
 
 def mylinreg(X, y):
     if X.shape[0] < X.shape[1]:
-        sys.exit('==> ABORT. too few data. ', \
-            X.shape[0], X.shape[1])
+        sys.exit('==> ABORT. too few data. ')
 
     temp = np.linalg.matrix_rank(X)
     if temp < X.shape[1]:
-        sys.exit('==> ABORT. linear regression ill-conditioned. ', \
-            temp, X.shape[1])
+        sys.exit('==> ABORT. linear regression ill-conditioned. ')
 
     beta = np.linalg.inv(X.T @ X) @ X.T @ y 
     SStot = np.sum( (y-y.mean())**2 )
