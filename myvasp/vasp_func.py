@@ -123,11 +123,17 @@ def get_list_of_outcar():
 def get_list_of_atoms():
     jobn, Etot, Eent, pres = vasp_read_post_data()
     latoms = []   # list of ASE_Atoms
-    for i in jobn:
-        filename = './y_dir/%s/CONTCAR' %(i)
-        ASE_Atoms = read_vasp(filename)
+    
+    os.chdir('y_dir')
+    for i in np.arange( len(jobn) ):
+        os.chdir( jobn[i] )
+        ASE_Atoms = read_vasp('CONTCAR')
         latoms.append(ASE_Atoms)
+        os.chdir('..')
+    os.chdir('..')
+
     return latoms
+
 
 
 def my_plot(fig_wh, fig_subp):
