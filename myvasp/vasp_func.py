@@ -136,7 +136,7 @@ def get_list_of_atoms():
 
 
 
-def my_plot(fig_wh, fig_subp):
+def my_plot(fig_wh, fig_subp, fig_sharex=True):
     plt.rcParams['font.size']=8
     #plt.rcParams['font.family'] = 'Arial'
     plt.rcParams['axes.linewidth']=0.5
@@ -148,7 +148,7 @@ def my_plot(fig_wh, fig_subp):
     plt.rcParams['lines.markersize'] = 4
  
     fig1, ax1 = plt.subplots(nrows=fig_subp[0], ncols=fig_subp[1], \
-    sharex=True, figsize=(fig_wh[0], fig_wh[1]) )
+    sharex=fig_sharex, figsize=(fig_wh[0], fig_wh[1]) )
     
     return fig1, ax1
 
