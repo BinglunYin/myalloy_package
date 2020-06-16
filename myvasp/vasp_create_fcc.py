@@ -77,7 +77,7 @@ def vasp_create_fcc_100(a, ncell, bp=0):
         [0,  0.5,  0.5],
     ])
 
-    atoms = vf.create_supercell(ncell, latt, motif)
+    atoms = vf.create_supercell(latt, motif, ncell)
     atoms.pos_a0 = a 
 
     if bp == 33:
