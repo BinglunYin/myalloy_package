@@ -9,6 +9,37 @@ from ase import Atoms
 
 
 
+
+def create_supercell(latt, motif, ncell):
+    atoms_pos = np.zeros([1, 3])
+    
+    for k in np.arange(ncell[2]):
+        for j in np.arange(ncell[1]):
+            for i in np.arange(ncell[0]):
+                
+                refp = i*latt[0,:] + j*latt[1,:] + k*latt[2,:] 
+
+                for m in np.arange(motif.shape[0]):
+                    atoms_pos = np.vstack([ atoms_pos, refp + motif[m,:] @ latt ])
+               
+    atoms_pos = np.delete(atoms_pos, 0, 0)       
+       
+    superlatt = latt.copy()
+    for i in np.arange(3):
+        superlatt[i,:] = superlatt[i,:] * ncell[i] 
+
+    atoms = Atoms(cell = superlatt, positions = atoms_pos, 
+        pbc = [1, 1, 1] )
+    
+    natoms = atoms.positions.shape[0]
+    atoms.set_chemical_symbols( np.ones([natoms, 1]) )
+
+    return atoms
+
+
+
+
+
 def create_random_alloys(atoms_in, cn, nsamples=1, id1=1, vasp5=False):
     atoms = copy.deepcopy(atoms_in)
     natoms = atoms.get_positions().shape[0]
