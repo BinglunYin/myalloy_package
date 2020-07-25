@@ -14,6 +14,18 @@ def create_supercell(*args, **kwargs):
     return atoms
 
 
+def make_SFP_xy(*args, **kwargs):
+    from myvasp import vasp_create as tmp 
+    atoms = tmp.make_SFP_xy(*args, **kwargs)
+    return atoms
+
+
+def make_a3_ortho(*args, **kwargs):
+    from myvasp import vasp_create as tmp 
+    atoms = tmp.make_a3_ortho(*args, **kwargs)
+    return atoms
+
+
 def create_random_alloys(*args, **kwargs):
     from myvasp import vasp_create as tmp 
     tmp.create_supercell(*args, **kwargs)

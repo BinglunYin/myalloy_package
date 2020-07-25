@@ -204,3 +204,7 @@ def calc_n_shell(ncrys, shellmax, r, n, cc_scale):
 
 
 
+# calc_pairs_per_shell()
+
+
+

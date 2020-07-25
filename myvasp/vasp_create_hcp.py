@@ -1,7 +1,6 @@
 #!/home/yin/opt/bin/python3
 
 import numpy as np
-import numpy.matlib
 from myvasp import vasp_func as vf
 
 
@@ -78,8 +77,8 @@ def vasp_create_hcp_prism1(a, ca, ncell, bp=33):
     vasp_create_hcp_basal(a, ca, ncell2, bp=0)
 
     atoms = vf.my_read_vasp('POSCAR')
-    atoms = make_SFP_xy(atoms, i1=1)
-    atoms = make_a3_ortho(atoms)
+    atoms = vf.make_SFP_xy(atoms, i1=1)
+    atoms = vf.make_a3_ortho(atoms)
 
     if bp == 33:
         print('==> create prism1-W')
@@ -121,8 +120,8 @@ def vasp_create_hcp_pyr1(a, ca, ncell, bp=33):
         ncell2[i] = ncell[ np.mod(i+2, 3) ]
    
     atoms = vf.create_supercell(latt, motif, ncell2)
-    atoms = make_SFP_xy(atoms, i1=1)
-    atoms = make_a3_ortho(atoms)
+    atoms = vf.make_SFP_xy(atoms, i1=1)
+    atoms = vf.make_a3_ortho(atoms)
 
     if bp == 33:
         print('==> create pry1-W')
@@ -165,8 +164,8 @@ def vasp_create_hcp_pyr2(a, ca, ncell, bp=33):
         ncell2[i] = ncell[ np.mod(i+2, 3) ]
    
     atoms = vf.create_supercell(latt, motif, ncell2)
-    atoms = make_SFP_xy(atoms, i1=1)
-    atoms = make_a3_ortho(atoms)
+    atoms = vf.make_SFP_xy(atoms, i1=1)
+    atoms = vf.make_a3_ortho(atoms)
     
 
     if bp == 33:
@@ -175,79 +174,6 @@ def vasp_create_hcp_pyr2(a, ca, ncell, bp=33):
 
     atoms.pos_a0 = a 
     vf.my_write_vasp(atoms, filename='POSCAR', vasp5=True)
-
-
-
-
-
-#=======================
-
-
-def make_SFP_xy(atoms_in, i1):
-    atoms = atoms_in.copy()
-    pos = atoms.get_positions()
-    latt = atoms.get_cell()[:]
-    
-    # i1 = 0, 1, 2. The axis to be new a1.
-    i2 = np.mod(i1+1, 3)
-    print('rotate SFP (lattices %.0f, %.0f) to xy' %(i1, i2) )
-
-    # old coordinate basis
-    ox=np.array([
-        [1.0,   0,   0],
-        [  0, 1.0,   0],
-        [  0,   0, 1.0]  ])
-
-    # new coordinate basis
-    nx = np.zeros([3, 3])
-    nx[0,:] = latt[i1,:] / np.linalg.norm( latt[i1,:] )
-    
-    temp=latt[i2,:] - np.dot(latt[i2,:], nx[0,:]) * nx[0,:]
-    nx[1,:]=temp / np.linalg.norm(temp)
-    
-    temp = np.cross(nx[0,:], nx[1,:])
-    nx[2,:] = temp / np.linalg.norm(temp)
-    print('nx:', nx)
-
-    # v_old @ ox = v_new @ nx 
-    R = ox @ np.linalg.inv(nx)
-    print('R:', R )
-
-    temp = numpy.matlib.repmat( latt @ R, 2, 1)
-    newlatt = np.zeros([3, 3])
-    for i in np.arange(3):
-        newlatt[i,:] = temp[i1+i,:]
-    
-    newpos = pos @ R
-    
-    atoms2 = atoms.copy()
-    atoms2.set_positions(newpos)
-    atoms2.set_cell(newlatt)
-    atoms2.wrap()
-    return atoms2
-    
-
-
-
-
-def make_a3_ortho(atoms_in):
-    atoms = atoms_in.copy()
-    latt = atoms.get_cell()[:]
-    
-    if np.abs(latt[0,1]) < 1e-10 \
-        and  np.abs(latt[0,2]) < 1e-10 \
-        and  np.abs(latt[1,2]) < 1e-10 :
-        
-        k = np.round( latt[2,1] /  latt[1,1] )
-        latt[2,:] = latt[2,:] - k* latt[1,:] 
-    
-        k = np.round( latt[2,0] /  latt[0,0] )
-        latt[2,:] = latt[2,:] - k* latt[0,:] 
-    
-        atoms.set_cell( latt )
-        atoms.wrap()
-        return atoms 
-    
 
 
 
