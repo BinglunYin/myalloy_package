@@ -2,105 +2,47 @@
 
 import numpy as np
 import os, sys, copy
-import matplotlib.pyplot as plt
-from ase.io.vasp import read_vasp, read_vasp_out, write_vasp
-from ase import Atoms
 
 
 
 
+# vasp_create.py
 
-def create_supercell(latt, motif, ncell):
-    atoms_pos = np.zeros([1, 3])
-    
-    for k in np.arange(ncell[2]):
-        for j in np.arange(ncell[1]):
-            for i in np.arange(ncell[0]):
-                
-                refp = i*latt[0,:] + j*latt[1,:] + k*latt[2,:] 
-
-                for m in np.arange(motif.shape[0]):
-                    atoms_pos = np.vstack([ atoms_pos, refp + motif[m,:] @ latt ])
-               
-    atoms_pos = np.delete(atoms_pos, 0, 0)       
-       
-    superlatt = latt.copy()
-    for i in np.arange(3):
-        superlatt[i,:] = superlatt[i,:] * ncell[i] 
-
-    atoms = Atoms(cell = superlatt, positions = atoms_pos, 
-        pbc = [1, 1, 1] )
-    
-    natoms = atoms.positions.shape[0]
-    atoms.set_chemical_symbols( np.ones([natoms, 1]) )
-
+def create_supercell(*args, **kwargs):
+    from myvasp import vasp_create as tmp 
+    atoms = tmp.create_supercell(*args, **kwargs)
     return atoms
 
 
-
-
-
-def create_random_alloys(atoms_in, cn, nsamples=1, id1=1, vasp5=False):
-    atoms = copy.deepcopy(atoms_in)
-    natoms = atoms.get_positions().shape[0]
-   
-    # calc natoms_elem
-    cn = cn/cn.sum()     
-    natoms_elem = np.around( cn * natoms )
-
-    if natoms_elem.min() < 0.1:
-        sys.exit('==> ABORT. natoms is too small. ')
-
-    max_elem = np.argmax( natoms_elem )
-    temp = natoms_elem.sum() - natoms_elem[max_elem]
-    natoms_elem[max_elem] = natoms - temp
-    print(natoms_elem)
-
-    # new symbols
-    symb = np.array([])
-    for i in np.arange(natoms_elem.shape[0]):
-        for j in np.arange(natoms_elem[i]):
-            symb = np.append(symb, i+1)
-    atoms.set_chemical_symbols( symb )
-
-    # randomize pos
-    for i in np.arange(nsamples):
-        temp = np.hstack([ atoms.positions, \
-            np.random.random_sample([natoms, 1]) ])
-        ind = np.argsort(temp[:, -1])
-        atoms.set_positions(temp[ind, 0:3], apply_constraint=False)
-  
-        filename = 'POSCAR_%03d' %( i + id1 )
-        my_write_vasp(atoms, filename, vasp5=vasp5)
+def create_random_alloys(*args, **kwargs):
+    from myvasp import vasp_create as tmp 
+    tmp.create_supercell(*args, **kwargs)
+    
 
 
 
 
-def my_read_vasp(filename):
-    atoms = read_vasp(filename)
-    with open(filename, 'r') as f:
-        atoms.pos_a0 = float( f.readlines()[1] )
+# vasp_io.py
+
+def  my_read_vasp(*args, **kwargs):
+    from myvasp import vasp_io as tmp 
+    atoms = tmp.my_read_vasp(*args, **kwargs)
     return atoms
 
 
+def my_write_vasp(*args, **kwargs):
+    from myvasp import vasp_io as tmp 
+    tmp.my_write_vasp(*args, **kwargs)
 
-def my_write_vasp(atoms_in, filename='POSCAR', vasp5=True):
-    atoms = copy.deepcopy(atoms_in)
-    pos_a0 = atoms.pos_a0
 
-    atoms.set_cell( atoms.get_cell()/pos_a0 )
-    atoms.set_positions( atoms.get_positions()/pos_a0, apply_constraint=False ) 
-    
-    write_vasp('POSCAR_temp', atoms,
-    label='system_name', direct=False, vasp5=vasp5)
+def my_rm(*args, **kwargs):
+    from myvasp import vasp_io as tmp 
+    tmp.my_rm(*args, **kwargs)
 
-    with open('POSCAR_temp', 'r') as f:
-        lines = f.readlines()
-    lines[1] = ' %.8f \n' % (pos_a0)
 
-    with open(filename, "w") as f:
-        f.writelines(lines)
-    os.remove('POSCAR_temp')
+
+
+
 
 
 
@@ -141,6 +83,8 @@ def run_cmd_in_jobn(mycmd, **kwargs):
 
 
 def get_list_of_outcar():
+    from ase.io.vasp import read_vasp_out
+
     jobn, Etot, Eent, pres = vasp_read_post_data()
     latoms2 = []   # list of ASE_Atoms from OUTCAR
     for i in jobn:
@@ -152,6 +96,8 @@ def get_list_of_outcar():
 
 
 def get_list_of_atoms():
+    from ase.io.vasp import read_vasp
+
     jobn, Etot, Eent, pres = vasp_read_post_data()
     latoms = []   # list of ASE_Atoms
     
@@ -168,6 +114,8 @@ def get_list_of_atoms():
 
 
 def my_plot(fig_wh, fig_subp, fig_sharex=True):
+    import matplotlib.pyplot as plt
+
     plt.rcParams['font.size']=8
     #plt.rcParams['font.family'] = 'Arial'
     plt.rcParams['axes.linewidth']=0.5

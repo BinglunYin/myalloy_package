@@ -1,51 +1,49 @@
 #!/home/yin/opt/bin/python3
 
 import numpy as np
-from ase.io.vasp import read_vasp
-from ovito.io import import_file
-from ovito.modifiers import CoordinationAnalysisModifier
 import sys, os
-import pandas as pd
+from myvasp import vasp_func as vf 
 
 
 
 def calc_pairs_per_shell(shellmax = 4):
     print('==> shellmax: ', shellmax)
 
-    try:
-        os.remove('y_post_n_shell.txt')
-    except OSError:
-        pass
+    vf.my_rm('y_post_n_shell.txt')  
+    vf.my_rm('y_post_dn_shell.txt')
     
-    try:
-        os.remove('y_post_dn_shell.txt')
-    except OSError:
-        pass
 
-    rfcc, nfcc = fcc_shell()
-
-    atoms = read_vasp('CONTCAR')
+    atoms = vf.my_read_vasp('CONTCAR')
     natoms = atoms.get_positions().shape[0]
     V0 = atoms.get_volume() / natoms
     a0 = (V0*4)**(1/3)
-    cn = get_cn(atoms)
+    cn = atoms.cn
     print('==> a0: ', a0, '; cn: ', cn )
 
     cc_scale = calc_cc_scale(cn)
 
-    cutoff = np.around( a0 * rfcc[shellmax-1], 1)
+    struc = calc_ovito_cna()
+    if struc == 'fcc':
+        print('==> fcc ')
+        rcrys, ncrys = fcc_shell()
+    elif struc == 'hcp':
+        print('==> hcp ')
+        rcrys, ncrys = hcp_shell()
+
+
+    cutoff = np.around( a0 * rcrys[shellmax-1], 1)
     calc_ovito_rdf(cutoff)
     r, n = post_rdf(V0, cc_scale)
 
-    while np.abs( n.sum() - nfcc[0:shellmax].sum() ) > 1e-10:
-        if n.sum() > nfcc[0:shellmax].sum() :
+    while np.abs( n.sum() - ncrys[0:shellmax].sum() ) > 1e-10:
+        if n.sum() > ncrys[0:shellmax].sum() :
             sys.exit('==> ABORT. impossible cutoff. ')
         cutoff = cutoff+0.1
         calc_ovito_rdf(cutoff)
         r, n = post_rdf(V0, cc_scale)
 
     os.remove('y_post_ovito_rdf.txt')
-    calc_n_shell(shellmax, r, n, cc_scale)
+    calc_n_shell(ncrys, shellmax, r, n, cc_scale)
 
 
 
@@ -61,21 +59,18 @@ def fcc_shell():
 
 
 
-def get_cn(atoms):
-    natoms = atoms.get_positions().shape[0]
-    atoms_an = atoms.get_atomic_numbers()
 
-    # number of atoms of each element
-    natoms_elem = np.array([])
-    for i in pd.unique(atoms_an):
-        mask = np.isin(atoms_an, i)
-        natoms_elem = np.append( natoms_elem, \
-            atoms_an[mask].shape[0] )
+def hcp_shell():
+    rhcp = np.array([
+        0.707, 0.999, 1.154, 1.224, 1.354, \
+        1.414, 1.581, 1.683, 1.732, 1.779, \
+        1.825, 1.870, 1.914,  ])
+    nhcp = np.array([
+        12,  6,  2, 18, 12,  \
+         6, 12, 12,  6,  6,  \
+        12, 24,  6,  ])
+    return rhcp, nhcp
 
-    if np.abs( natoms - natoms_elem.sum() ) > 1e-10:
-        sys.exit('==> ABORT. wrong natoms_elem. ')
-    cn = natoms_elem / natoms
-    return cn
 
 
 
@@ -98,7 +93,35 @@ def calc_cc_scale(cn):
 
 
 
+
+def calc_ovito_cna():
+    from ovito.io import import_file
+    from ovito.modifiers import CommonNeighborAnalysisModifier
+
+    print('==> running CNA in ovito ')
+    pipeline = import_file('CONTCAR')
+
+    modifier = CommonNeighborAnalysisModifier()
+    pipeline.modifiers.append(modifier)
+    data = pipeline.compute()
+
+    cna = data.tables['structures'].xy() 
+    mask = cna[:,1]>0.5
+    cna1 = cna[mask]
+    if cna1.shape[0] != 1:
+        sys.exit('ABORT: wrong CNA. ')
+
+    ovito_struc = ['other', 'fcc', 'hcp', 'bcc', 'ico']
+    struc = ovito_struc[ cna1[0, 0] ]
+    return struc
+
+
+
+
 def calc_ovito_rdf(cutoff = 6.0):
+    from ovito.io import import_file
+    from ovito.modifiers import CoordinationAnalysisModifier
+    
     print('==> cutoff in ovito rdf: {0}'.format(cutoff))
     pipeline = import_file('CONTCAR')
 
@@ -109,6 +132,7 @@ def calc_ovito_rdf(cutoff = 6.0):
 
     np.savetxt("y_post_ovito_rdf.txt", 
         data.tables['coordination-rdf'].xy() )
+
 
 
     
@@ -134,14 +158,15 @@ def post_rdf(V0, cc_scale):
   
 
 
-def calc_n_shell(shellmax, r, n, cc_scale):
-    rfcc, nfcc = fcc_shell()
+
+def calc_n_shell(ncrys, shellmax, r, n, cc_scale):
+    # rfcc, nfcc = fcc_shell()
 
     ntot = np.sum(n, axis=1)
 
     # find the index of critical r separating shells
     rc = np.array([0])
-    for i in np.cumsum( nfcc[0:shellmax] ):
+    for i in np.cumsum( ncrys[0:shellmax] ):
         for j in np.arange(1, len(ntot) ):
             if ( np.abs(np.cumsum(ntot)[j-1] -i) < 1e-10 ) \
                 and ( np.abs(np.cumsum(ntot)[j] -i) < 1e-10 ):
@@ -150,7 +175,7 @@ def calc_n_shell(shellmax, r, n, cc_scale):
 
     if np.abs( rc.shape[0] -(shellmax+1) ) > 1e-10 :
         if np.abs( rc.shape[0] - shellmax ) < 1e-10:
-            rc = np.append(rc, len(ntot)+1)
+            rc = np.append(rc, len(ntot) )
         else:
             sys.exit('==> ABORT. wrong rc. {0}'.format(rc) )
 
@@ -161,12 +186,12 @@ def calc_n_shell(shellmax, r, n, cc_scale):
 
     # for ideal random
     n_shell_rand = np.tile( cc_scale, [shellmax, 1] )
-    n_shell_rand = ( n_shell_rand.T * nfcc[0:shellmax] ).T
+    n_shell_rand = ( n_shell_rand.T * ncrys[0:shellmax] ).T
 
     dn_shell = n_shell - n_shell_rand
 
 
-    if np.linalg.norm( np.sum(n_shell, axis=1) - nfcc[0:shellmax] )  > 1e-10:
+    if np.linalg.norm( np.sum(n_shell, axis=1) - ncrys[0:shellmax] )  > 1e-10:
         sys.exit('==> wrong n_shell')
       
     if np.linalg.norm( np.sum(dn_shell, axis=1)  )  > 1e-10:
@@ -176,11 +201,6 @@ def calc_n_shell(shellmax, r, n, cc_scale):
     np.savetxt("y_post_n_shell.txt",   n_shell )
     np.savetxt("y_post_dn_shell.txt", dn_shell )
 
-
-
-
-# calc_pairs_per_shell()
-# calc_pairs_per_shell(shellmax=2)
 
 
 
