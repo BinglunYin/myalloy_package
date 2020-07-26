@@ -2,8 +2,43 @@
 
 import numpy as np
 import os, sys, copy
+from myvasp import vasp_func as vf 
 
 
+
+
+def get_list_of_outcar():
+    from ase.io.vasp import read_vasp_out
+
+    jobn, Etot, Eent, pres = vf.vasp_read_post_data()
+    latoms2 = []   # list of ASE_Atoms from OUTCAR
+    for i in jobn:
+        filename = './y_dir/%s/OUTCAR' %(i)
+        atoms2 = read_vasp_out(filename)
+        latoms2.append(atoms2)
+    return latoms2
+
+
+
+
+def get_list_of_atoms():
+    jobn, Etot, Eent, pres = vf.vasp_read_post_data()
+    latoms = []   # list of ASE_Atoms from CONTCAR
+    
+    os.chdir('y_dir')
+    for i in np.arange( len(jobn) ):
+        os.chdir( jobn[i] )
+        atoms = my_read_vasp('CONTCAR')
+        latoms.append(atoms)
+        os.chdir('..')
+    os.chdir('..')
+
+    return latoms
+
+
+
+
+#==============================
 
 
 def my_read_vasp(filename):

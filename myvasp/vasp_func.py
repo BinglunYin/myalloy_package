@@ -35,8 +35,19 @@ def create_random_alloys(*args, **kwargs):
 
 
 # vasp_io.py
+def get_list_of_outcar(*args, **kwargs):
+    from myvasp import vasp_io as tmp 
+    atoms = tmp.get_list_of_outcar(*args, **kwargs)
+    return atoms
 
-def  my_read_vasp(*args, **kwargs):
+
+def get_list_of_atoms(*args, **kwargs):
+    from myvasp import vasp_io as tmp 
+    atoms = tmp.get_list_of_atoms(*args, **kwargs)
+    return atoms
+
+
+def my_read_vasp(*args, **kwargs):
     from myvasp import vasp_io as tmp 
     atoms = tmp.my_read_vasp(*args, **kwargs)
     return atoms
@@ -58,7 +69,7 @@ def my_rm(*args, **kwargs):
 
 
 
-
+# math
 
 def mylinreg(X, y):
     if X.shape[0] < X.shape[1]:
@@ -78,52 +89,7 @@ def mylinreg(X, y):
 
 
 
-def run_cmd_in_jobn(mycmd, **kwargs):
-    print('==> mycmd, args:', mycmd, kwargs)
-    jobn, Etot, Eent, pres = vasp_read_post_data()
-    os.chdir('y_dir')
-    print( os.getcwd() )
-    for i in np.arange( len(jobn) ):
-        os.chdir( jobn[i] )
-        print( os.getcwd() )
-        mycmd(**kwargs)
-        os.chdir('..')
-    os.chdir('..')
-    print( os.getcwd() )
-
-
-
-
-def get_list_of_outcar():
-    from ase.io.vasp import read_vasp_out
-
-    jobn, Etot, Eent, pres = vasp_read_post_data()
-    latoms2 = []   # list of ASE_Atoms from OUTCAR
-    for i in jobn:
-        filename = './y_dir/%s/OUTCAR' %(i)
-        atoms2 = read_vasp_out(filename)
-        latoms2.append(atoms2)
-    return latoms2
-
-
-
-def get_list_of_atoms():
-    from ase.io.vasp import read_vasp
-
-    jobn, Etot, Eent, pres = vasp_read_post_data()
-    latoms = []   # list of ASE_Atoms
-    
-    os.chdir('y_dir')
-    for i in np.arange( len(jobn) ):
-        os.chdir( jobn[i] )
-        ASE_Atoms = read_vasp('CONTCAR')
-        latoms.append(ASE_Atoms)
-        os.chdir('..')
-    os.chdir('..')
-
-    return latoms
-
-
+# plot
 
 def my_plot(fig_wh, fig_subp, fig_sharex=True):
     import matplotlib.pyplot as plt
@@ -142,6 +108,26 @@ def my_plot(fig_wh, fig_subp, fig_sharex=True):
     sharex=fig_sharex, figsize=(fig_wh[0], fig_wh[1]) )
     
     return fig1, ax1
+
+
+
+
+
+# basic func
+
+def run_cmd_in_jobn(mycmd, **kwargs):
+    print('==> mycmd, args:', mycmd, kwargs)
+    jobn, Etot, Eent, pres = vasp_read_post_data()
+    os.chdir('y_dir')
+    print( os.getcwd() )
+    for i in np.arange( len(jobn) ):
+        os.chdir( jobn[i] )
+        print( os.getcwd() )
+        mycmd(**kwargs)
+        os.chdir('..')
+    os.chdir('..')
+    print( os.getcwd() )
+
 
 
 
