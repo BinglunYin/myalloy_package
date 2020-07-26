@@ -28,7 +28,7 @@ def make_a3_ortho(*args, **kwargs):
 
 def create_random_alloys(*args, **kwargs):
     from myvasp import vasp_create as tmp 
-    tmp.create_supercell(*args, **kwargs)
+    tmp.create_random_alloys(*args, **kwargs)
     
 
 
