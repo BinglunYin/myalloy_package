@@ -91,7 +91,7 @@ def my_write_vasp(atoms_in, filename='POSCAR', vasp5=True):
 
     with open('POSCAR_temp', 'r') as f:
         lines = f.readlines()
-    lines[1] = ' %.8f \n' % (pos_a0)
+    lines[1] = ' %.16f \n' % (pos_a0)
 
     with open(filename, "w") as f:
         f.writelines(lines)
