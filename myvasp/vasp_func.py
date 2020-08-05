@@ -87,6 +87,23 @@ def mylinreg(X, y):
     return beta, R2
 
 
+def confirm_int(x):
+    temp = np.linalg.norm( x - np.around(x) )
+    if temp > 1e-10:
+        print(temp)
+        sys.exit('ABORT: x is not int. ')
+    
+
+def confirm_0(x):
+    temp = np.linalg.norm( x )
+    if temp > 1e-10:
+        print(temp)
+        sys.exit('ABORT: x is not 0. ')
+    
+
+
+
+
 
 
 # plot
