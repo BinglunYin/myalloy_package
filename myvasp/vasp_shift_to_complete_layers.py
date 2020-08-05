@@ -3,7 +3,6 @@
 
 import numpy as np
 from myvasp import vasp_func as vf
-import sys, copy
 
 
 
@@ -164,7 +163,7 @@ def shift_to_poscar_layer(nmiss):
 
 
 
-shift_to_complete_layers()
+# shift_to_complete_layers()
 
 
 
