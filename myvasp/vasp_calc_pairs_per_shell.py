@@ -32,7 +32,7 @@ def calc_pairs_per_shell(atoms_in, shellmax = 4):
 
     cc_scale = calc_cc_scale(cn)
 
-    struc = calc_ovito_cna()
+    struc = calc_ovito_cna(atoms)
     if struc == 'fcc':
         print('==> fcc ')
         rcrys, ncrys = fcc_shell()
@@ -42,14 +42,14 @@ def calc_pairs_per_shell(atoms_in, shellmax = 4):
 
 
     cutoff = np.around( a0 * rcrys[shellmax-1], 1)
-    calc_ovito_rdf(cutoff)
+    calc_ovito_rdf(atoms, cutoff)
     r, n = post_rdf(V0, cc_scale)
 
     while np.abs( n.sum() - ncrys[0:shellmax].sum() ) > 1e-10:
         if n.sum() > ncrys[0:shellmax].sum() :
             sys.exit('==> ABORT. impossible cutoff. ')
         cutoff = cutoff+0.1
-        calc_ovito_rdf(cutoff)
+        calc_ovito_rdf(atoms, cutoff)
         r, n = post_rdf(V0, cc_scale)
 
     os.remove('y_post_ovito_rdf.txt')
@@ -117,12 +117,16 @@ def calc_cc_scale(cn):
 
 
 
-def calc_ovito_cna():
-    from ovito.io import import_file
+def calc_ovito_cna(atoms_in):
+    from ovito.pipeline import StaticSource, Pipeline
+    from ovito.io.ase import ase_to_ovito
     from ovito.modifiers import CommonNeighborAnalysisModifier
-
+    
     print('==> running CNA in ovito ')
-    pipeline = import_file('CONTCAR')
+
+    atoms = copy.deepcopy(atoms_in)
+    data = ase_to_ovito(atoms)
+    pipeline = Pipeline(source = StaticSource(data = data))
 
     modifier = CommonNeighborAnalysisModifier()
     pipeline.modifiers.append(modifier)
@@ -141,12 +145,16 @@ def calc_ovito_cna():
 
 
 
-def calc_ovito_rdf(cutoff = 6.0):
-    from ovito.io import import_file
+def calc_ovito_rdf(atoms_in, cutoff = 6.0):
+    from ovito.pipeline import StaticSource, Pipeline
+    from ovito.io.ase import ase_to_ovito
     from ovito.modifiers import CoordinationAnalysisModifier
     
     print('==> cutoff in ovito rdf: {0}'.format(cutoff))
-    pipeline = import_file('CONTCAR')
+    
+    atoms = copy.deepcopy(atoms_in)
+    data = ase_to_ovito(atoms)
+    pipeline = Pipeline(source = StaticSource(data = data))
 
     modifier = CoordinationAnalysisModifier(
         cutoff = cutoff, number_of_bins = 200, partial=True)
