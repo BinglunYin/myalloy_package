@@ -15,12 +15,10 @@ def calc_pairs_per_shell_from_CONTCAR(shellmax = 4):
 
 
 
-def calc_pairs_per_shell(atoms_in, shellmax = 4):
+def calc_pairs_per_shell(atoms_in, shellmax=4, write_dp=True):
     atoms = copy.deepcopy(atoms_in)
 
     print('==> shellmax: ', shellmax)
-    vf.my_rm('y_post_n_shell.txt')  
-    vf.my_rm('y_post_dn_shell.txt')
     vf.my_rm('y_post_dp_shell.txt')
 
     natoms = atoms.get_positions().shape[0]
@@ -42,27 +40,28 @@ def calc_pairs_per_shell(atoms_in, shellmax = 4):
 
 
     cutoff = np.around( a0 * rcrys[shellmax-1], 1)
-    calc_ovito_rdf(atoms, cutoff)
-    r, n = post_rdf(V0, cc_scale)
+    data_rdf = calc_ovito_rdf(atoms, cutoff)
+    r, n = post_rdf(data_rdf, V0, cc_scale)
 
     while np.abs( n.sum() - ncrys[0:shellmax].sum() ) > 1e-10:
         if n.sum() > ncrys[0:shellmax].sum() :
             sys.exit('==> ABORT. impossible cutoff. ')
         cutoff = cutoff+0.1
-        calc_ovito_rdf(atoms, cutoff)
-        r, n = post_rdf(V0, cc_scale)
+        data_rdf = calc_ovito_rdf(atoms, cutoff)
+        r, n = post_rdf(data_rdf, V0, cc_scale)
 
-    os.remove('y_post_ovito_rdf.txt')
-    calc_n_shell(ncrys, shellmax, r, n, cc_scale)
+    dn_shell = calc_n_shell(ncrys, shellmax, r, n, cc_scale)
 
 
     rmid = calc_rmid(cn)
-    dn_shell = read_reduced_dn_shell(rmid)
+    dn_shell_r = read_reduced_dn_shell(dn_shell, rmid)
 
-    dpw = np.prod(dn_shell.shape)  # dp width
-    dp_shell = dn_shell.reshape(dpw) /2
+    dpw = np.prod(dn_shell_r.shape)  # dp width
+    dp_shell = dn_shell_r.reshape(dpw) /2
     
-    np.savetxt("y_post_dp_shell.txt", dp_shell )
+    if write_dp == True:
+        np.savetxt("y_post_dp_shell.txt", dp_shell )
+    
     return dp_shell
 
 
@@ -161,14 +160,15 @@ def calc_ovito_rdf(atoms_in, cutoff = 6.0):
     pipeline.modifiers.append(modifier)
     data = pipeline.compute()
 
-    np.savetxt("y_post_ovito_rdf.txt", 
-        data.tables['coordination-rdf'].xy() )
-
-
+    # np.savetxt("y_post_ovito_rdf.txt", 
+        # data.tables['coordination-rdf'].xy() )
+    data_rdf = data.tables['coordination-rdf'].xy()
+    return data_rdf
 
     
-def post_rdf(V0, cc_scale):
-    data = np.loadtxt('y_post_ovito_rdf.txt')
+
+def post_rdf(data_rdf, V0, cc_scale):
+    data = data_rdf.copy()
 
     r = data[:,0].copy()
     dr = r[1] - r[0]
@@ -226,10 +226,9 @@ def calc_n_shell(ncrys, shellmax, r, n, cc_scale):
     if np.linalg.norm( np.sum(dn_shell, axis=1)  )  > 1e-10:
         sys.exit('==> wrong dn_shell')
 
-    # print(n_shell)
     # np.savetxt("y_post_n_shell.txt",   n_shell )
-    np.savetxt("y_post_dn_shell.txt", dn_shell )
-
+    # np.savetxt("y_post_dn_shell.txt", dn_shell )
+    return  dn_shell
 
 
 
@@ -251,13 +250,12 @@ def calc_rmid(cn):
 
 
 
-def read_reduced_dn_shell(rmid):
-    filename = 'y_post_dn_shell.txt'
-    dn_shell = np.loadtxt(filename)
+def read_reduced_dn_shell(dn_shell_in, rmid):
+    dn_shell = dn_shell_in.copy()
     if len(dn_shell.shape) < 1.9:
         dn_shell = dn_shell[np.newaxis, :]
-    dn_shell = np.delete(dn_shell, rmid.astype(int), axis=1)
-    return dn_shell
+    dn_shell_r = np.delete(dn_shell, rmid.astype(int), axis=1)
+    return dn_shell_r
 
 
 
