@@ -257,7 +257,7 @@ def read_reduced_dn_shell(rmid):
 
 
 
-calc_pairs_per_shell_from_CONTCAR()
+# calc_pairs_per_shell_from_CONTCAR()
 
 
 
