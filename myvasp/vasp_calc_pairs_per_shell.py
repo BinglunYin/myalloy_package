@@ -1,24 +1,34 @@
 #!/home/yin/opt/bin/python3
 
 import numpy as np
-import sys, os
+import sys, os, copy
 from myvasp import vasp_func as vf 
 
 
 
-def calc_pairs_per_shell(shellmax = 4):
-    print('==> shellmax: ', shellmax)
-
-    vf.my_rm('y_post_n_shell.txt')  
-    vf.my_rm('y_post_dn_shell.txt')
-    
+def calc_pairs_per_shell_from_CONTCAR(shellmax = 4):
 
     atoms = vf.my_read_vasp('CONTCAR')
+    calc_pairs_per_shell(atoms, shellmax = shellmax)
+
+
+
+
+
+def calc_pairs_per_shell(atoms_in, shellmax = 4):
+    atoms = copy.deepcopy(atoms_in)
+
+    print('==> shellmax: ', shellmax)
+    vf.my_rm('y_post_n_shell.txt')  
+    vf.my_rm('y_post_dn_shell.txt')
+    vf.my_rm('y_post_dp_shell.txt')
+
     natoms = atoms.get_positions().shape[0]
     V0 = atoms.get_volume() / natoms
     a0 = (V0*4)**(1/3)
     cn = atoms.cn
     print('==> a0: ', a0, '; cn: ', cn )
+
 
     cc_scale = calc_cc_scale(cn)
 
@@ -44,6 +54,19 @@ def calc_pairs_per_shell(shellmax = 4):
 
     os.remove('y_post_ovito_rdf.txt')
     calc_n_shell(ncrys, shellmax, r, n, cc_scale)
+
+
+    rmid = calc_rmid(cn)
+    dn_shell = read_reduced_dn_shell(rmid)
+
+    dpw = np.prod(dn_shell.shape)  # dp width
+    dp_shell = dn_shell.reshape(dpw) /2
+    
+    np.savetxt("y_post_dp_shell.txt", dp_shell )
+    return dp_shell
+
+
+
 
 
 
@@ -160,8 +183,6 @@ def post_rdf(V0, cc_scale):
 
 
 def calc_n_shell(ncrys, shellmax, r, n, cc_scale):
-    # rfcc, nfcc = fcc_shell()
-
     ntot = np.sum(n, axis=1)
 
     # find the index of critical r separating shells
@@ -198,13 +219,45 @@ def calc_n_shell(ncrys, shellmax, r, n, cc_scale):
         sys.exit('==> wrong dn_shell')
 
     # print(n_shell)
-    np.savetxt("y_post_n_shell.txt",   n_shell )
+    # np.savetxt("y_post_n_shell.txt",   n_shell )
     np.savetxt("y_post_dn_shell.txt", dn_shell )
 
 
 
 
-# calc_pairs_per_shell()
+
+
+def calc_rmid(cn):
+    nelem = cn.shape[0]
+    rmid = np.array([])    # rm id for cn*cn
+    k=-1
+    for i in np.arange(nelem):
+        for j in np.arange(i, nelem):
+            k = k+1
+            if i == j :
+                rmid = np.append(rmid, k)
+    # print('rmid:', rmid)
+    return rmid
+
+
+
+
+
+def read_reduced_dn_shell(rmid):
+    filename = 'y_post_dn_shell.txt'
+    dn_shell = np.loadtxt(filename)
+    if len(dn_shell.shape) < 1.9:
+        dn_shell = dn_shell[np.newaxis, :]
+    dn_shell = np.delete(dn_shell, rmid.astype(int), axis=1)
+    return dn_shell
+
+
+
+
+
+
+
+calc_pairs_per_shell_from_CONTCAR()
 
 
 
