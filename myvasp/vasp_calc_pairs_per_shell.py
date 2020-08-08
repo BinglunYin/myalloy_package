@@ -27,8 +27,10 @@ def calc_pairs_per_shell(atoms_in, shellmax=4, write_dp=True):
     cn = atoms.cn
     print('==> a0: ', a0, '; cn: ', cn )
 
-
     cc_scale = calc_cc_scale(cn)
+
+
+    vf.my_write_vasp(atoms, filename='CONTCAR_for_ovito', vasp5=True)
 
     struc = calc_ovito_cna(atoms)
     if struc == 'fcc':
@@ -117,15 +119,17 @@ def calc_cc_scale(cn):
 
 
 def calc_ovito_cna(atoms_in):
-    from ovito.pipeline import StaticSource, Pipeline
-    from ovito.io.ase import ase_to_ovito
+    # from ovito.pipeline import StaticSource, Pipeline
+    # from ovito.io.ase import ase_to_ovito
+    from ovito.io import import_file
     from ovito.modifiers import CommonNeighborAnalysisModifier
     
     print('==> running CNA in ovito ')
 
-    atoms = copy.deepcopy(atoms_in)
-    data = ase_to_ovito(atoms)
-    pipeline = Pipeline(source = StaticSource(data = data))
+    # atoms = copy.deepcopy(atoms_in)
+    # data = ase_to_ovito(atoms)
+    # pipeline = Pipeline(source = StaticSource(data = data))
+    pipeline = import_file('CONTCAR_for_ovito')
 
     modifier = CommonNeighborAnalysisModifier()
     pipeline.modifiers.append(modifier)
@@ -145,15 +149,17 @@ def calc_ovito_cna(atoms_in):
 
 
 def calc_ovito_rdf(atoms_in, cutoff = 6.0):
-    from ovito.pipeline import StaticSource, Pipeline
-    from ovito.io.ase import ase_to_ovito
+    # from ovito.pipeline import StaticSource, Pipeline
+    # from ovito.io.ase import ase_to_ovito
+    from ovito.io import import_file
     from ovito.modifiers import CoordinationAnalysisModifier
-    
+
     print('==> cutoff in ovito rdf: {0}'.format(cutoff))
     
-    atoms = copy.deepcopy(atoms_in)
-    data = ase_to_ovito(atoms)
-    pipeline = Pipeline(source = StaticSource(data = data))
+    # atoms = copy.deepcopy(atoms_in)
+    # data = ase_to_ovito(atoms)
+    # pipeline = Pipeline(source = StaticSource(data = data))
+    pipeline = import_file('CONTCAR_for_ovito')
 
     modifier = CoordinationAnalysisModifier(
         cutoff = cutoff, number_of_bins = 200, partial=True)
