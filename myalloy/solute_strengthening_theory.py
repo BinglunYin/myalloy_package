@@ -159,7 +159,8 @@ class alloy_class:
         wc = (np.pi/(2**(5/2) -1))**(1/3) *(dEb**2/(Gamma*b*ty0))**(1/3) *1e15  # [Ang]
         zetac = np.pi *dEb /( 2 *wc *b *ty0) *1e24   # [Ang]
 
-
+        qe = 1.602176634e-19 
+        sigma_dUsd = ( (2**(5/2)-1)**(-1) * 4 ) *dEb /qe   # [eV]
 
         #-------------------
         if 'filename' in param: 
@@ -217,6 +218,14 @@ class alloy_class:
 
             f.write('%16.4f %16.4f %16.4f %16.4f \n\n' \
             %(wc, wc/b, zetac, zetac/b) )
+
+            f.write('%16s \n' \
+            %('sigma_dUsd (eV)' ) )
+
+            f.write('%16.4f \n\n' \
+            %(sigma_dUsd) )
+
+
 
 
             if hasattr(self, 'V0'):
