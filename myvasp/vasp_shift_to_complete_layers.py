@@ -21,8 +21,8 @@ def shift_to_complete_layers():
 
 #==========================
 
-def check_layers():
-    atoms = vf.my_read_vasp(filename='CONTCAR')
+def check_layers(filename='CONTCAR'):
+    atoms = vf.my_read_vasp(filename = filename)
 
     z = atoms.get_positions()[:,-1]
     z.sort()
