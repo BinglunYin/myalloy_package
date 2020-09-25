@@ -90,7 +90,7 @@ def calc_natomsl_nlayers_nmiss(dz, dz_b):
 
     # interplane id in dz
     intp_id = np.array([])
-    for item in dz_b:
+    for item in np.unique(dz_b):
         temp, = np.where(dz == item)
         intp_id = np.append(intp_id, temp)
     
@@ -100,9 +100,8 @@ def calc_natomsl_nlayers_nmiss(dz, dz_b):
     vf.confirm_int(d_intp_id)
 
     # use the most frequent value as the natoms per layer
-    # natomsl = np.bincount( d_intp_id.astype(int) ).argmax() 
-
-    natomsl = calc_natomsl(d_intp_id)
+    natomsl = np.bincount( d_intp_id.astype(int) ).argmax() 
+    # natomsl = calc_natomsl(d_intp_id)
 
 
     vf.confirm_int( d_intp_id/natomsl  )
