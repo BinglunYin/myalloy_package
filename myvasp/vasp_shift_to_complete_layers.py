@@ -100,7 +100,10 @@ def calc_natomsl_nlayers_nmiss(dz, dz_b):
     vf.confirm_int(d_intp_id)
 
     # use the most frequent value as the natoms per layer
-    natomsl = np.bincount( d_intp_id.astype(int) ).argmax() 
+    # natomsl = np.bincount( d_intp_id.astype(int) ).argmax() 
+
+    natomsl = calc_natomsl(d_intp_id)
+
 
     vf.confirm_int( d_intp_id/natomsl  )
 
@@ -114,6 +117,24 @@ def calc_natomsl_nlayers_nmiss(dz, dz_b):
     print('==> natomsl, nlayers, nmiss:', \
         natomsl, nlayers, nmiss)
     return natomsl, nlayers, nmiss
+
+
+
+def calc_natomsl(d_intp_id):
+    print(d_intp_id)
+
+    d_intp_id_uniq = np.unique(d_intp_id)
+    k = np.array([])
+    
+    for i in d_intp_id_uniq:
+        mask = (d_intp_id == i)
+        temp = len( d_intp_id[mask] )
+        k = np.append(k, temp)
+
+    natomsl = d_intp_id_uniq[ np.argmax(k) ]
+    return natomsl
+
+
 
 
 
