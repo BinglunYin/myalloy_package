@@ -52,7 +52,7 @@ def calc_pairs_per_shell(atoms_in, shellmax=4, write_dp=True):
         data_rdf = calc_ovito_rdf(atoms, cutoff)
         r, n = post_rdf(data_rdf, V0, cc_scale)
 
-    dn_shell = calc_n_shell(ncrys, shellmax, r, n, cc_scale)
+    dn_shell, WC_SRO = calc_n_shell(ncrys, shellmax, r, n, cc_scale)
 
 
     rmid = calc_rmid(cn)
@@ -63,7 +63,8 @@ def calc_pairs_per_shell(atoms_in, shellmax=4, write_dp=True):
     
     if write_dp == True:
         np.savetxt("y_post_dp_shell.txt", dp_shell )
-    
+        np.savetxt("y_post_WC_SRO_shell.txt", WC_SRO )
+
     return dp_shell
 
 
@@ -225,6 +226,7 @@ def calc_n_shell(ncrys, shellmax, r, n, cc_scale):
 
     dn_shell = n_shell - n_shell_rand
 
+    WC_SRO = - dn_shell / n_shell_rand
 
     if np.linalg.norm( np.sum(n_shell, axis=1) - ncrys[0:shellmax] )  > 1e-10:
         sys.exit('==> wrong n_shell')
@@ -234,7 +236,7 @@ def calc_n_shell(ncrys, shellmax, r, n, cc_scale):
 
     # np.savetxt("y_post_n_shell.txt",   n_shell )
     # np.savetxt("y_post_dn_shell.txt", dn_shell )
-    return  dn_shell
+    return  dn_shell, WC_SRO
 
 
 
