@@ -261,6 +261,36 @@ class alloy_class:
                 %(self.Cij[0], self.Cij[1], self.Cij[2]) )
 
 
+
+
+
+            if hasattr(self, 'Cijavg'):
+                f.write(' Cij average: B, mu, nu, E \n')
+
+                B  = self.Cijavg['B_V']
+                mu = self.Cijavg['mu_V']
+                nu = self.Cijavg['nu_V']
+                f.write('%10s %16.1f %16.1f %16.4f %16.1f \n' \
+                %('Voigt:', B, mu, nu, calc_E_from_mu_nu(mu, nu)  ))
+   
+                B  = self.Cijavg['B_R']
+                mu = self.Cijavg['mu_R']
+                nu = self.Cijavg['nu_R']
+                f.write('%10s %16.1f %16.1f %16.4f %16.1f \n' \
+                %('Reuss:', B, mu, nu, calc_E_from_mu_nu(mu, nu)  ))
+
+                B  = self.Cijavg['B_H']
+                mu = self.Cijavg['mu_H']
+                nu = self.Cijavg['nu_H']
+                f.write('%10s %16.1f %16.1f %16.4f %16.1f \n\n' \
+                %('Hill:', B, mu, nu, calc_E_from_mu_nu(mu, nu)  ))
+
+
+
+
+
+
+
             if hasattr(self, 'polyelem'):
                 f.write(' elemental poly: \n')
 
