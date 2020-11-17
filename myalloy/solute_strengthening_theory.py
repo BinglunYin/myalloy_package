@@ -151,9 +151,9 @@ def calc_yield_strength(self, param={}):
             sigmay_ss = 3.06*calc_ty(et0, T, et, ty0_ss, dEb_ss)
 
             f.write('%16s %16s %16s \n' \
-            %('ty0_ss', 'dEb_ss', 'sigmay_ss' ) )
+            %('ty0_ss (MPa)', 'dEb_ss (eV)', 'sigmay_ss (MPa)' ) )
             f.write('%16.8f %16.8f %16.8f \n\n' \
-            %(ty0_ss, dEb_ss, sigmay_ss) )
+            %(ty0_ss, dEb_ss/qe, sigmay_ss) )
 
 
 
