@@ -138,9 +138,9 @@ def calc_yield_strength(self, param={}):
 
 
 
-
-        if hasattr(self, 'dU_ratio'):
-            dU_ratio = self.dU_ratio 
+        if 'dU_ratio' in param: 
+            dU_ratio = param['dU_ratio']
+            
             f.write('\n%16s %16s %16s \n' \
             %('dU_ratio', 'dU_ratio**(4/3)', 'dU_ratio**(2/3)') )
             f.write('%16.8f %16.8f %16.8f \n' \
@@ -150,7 +150,7 @@ def calc_yield_strength(self, param={}):
             dEb_ss = dEb*dU_ratio**(2/3)
             sigmay_ss = 3.06*calc_ty(et0, T, et, ty0_ss, dEb_ss)
 
-            f.write('\n%16s %16s %16s \n' \
+            f.write('%16s %16s %16s \n' \
             %('ty0_ss', 'dEb_ss', 'sigmay_ss' ) )
             f.write('%16.8f %16.8f %16.8f \n' \
             %(ty0_ss, dEb_ss, sigmay_ss) )
