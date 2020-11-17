@@ -147,7 +147,7 @@ def symmetrize_matrix(C_in):
         sys.exit('ABORT: C has to be a square matrix.') 
     
     for i in np.arange(1, C.shape[0]):
-        for j in np.arange(0, i)
+        for j in np.arange(0, i):
             C[i,j] = C[j,i]
    
     return C
