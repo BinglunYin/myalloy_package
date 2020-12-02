@@ -180,9 +180,9 @@ def calc_dstep_from_nstep(nstep):
 
 
 
-def move_file_to_dump(files, dumpdir):
+def move_file_to_dump(filename, dumpdir):
     import glob  
-    f = glob.iglob(files)  
+    f = glob.iglob(filename)  
     for i in f:  
         shutil.move(i, dumpdir)
 
