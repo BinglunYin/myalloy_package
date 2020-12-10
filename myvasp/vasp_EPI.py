@@ -56,48 +56,48 @@ def MC_swap_with_EPI(atoms_in, EPI_beta, T, nstep):
     # enter MC loop
     for i in np.arange(1, nstep+1):
         print('==> MC STEP:', i)
+    
         
         sid1 = rand_id(natoms)
         sid2 = rand_id(natoms)
 
-
-        if atom_num[sid1] == atom_num[sid2]:    
+        while atom_num[sid1] == atom_num[sid2]:    
             # the same element
-            Ef_new = Ef_all[-1]
+            sid1 = rand_id(natoms)
+            sid2 = rand_id(natoms)
 
+        
+        # different element
+        pos = atoms.get_positions()
+        temp = pos[sid1,:].copy()
+        pos[sid1,:] = pos[sid2,:].copy()
+        pos[sid2,:] = temp.copy()
+        
+        atoms2 = copy.deepcopy(atoms)
+        atoms2.set_positions(pos, apply_constraint=False )
+        Ef2 = eval_Ef_from_EPI(atoms2, EPI_beta) 
+        dEf = Ef2 - Ef_all[-1]    
+        
+        
+        #acceptance probability
+        P = np.exp( -dEf * beta2 )
+        print('dEf, P:', dEf, P)
+        if P > np.random.random_sample() :
+            atoms = copy.deepcopy(atoms2)
+            Ef_new = Ef2
         else:
-            # different element
-            pos = atoms.get_positions()
-            temp = pos[sid1,:].copy()
-            pos[sid1,:] = pos[sid2,:].copy()
-            pos[sid2,:] = temp.copy()
-            
-            atoms2 = copy.deepcopy(atoms)
-            atoms2.set_positions(pos, apply_constraint=False )
-            Ef2 = eval_Ef_from_EPI(atoms2, EPI_beta) 
-            dEf = Ef2 - Ef_all[-1]    
-
-            #acceptance probability
-            P = np.exp( -dEf * beta2 )
-            print('dEf, P:', dEf, P)
-
-            if P > np.random.random_sample() :
-                atoms = copy.deepcopy(atoms2)
-                Ef_new = Ef2
-            else:
-                Ef_new = Ef_all[-1]
+            Ef_new = Ef_all[-1]
         
         Ef_all = np.append(Ef_all, Ef_new)
 
 
         # write pos
-
         if Ef_new < Ef_write_pos:
             write_MC_poscar(atoms, Ef_new -EPI_beta[0])
             Ef_write_pos -= 0.01
         
         if i==1 or i==nstep :  
-            write_MC_poscar(atoms, Ef_new -EPI_beta[0])
+            write_MC_poscar(atoms, Ef_new -EPI_beta[0], istep=i)
 
         if np.mod(i, dstep) == 0:
             write_MC_poscar(atoms, Ef_new -EPI_beta[0], istep=i)
@@ -237,7 +237,7 @@ def run_MC_case(nstep=1000, T_list=[300.0, 1500.0], \
 
 
 
-# run_MC_case(nstep=1000, T_list=[3000.0])
+# run_MC_case(nstep=1000, T_list=[300.0, 1500.0])
 
 
 
