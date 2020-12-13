@@ -120,7 +120,8 @@ def MC_swap_with_EPI(atoms_in, EPI_beta, T, nstep):
 
     os.chdir(dumpdir)
     analyze_dump()
-
+    os.chdir('..')
+    
     return Ef_all
 
 
