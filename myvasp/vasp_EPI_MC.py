@@ -11,7 +11,7 @@ import copy, os, sys, shutil, time
 
 def MC_swap_with_EPI(atoms_in, EPI_beta, T, nstep):
     
-    jobname = 'T_%.0f_nstep_%d' %(T, nstep)
+    jobname = 'T_%04.0f_nstep_%d' %(T, nstep)
 
 
     # mkdir dump with backup
