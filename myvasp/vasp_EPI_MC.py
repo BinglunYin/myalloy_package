@@ -217,7 +217,7 @@ def plot_MC(EPI_beta, Ef_all, T):
     ax1.set_ylabel('$E_{f,\\mathrm{Pred}} - E^\\mathrm{rand}_{f}$ (meV/atom)')
     ax1.legend( framealpha=0.5, loc="best")
 
-    filename = 'fig_MC_T_%.0f_nstep_%d.pdf' %(T, len(Ef_all)-1)
+    filename = 'fig_MC_T_%04.0f_nstep_%d.pdf' %(T, len(Ef_all)-1)
     plt.savefig(filename)
     plt.close('all')
 
