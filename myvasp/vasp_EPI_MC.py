@@ -119,7 +119,7 @@ def MC_swap_with_EPI(atoms_in, EPI_beta, T, nstep):
 
 
     os.chdir(dumpdir)
-    analyze_dump()
+    analyze_dump(jobname)
     os.chdir('..')
     
     return Ef_all
@@ -227,7 +227,7 @@ def plot_MC(EPI_beta, Ef_all, T):
 
 
 
-def analyze_dump():
+def analyze_dump(jobname):
     EPI_beta =  np.loadtxt('../y_post_EPI.beta_4.txt')
 
     os.system('ls POSCAR_step_* > tmp_filelist')
@@ -261,18 +261,20 @@ def analyze_dump():
     print('==> dp_shell_tot.shape[0]:', dp_shell_tot.shape[0])
     
     dp_shell_avg = np.mean(dp_shell_tot, axis=0)
-    np.savetxt("y_post_dp_shell_avg.txt", dp_shell_avg )
+    filename2 = 'y_post_dp_shell_avg_%s.txt' %(jobname)
+    np.savetxt(filename2, dp_shell_avg )
 
     plot_dp_shell(atoms, EPI_beta, dp_shell=dp_shell_avg)
-    os.rename('y_post_dp_shell.pdf', \
-        'fig_dp_shell_avg.pdf')
+    filename2 = 'fig_dp_shell_avg_%s.pdf' %(jobname)
+    os.rename('y_post_dp_shell.pdf', filename2)
 
 
     WC_SRO_tot = np.delete(WC_SRO_tot, 0, 0)
     print('==> WC_SRO_tot.shape[0]:', WC_SRO_tot.shape[0])
 
     WC_SRO_avg = np.mean(WC_SRO_tot, axis=0)
-    np.savetxt("y_post_WC_SRO_shell_avg.txt", WC_SRO_avg )
+    filename2 = 'y_post_WC_SRO_shell_avg_%s.txt' %(jobname)
+    np.savetxt(filename2, WC_SRO_avg )
 
 
 
@@ -423,7 +425,7 @@ def run_MC_case(nstep=1000, T_list=[300.0, 1500.0], \
 
 
 
-# run_MC_case(nstep=1000, T_list=[1e11])
+run_MC_case(nstep=1000, T_list=[1000.0])
 
 
 
