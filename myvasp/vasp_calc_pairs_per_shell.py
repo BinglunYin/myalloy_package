@@ -57,13 +57,15 @@ def calc_pairs_per_shell(atoms_in, shellmax=4, write_dp=True):
 
     rmid = calc_rmid(cn)
     dn_shell_r = read_reduced_dn_shell(dn_shell, rmid)
+    WC_SRO_r = read_reduced_dn_shell(WC_SRO, rmid)
 
     dpw = np.prod(dn_shell_r.shape)  # dp width
-    dp_shell = dn_shell_r.reshape(dpw) /2
-    
+    dp_shell  = dn_shell_r.reshape(dpw) /2
+    WC_SRO_r2 =   WC_SRO_r.reshape(dpw) 
+
     if write_dp == True:
         np.savetxt("y_post_dp_shell.txt", dp_shell )
-        np.savetxt("y_post_WC_SRO_shell.txt", WC_SRO )
+        np.savetxt("y_post_WC_SRO_shell.txt", WC_SRO_r2 )
 
     return dp_shell
 
