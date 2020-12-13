@@ -33,12 +33,8 @@ def calc_pairs_per_shell(atoms_in, shellmax=4, write_dp=True):
     vf.my_write_vasp(atoms, filename='CONTCAR_for_ovito', vasp5=True)
 
     struc = calc_ovito_cna(atoms)
-    if struc == 'fcc':
-        print('==> fcc ')
-        rcrys, ncrys = fcc_shell()
-    elif struc == 'hcp':
-        print('==> hcp ')
-        rcrys, ncrys = hcp_shell()
+    rcrys, ncrys = crystal_shell(struc)
+    
 
 
     cutoff = np.around( a0 * rcrys[shellmax-1], 1)
@@ -75,28 +71,29 @@ def calc_pairs_per_shell(atoms_in, shellmax=4, write_dp=True):
 
 
 
-def fcc_shell():
-    rfcc = np.sqrt(  np.array([ 
-        1/2, 1,   3/2, 2,   5/2, 3,    
-        7/2, 4,   9/2, 5,   11/2, 6,   13/2    ])  ) # in unit of a0
-    nfcc = np.array([ 
-        12, 6,   24, 12,   24, 8,
-        48, 6,   36, 24,   24, 24,    72   ])
-    return rfcc, nfcc
+def crystal_shell(struc):
+    if struc == 'fcc':
+        print('==> fcc ')  
+        rcrys = np.sqrt(  np.array([ 
+            1/2, 1,   3/2, 2,   5/2, 3,    
+            7/2, 4,   9/2, 5,   11/2, 6,   13/2    ])  ) # in unit of a0
+        ncrys = np.array([ 
+            12, 6,   24, 12,   24, 8,
+            48, 6,   36, 24,   24, 24,    72   ])
 
-
-
-
-def hcp_shell():
-    rhcp = np.array([
-        0.707, 0.999, 1.154, 1.224, 1.354, \
-        1.414, 1.581, 1.683, 1.732, 1.779, \
-        1.825, 1.870, 1.914,  ])
-    nhcp = np.array([
-        12,  6,  2, 18, 12,  \
-         6, 12, 12,  6,  6,  \
-        12, 24,  6,  ])
-    return rhcp, nhcp
+    elif struc == 'hcp':
+        print('==> hcp ')
+        rcrys = np.array([
+            0.707, 0.999, 1.154, 1.224, 1.354, \
+            1.414, 1.581, 1.683, 1.732, 1.779, \
+            1.825, 1.870, 1.914,  ])
+        ncrys = np.array([
+            12,  6,  2, 18, 12,  \
+             6, 12, 12,  6,  6,  \
+            12, 24,  6,  ])
+    else:
+        sys.exit('ABORT: no data in crystal shell. ')
+    return rcrys, ncrys
 
 
 
