@@ -97,9 +97,9 @@ def MC_swap_with_EPI(atoms_in, EPI_beta, T, nstep):
             Ef_write_pos -= 0.01
         
         if i==1 or i==nstep :  
-            write_MC_poscar(atoms, Ef_new -EPI_beta[0], istep=i)
+            write_MC_poscar(atoms, Ef_new -EPI_beta[0])
 
-        if np.mod(i, dstep) == 0:
+        if (i>nstep*0.3) and (np.mod(i, dstep) == 0):
             write_MC_poscar(atoms, Ef_new -EPI_beta[0], istep=i)
 
     # MC loop ends
@@ -116,6 +116,10 @@ def MC_swap_with_EPI(atoms_in, EPI_beta, T, nstep):
     move_file_to_dump('POSCAR*', dumpdir)
     move_file_to_dump('Ef_all*', dumpdir)
     move_file_to_dump('fig_MC*', dumpdir)
+
+
+    os.chdir(dumpdir)
+    analyze_dump()
 
     return Ef_all
 
@@ -148,7 +152,7 @@ def rand_id(natoms):
 
 
 def eval_Ef_from_EPI(atoms_in, EPI_beta):
-    from myvasp import vasp_calc_pairs_per_shell as vf2
+    from myvasp import vasp_EPI_dp_shell as vf2
 
     atoms = copy.deepcopy( atoms_in )
     nelem = len( atoms.cn )
@@ -218,6 +222,187 @@ def plot_MC(EPI_beta, Ef_all, T):
 
 
 
+
+
+
+
+def analyze_dump():
+    EPI_beta =  np.loadtxt('../y_post_EPI.beta_4.txt')
+
+    os.system('ls POSCAR_step_* > tmp_filelist')
+    f = open('tmp_filelist', 'r')
+
+    dp_shell_tot = np.zeros(len(EPI_beta)-1)
+    WC_SRO_tot   = np.zeros(len(EPI_beta)-1)
+
+    for line in f:
+        filename = line.strip('\n') 
+        print(filename)
+        atoms = vf.my_read_vasp(filename)
+   
+        dp_shell = plot_dp_shell(atoms, EPI_beta=EPI_beta)
+        dp_shell_tot = np.vstack([dp_shell_tot, dp_shell])
+
+        filename2 = 'y_post_dp_shell_%s.pdf' %(filename)
+        os.rename(  'y_post_dp_shell.pdf', filename2)
+
+
+        os.remove('y_post_dp_shell.txt')
+
+        filename2 = 'y_post_WC_SRO_shell.txt' 
+        temp = np.loadtxt(filename2)
+        WC_SRO_tot = np.vstack([WC_SRO_tot, temp])
+        os.remove(filename2)
+
+    os.remove('tmp_filelist')
+
+    dp_shell_tot = np.delete(dp_shell_tot, 0, 0)
+    print('==> dp_shell_tot.shape[0]:', dp_shell_tot.shape[0])
+    
+    dp_shell_avg = np.mean(dp_shell_tot, axis=0)
+    np.savetxt("y_post_dp_shell_avg.txt", dp_shell_avg )
+
+    plot_dp_shell(atoms, EPI_beta, dp_shell=dp_shell_avg)
+    os.rename('y_post_dp_shell.pdf', \
+        'fig_dp_shell_avg.pdf')
+
+
+    WC_SRO_tot = np.delete(WC_SRO_tot, 0, 0)
+    print('==> WC_SRO_tot.shape[0]:', WC_SRO_tot.shape[0])
+
+    WC_SRO_avg = np.mean(WC_SRO_tot, axis=0)
+    np.savetxt("y_post_WC_SRO_shell_avg.txt", WC_SRO_avg )
+
+
+
+
+
+def plot_dp_shell(atoms_in, EPI_beta=np.array([]), dp_shell=np.array([]) ) :
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import pandas as pd 
+    from myvasp import vasp_EPI_dp_shell as vf2
+
+
+    atoms = copy.deepcopy(atoms_in)
+
+    nelem = len( atoms.cn )
+    shellmax = (len(EPI_beta)-1)/ (nelem*(nelem-1)/2) 
+    vf.confirm_int(shellmax)
+    shellmax = int(shellmax)
+
+    if len(dp_shell)<0.1 :
+        dp_shell = vf2.calc_pairs_per_shell(atoms, \
+            shellmax=shellmax, write_dp=True)
+    else:
+        print('==> Use input dp_shell.')
+
+    temp = int(len(dp_shell)/shellmax)
+    dp_shell_2 = dp_shell.reshape(shellmax, temp)
+
+    rcry, ncry = vf2.crystal_shell('fcc')
+    xi = rcry[0:shellmax].copy()
+
+
+    fig_xlim = np.array([ xi[0]-0.15, xi[-1]+0.15 ])
+    fig_ylim = np.array([-0.5, 0.5])
+
+    elem_sym = pd.unique( atoms.get_chemical_symbols() )
+    print('elem_sym:', elem_sym)
+    nelem = elem_sym.shape[0]
+
+    fig_wh = [2.7, 2.5]
+    fig_subp = [1, 1]            
+    fig1, ax1 = vf.my_plot(fig_wh, fig_subp)
+
+    fig_pos  = np.array([0.27, 0.17, 0.70, 0.78])
+    ax1.set_position(fig_pos)
+
+    ax1.plot( fig_xlim, [0, 0], ':k' )
+  
+
+    k=-1
+    for i in np.arange(nelem):
+        for j in np.arange(i, nelem):
+            if i != j:
+                k = k+1
+
+                elems_name = '%s%s' %( elem_sym[i], elem_sym[j] )
+                str1 = '$\\Delta \\eta_{\\mathrm{%s}, d}$' %(elems_name)
+                mycolor, mymarker =  mycolors(elems_name)
+                               
+                ax1.plot(xi,  dp_shell_2[:, k], '-', \
+                    color = mycolor, marker = mymarker, \
+                    label = str1)
+      
+
+    vf.confirm_0( dp_shell_2.shape[1] - (k+1) ) 
+    ax1.legend(loc='best', ncol=2, framealpha=0.4, \
+        fontsize=7)
+
+    ax1.set_xlabel('Pair distance $d/a$')
+    ax1.set_ylabel('$\\Delta \\eta_{nm, d}$')
+    ax1.set_xlim( fig_xlim )
+    ax1.set_ylim( fig_ylim )
+
+    if len(EPI_beta) > 0.1 :
+        Ef = -0.5 * np.dot( dp_shell, EPI_beta[1:])
+
+        str1 = '$E_{f, \\mathrm{Pred}} - {E}^\\mathrm{rand}_{f}$ = %.0f meV/atom' %( Ef*1e3 )
+        ax1.text( 
+            fig_xlim[0]+(fig_xlim[1]-fig_xlim[0])*0.95, \
+            fig_ylim[0]+(fig_ylim[1]-fig_ylim[0])*0.05, str1, \
+            horizontalalignment='right' )
+
+    plt.savefig('y_post_dp_shell.pdf')
+    plt.close('all')
+    return dp_shell
+
+
+
+
+
+def mycolors(elems_name):
+    d={}
+    d['AuNi'] = ['C0', 'o']      
+    d['AuPd'] = ['C1', 's']    
+    d['AuPt'] = ['C2', '^']      
+    d['NiPd'] = ['C3', 'v']      
+    d['NiPt'] = ['C4', '<']      
+    d['PdPt'] = ['C5', '>']   
+
+    d['AuCu'] = ['C6', 'P']   
+    d['NiCu'] = ['C7', 'X']   
+    d['PdCu'] = ['C8', 'p']   
+    d['PtCu'] = ['C9', 'H']   
+ 
+    d['AuAg'] = [ np.array([3,168,158])/255,   'o']   
+    d['AgCu'] = [ np.array([240,128,128])/255, 's']   
+
+    d['NiCo'] = ['C0', 'o']   
+    d['NiCr'] = ['C1', 's']   
+    d['CoCr'] = ['C2', '^']   
+
+
+    if elems_name in d:
+        y1 = d[elems_name][0]
+        y2 = d[elems_name][1]
+    else:
+        y1 = 'k'
+        y2 = 'o'
+    return y1, y2
+
+
+
+
+
+
+
+
+
+
+
 #============================
 # run MC case
 
@@ -237,7 +422,7 @@ def run_MC_case(nstep=1000, T_list=[300.0, 1500.0], \
 
 
 
-# run_MC_case(nstep=1000, T_list=[300.0, 1500.0])
+run_MC_case(nstep=1000, T_list=[1e11])
 
 
 
