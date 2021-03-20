@@ -309,7 +309,7 @@ def plot_dp_shell(atoms_in, EPI_beta=np.array([]), dp_shell=np.array([]) ) :
 
 
     fig_xlim = np.array([ xi[0]-0.15, xi[-1]+0.15 ])
-    fig_ylim = np.array([-0.5, 0.5])
+    # fig_ylim = np.array([-0.5, 0.5])
 
     elem_sym = pd.unique( atoms.get_chemical_symbols() )
     print('elem_sym:', elem_sym)
@@ -347,12 +347,13 @@ def plot_dp_shell(atoms_in, EPI_beta=np.array([]), dp_shell=np.array([]) ) :
     ax1.set_xlabel('Pair distance $d/a$')
     ax1.set_ylabel('$\\Delta \\eta_{nm, d}$')
     ax1.set_xlim( fig_xlim )
-    ax1.set_ylim( fig_ylim )
+    # ax1.set_ylim( fig_ylim )
+    fig_ylim = ax1.get_ylim()
 
     if len(EPI_beta) > 0.1 :
         Ef = -0.5 * np.dot( dp_shell, EPI_beta[1:])
 
-        str1 = '$E_{f, \\mathrm{Pred}} - {E}^\\mathrm{rand}_{f}$ = %.0f meV/atom' %( Ef*1e3 )
+        str1 = '$E_{f, \\mathrm{Pred}} - {E}^\\mathrm{rand}_{f}$ = %.3f meV/atom' %( Ef*1e3 )
         ax1.text( 
             fig_xlim[0]+(fig_xlim[1]-fig_xlim[0])*0.95, \
             fig_ylim[0]+(fig_ylim[1]-fig_ylim[0])*0.05, str1, \
