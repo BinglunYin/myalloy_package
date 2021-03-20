@@ -99,7 +99,7 @@ def MC_swap_with_EPI(atoms_in, EPI_beta, T, nstep):
         if i==1 or i==nstep :  
             write_MC_poscar(atoms, Ef_new -EPI_beta[0])
 
-        if (i>nstep*0.3) and (np.mod(i, dstep) == 0):
+        if (i>nstep*0.4) and (np.mod(i, dstep) == 0):
             write_MC_poscar(atoms, Ef_new -EPI_beta[0], istep=i)
 
     # MC loop ends
@@ -353,10 +353,10 @@ def plot_dp_shell(atoms_in, EPI_beta=np.array([]), dp_shell=np.array([]) ) :
     if len(EPI_beta) > 0.1 :
         Ef = -0.5 * np.dot( dp_shell, EPI_beta[1:])
 
-        str1 = '$E_{f, \\mathrm{Pred}} - {E}^\\mathrm{rand}_{f}$ \n= %.3f meV/atom' %( Ef*1e3 )
+        str1 = '$E_{f, \\mathrm{Pred}} - {E}^\\mathrm{rand}_{f}$\n= %.3f meV/atom' %( Ef*1e3 )
         ax1.text( 
             fig_xlim[0]+(fig_xlim[1]-fig_xlim[0])*0.95, \
-            fig_ylim[0]+(fig_ylim[1]-fig_ylim[0])*0.08, str1, \
+            fig_ylim[0]+(fig_ylim[1]-fig_ylim[0])*0.06, str1, \
             horizontalalignment='right' )
 
     plt.savefig('y_post_dp_shell.pdf')
