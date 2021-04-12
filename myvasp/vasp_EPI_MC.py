@@ -228,7 +228,12 @@ def plot_MC(EPI_beta, Ef_all, T):
 
 
 def analyze_dump(jobname):
-    EPI_beta =  np.loadtxt('../y_post_EPI.beta_4.txt')
+
+    # make it up to 9 shells
+    temp =  np.loadtxt('../y_post_EPI.beta_4.txt')
+    EPI_beta = np.append(temp, np.zeros(10-len(temp)) )  
+
+
 
     os.system('ls POSCAR_step_* > tmp_filelist')
     f = open('tmp_filelist', 'r')
