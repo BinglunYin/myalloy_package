@@ -25,7 +25,7 @@ def vasp_create_fcc_111(a, ncell, bp=0):
     atoms.pos_a0 = a 
 
     if bp == 33:
-        atoms.positions = atoms.positions + np.array([0, 0, 0.01])
+        atoms.positions = atoms.positions + np.array([0, 0, 0.1]) *a 
         atoms.wrap()
 
     vf.my_write_vasp(atoms, filename='POSCAR', vasp5=True)
@@ -55,6 +55,10 @@ def vasp_create_fcc_111_ortho(a, ncell, bp=0):
     atoms = vf.create_supercell(latt, motif, ncell)
     atoms.pos_a0 = a 
 
+    if bp == 33:
+        atoms.positions = atoms.positions + np.array([0, 0, 0.1]) *a 
+        atoms.wrap()
+
     vf.my_write_vasp(atoms, filename='POSCAR', vasp5=True)
 
 
@@ -81,7 +85,7 @@ def vasp_create_fcc_100(a, ncell, bp=0):
     atoms.pos_a0 = a 
 
     if bp == 33:
-        atoms.positions = atoms.positions + np.array([0, 0, 0.01])
+        atoms.positions = atoms.positions + np.array([0, 0, 0.1]) *a 
         atoms.wrap()
 
     vf.my_write_vasp(atoms, filename='POSCAR', vasp5=True)
