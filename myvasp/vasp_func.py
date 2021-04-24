@@ -183,8 +183,8 @@ def vasp_read_post_data(filename='y_post_data'):
             pres = np.vstack( (pres, temp) ) 
     f.close()
 
-    print('==> CHECK data:')
-    print(jobn, Etot, Eent, pres)
+    # print('==> CHECK data:')
+    # print(jobn, Etot, Eent, pres)
 
     return jobn, Etot, Eent, pres
 
