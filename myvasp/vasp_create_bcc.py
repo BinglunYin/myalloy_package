@@ -5,6 +5,40 @@ from myvasp import vasp_func as vf
 
 
 
+
+def vasp_create_bcc_100(a, ncell, bp=0):
+    print('==> create bcc 100 plane: ')
+    print(a, ncell, bp)
+
+    latt = np.array([
+        [ 1.0,     0,     0],
+        [   0,   1.0,     0],
+        [   0,     0,   1.0],
+    ]) *a
+
+   
+    motif = np.array([
+        [0, 0, 0],
+        [0.5, 0.5, 0.5],
+    ])
+
+    atoms = vf.create_supercell(latt, motif, ncell)
+
+
+    if bp == 33:
+        atoms.positions = atoms.positions + np.array([0, 0, 0.1])*a
+        atoms.wrap()
+
+    atoms.pos_a0 = a 
+    vf.my_write_vasp(atoms, filename='POSCAR', vasp5=True)
+
+
+
+
+
+
+
+
 def vasp_create_bcc_110(a, ncell, bp=0):
     print('==> create bcc 110 plane: ')
     print(a, ncell, bp)
