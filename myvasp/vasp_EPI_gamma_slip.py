@@ -77,7 +77,7 @@ def calc_gamma_all(a_fcc=3.840, b_slip=1):
         gamma_all = np.vstack([gamma_all, gamma_s])
 
     gamma_all = np.delete(gamma_all, 0, 0)
-    vf.confirm_0(gamma_all.shape - np.array([npos*nz, 2]) )
+    vf.confirm_0(gamma_all.shape - np.array([npos*nz/6, 2]) )
     
     filename = 'SRO_gamma_all_%d.txt' %(b_slip)
     np.savetxt(filename, gamma_all)
@@ -112,7 +112,7 @@ def calc_gamma_s(EPI_beta, pos_filename, a_fcc, b_slip):
 
     E_s = calc_E_s(atoms, nx, nz, EPI_beta, b_slip)
     
-    vf.confirm_0( E_s.shape - np.array([nz, 2]) )
+    vf.confirm_0( E_s.shape - np.array([nz/6, 2]) )
 
     qe = vf.phy_const('qe')
     gamma_s = E_s/(natoms/nz) / (np.sqrt(3)/2*a_fcc**2/2) *qe*1e23
@@ -138,11 +138,11 @@ def calc_E_s(atoms_in, nx, nz, EPI_beta, b_slip):
 
     E_s = np.zeros( 2 )  # + and -
     
-    for i in np.arange( nz ):
+    for i in np.arange( nz/6 ):
         atoms2 = copy.deepcopy(atoms)
         
         pos2 = atoms2.get_positions()
-        pos2[:,2] = pos2[:,2] + i* dz
+        pos2[:,2] = pos2[:,2] + i* dz*6
         atoms2.set_positions(pos2, apply_constraint=False )
         atoms2.wrap()
             
