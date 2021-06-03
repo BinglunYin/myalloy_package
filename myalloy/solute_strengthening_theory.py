@@ -145,7 +145,7 @@ def calc_yield_strength(self, param={}):
             f.write('\n# Add solute-solute interaction: \n' )
 
             f.write('%16s %16s %16s \n' \
-            %('sigma_ratio', 'sigma_ratio**(4/3)', 'sigma_ratio**(2/3)') )
+            %('sigma_ratio', 'ratio**(4/3)', 'ratio**(2/3)') )
             f.write('%16.4f %16.4f %16.4f \n\n' \
             %(sigma_ratio, sigma_ratio**(4/3), sigma_ratio**(2/3)) )
 
