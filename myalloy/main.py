@@ -1,7 +1,7 @@
 
 import numpy as np
 import sys 
-from myalloy import calc_elastic_constants as cec
+from myalloy import calc_elastic_constant as cec
 
 
 
