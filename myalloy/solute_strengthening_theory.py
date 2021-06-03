@@ -140,17 +140,17 @@ def calc_yield_strength(self, param={}):
 
 
 
-        if 'dU_ratio' in param: 
-            dU_ratio = param['dU_ratio']
+        if 'sigma_ratio' in param: 
+            sigma_ratio = param['sigma_ratio']
             f.write('\n# Add solute-solute interaction: \n' )
 
             f.write('%16s %16s %16s \n' \
-            %('dU_ratio', 'dU_ratio**(4/3)', 'dU_ratio**(2/3)') )
+            %('sigma_ratio', 'sigma_ratio**(4/3)', 'sigma_ratio**(2/3)') )
             f.write('%16.4f %16.4f %16.4f \n\n' \
-            %(dU_ratio, dU_ratio**(4/3), dU_ratio**(2/3)) )
+            %(sigma_ratio, sigma_ratio**(4/3), sigma_ratio**(2/3)) )
 
-            ty0_ss = ty0*dU_ratio**(4/3)
-            dEb_ss = dEb*dU_ratio**(2/3)
+            ty0_ss = ty0*sigma_ratio**(4/3)
+            dEb_ss = dEb*sigma_ratio**(2/3)
             sigmay_ss = 3.06*calc_ty(et0, T, et, ty0_ss, dEb_ss)
 
             f.write('%16s %16s %16s \n' \
