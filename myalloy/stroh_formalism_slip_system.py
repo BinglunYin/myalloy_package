@@ -3,7 +3,7 @@ import numpy as np
 import sys 
 
 
-def stroh_slip_system(self, slip_system='basal_a_edge', bp=None):
+def stroh_slip_system(self, slip_system='111_a_edge', bp=None):
 
     a=self.a
     c=self.c

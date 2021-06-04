@@ -7,7 +7,8 @@ import sys
 def calc_stroh(self, slip_system='basal_a_edge', bp=None):
     qe=1.60217657e-19
 
-
+    if not hasattr(self, 'c'):
+        self.c = self.a
 
     from myalloy import stroh_formalism_slip_system as ss
     mm, bt, theta, xx, yy, b1, b2 = \
@@ -15,10 +16,8 @@ def calc_stroh(self, slip_system='basal_a_edge', bp=None):
     
 
     a = self.a
-    if hasattr(self, 'c'):
-        c = self.c
-    else:
-        c=a 
+    c = self.c
+    
 
     Cij = self.Cij 
     brav_latt = self.brav_latt
