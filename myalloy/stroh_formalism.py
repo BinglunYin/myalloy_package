@@ -35,6 +35,13 @@ def calc_stroh(self, slip_system='basal_a_edge', bp=None):
     E2 = E2*1.0e9*(1.0/qe/1.0e30)
 
 
+    N, p, A, B = calc_N_p_A_B(E2)
+    
+    K1 = 1.0/(2.0*np.pi) * b1.T @ np.imag(B @ B.T) @ b1
+    K2 = 1.0/(2.0*np.pi) * b2.T @ np.imag(B @ B.T) @ b2
+    K12 = 1.0/np.pi * b2.T @ np.imag(B @ B.T) @ b1
+    
+
 
 
 
@@ -50,6 +57,79 @@ def calc_stroh(self, slip_system='basal_a_edge', bp=None):
 
 
 
+def calc_N_p_A_B(c):
+
+    Q = np.zeros([3, 3])
+    R = np.zeros([3, 3])
+    T = np.zeros([3, 3])
+    for i in np.arange(0,3,1):
+        for k in np.arange(0,3,1):
+            Q[i, k] = c[i, 0, k, 0]
+            R[i, k] = c[i, 0, k, 1]
+            T[i, k] = c[i, 1, k, 1]
+
+    Ti = np.linalg.inv(T)
+
+    N11 = -Ti @ (R.T)
+    N21 = R @ Ti @ (R.T) -Q
+    N22 = -R @ Ti
+
+    N = np.zeros([6,6])
+    for i in np.arange(0,3,1):
+        for j in np.arange(0,3,1):
+            N[i,j]     = N11[i,j]
+            N[i,j+3]   = Ti[i,j]
+            N[i+3,j]   = N21[i,j]
+            N[i+3,j+3] = N22[i,j]
+
+    va1, ve = np.linalg.eig(N)     #va-eigenvalue;  ve-eigenvector
+    va = np.zeros([6,6], dtype = complex)
+    for i in np.arange(0,6,1):
+        va[i,i] = va1[i]
+
+    k1 = -1
+    k2 = 2
+    p  = np.zeros([6,1], dtype = complex )  
+    xi = np.zeros([6,6], dtype = complex )   
+
+
+    for i in np.arange(0,6,1):
+        if np.imag(va[i,i]) > 0:
+            k1 = k1+1
+            p[k1,0] = va[i,i]
+            xi[:,k1] = ve[:,i]
+        else:
+            k2 = k2+1
+            p[k2,0] = va[i,i]
+            xi[:,k2] = ve[:,i]
+
+    for i in np.arange(0,3,1):
+        t11 =        abs(np.real(p[i,0] - p[i+3,0]) )
+        t12 = 1.0e-6*abs(np.real(p[i,0]) ) 
+        t21 =        abs(np.imag(p[i,0] - p[i+3,0]) )
+        t22 = 1.0e-6*abs(np.imag(p[i,0]) )
+        if t11 > t12 or t21 > t22:       
+            sys.exit('ABORT: wrong order of p') 
+
+    J = np.zeros([6,6])
+    for i in np.arange(0,3,1):
+        J[i,i+3] = 1
+        J[i+3,i] = 1
+
+    nxi = np.zeros([6,6],dtype = complex)
+    for i in np.arange(0,6,1):
+        tnx1 = xi[:,i]
+        nxi[:,i] = tnx1/np.sqrt(tnx1.T @ J @ tnx1)
+
+    
+    A = np.zeros([3,3],dtype = complex)
+    B = np.zeros([3,3],dtype = complex)
+    for i in np.arange(0,3,1):
+        A[:,i] = nxi[0:3, i]
+        B[:,i] = nxi[3:6, i]
+        
+    return N, p, A, B
+
 
 
 
@@ -64,14 +144,6 @@ def calc_stroh(self, slip_system='basal_a_edge', bp=None):
 # def  stroh_aniso_energy(self, mm, b1, b2, theta, r12, LMdata, Ldispl) :
    
 
-
-#     import stroh_Stroh_formalism as sform
-#     N, p, A, B = sform.stroh_Stroh_formalism(c)
-    
-#     K1 = 1.0/(2.0*np.pi) * b1.T @ np.imag(B @ B.T) @ b1
-#     K2 = 1.0/(2.0*np.pi) * b2.T @ np.imag(B @ B.T) @ b2
-#     K12 = 1.0/np.pi * b2.T @ np.imag(B @ B.T) @ b1
-    
 
 #     if r12 == 0:
 #         r12 = K12/gamma
