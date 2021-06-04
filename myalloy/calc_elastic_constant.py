@@ -169,9 +169,9 @@ def calc_E_from_CIJ(CIJ):
     ])
 
     E = np.zeros([3, 3, 3, 3])
-    for i in np.arange(data.shape[0]):
-        [i, j, k, l] = np.array( data[i, 0:4]-1,  dtype='int' )
-        E[i, j, k, l] = data[i, 4]
+    for i1 in np.arange(data.shape[0]):
+        [i, j, k, l] = np.array( data[i1, 0:4]-1,  dtype='int' )
+        E[i, j, k, l] = data[i1, 4]
 
     return E 
 
