@@ -211,7 +211,7 @@ def rotate_Cij(brav_latt, Cij, mm):
 
     temp = calc_CIJ_from_E(E)
     if np.linalg.norm( CIJ-temp ) > 1e-10:
-        print(CIJ, temp, CIJ-temp)
+        print(E, CIJ, temp, CIJ-temp)
         sys.exit('ABORT: wrong CIJ and E.')
     
 
