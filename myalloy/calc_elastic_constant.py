@@ -181,6 +181,7 @@ def calc_E_from_CIJ(CIJ):
 
 def calc_CIJ_from_E(E):
     CIJ = np.zeros([6,6])
+    
     for i in np.arange(1,4,1):
         for j in np.arange(1,4,1):
             for k in np.arange(1,4,1):
@@ -189,12 +190,13 @@ def calc_CIJ_from_E(E):
                         m = i
                     else:
                         m = 9-i-j
+                    
                     if k == l:
                         n = k
                     else:
                         n = 9-k-l
+                    
                     CIJ[m-1, n-1] = E[i-1, j-1, k-1, l-1]
-
     return CIJ 
 
 
@@ -208,7 +210,8 @@ def rotate_Cij(brav_latt, Cij, mm):
     E   = calc_E_from_CIJ(CIJ)
 
     temp = calc_CIJ_from_E(E)
-    if np.linalg.norm(temp-CIJ) > 1e-10:
+    if np.linalg.norm( CIJ-temp ) > 1e-10:
+        print(CIJ, temp, CIJ-temp)
         sys.exit('ABORT: wrong CIJ and E.')
     
 
