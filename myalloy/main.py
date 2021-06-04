@@ -56,7 +56,7 @@ class alloy_class:
 
     # elasticity
     def calc_Cijavg_from_Cij(self):      
-        self.Cijavg = cec.calc_Cijavg_from_Cij(self.Cij, self.brav_latt)
+        self.Cijavg = cec.calc_Cijavg_from_Cij(self.brav_latt, self.Cij)
 
 
 
@@ -94,6 +94,10 @@ class alloy_class:
         from myalloy import solute_strengthening_theory as sst 
         sst.calc_yield_strength(self, param=param)
 
+
+    def calc_stroh(self, slip_system='basal_a_edge', bp=None):
+        from myalloy import stroh_formalism as stroh 
+        stroh.calc_stroh(self, slip_system=slip_system, bp=bp)
 
 
 
