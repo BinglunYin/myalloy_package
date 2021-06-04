@@ -41,7 +41,7 @@ def calc_stroh(self, slip_system='basal_a_edge', bp=None):
     K2 = 1.0/(2.0*np.pi) * b2.T @ np.imag(B @ B.T) @ b2
     K12 = 1.0/np.pi * b2.T @ np.imag(B @ B.T) @ b1
     
-
+    print('==> K1, K2, K12:', K1, K2, K12)
 
 
 
