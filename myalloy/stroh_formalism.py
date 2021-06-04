@@ -109,7 +109,7 @@ def calc_N_p_A_B(c):
         t21 =        abs(np.imag(p[i,0] - p[i+3,0]) )
         t22 = 1.0e-6*abs(np.imag(p[i,0]) )
         if t11 > t12 or t21 > t22:     
-            print(p)  
+            print(p, i, t11, t12, t21, t22)  
             sys.exit('ABORT: wrong order of p') 
 
     J = np.zeros([6,6])
