@@ -1,10 +1,15 @@
 
+# By T. Liu and B. Yin
+# 2021.06.04
+
+
+
 import numpy as np
 import sys 
 
 
 
-def calc_stroh(self, slip_system='basal_a_edge', bp=None):
+def calc_stroh(self, slip_system='basal_a_edge', bp=None, param={}):
     qe=1.60217657e-19
 
     if not hasattr(self, 'c'):
@@ -14,36 +19,56 @@ def calc_stroh(self, slip_system='basal_a_edge', bp=None):
     mm, bt, theta, xx, yy, b1, b2 = \
         ss.stroh_slip_system(self, slip_system=slip_system, bp=bp)
     
-
-    a = self.a
-    c = self.c
-    
-
+    a   = self.a
+    c   = self.c
     Cij = self.Cij 
     brav_latt = self.brav_latt
     
-    gamma = self.gamma * 1e-3 * (1 / qe / 1e20)
+    gamma = self.gamma * 1e-3 * (1 / qe / 1e20)  # to [eV/Ang^2]
 
     r0=0.5*np.linalg.norm(b1+b2)
     R0 = 1e7*a
     
+   
+
+    from myalloy import calc_elastic_constant as cec 
+    E2, CIJ2 = cec.rotate_Cij(brav_latt, Cij, mm)
+
+    E2 = E2*1.0e9*(1.0/qe/1.0e30)     # to [eV/Ang^3]
+
+    N, p, A, B = calc_N_p_A_B(E2)
+    K1, K2, K12 = calc_K(b1, b2, B) 
+    
+
+    if 'r12' in param: 
+        r12 = param['r12']
+    else:
+        r12 = K12/gamma
+
+    if r12 < 2.0*r0 :
+        print(r12, 2.0*r0)
+        sys.exit('ABORT: r12<2*r0.')
+
+
+    X1 = 0.
+    Y1 = 0.
+    X2 = X1+r12*np.cos(theta)
+    Y2 = Y1+r12*np.sin(theta)
     cut1 = -np.pi
     cut2 = 0 
     
-    from myalloy import calc_elastic_constant as cec 
-    E2, CIJ2 = cec.rotate_Cij(brav_latt, Cij, mm)
-    E2 = E2*1.0e9*(1.0/qe/1.0e30)
 
-
-    N, p, A, B = calc_N_p_A_B(E2)
+    from functools import partial
+    stroh_us1 = partial(stroh_u0_s0, p=p, A=A, B=B, \
+        b=b1, X=X1, Y=Y1, cut=cut1)
     
-    K1 = 1.0/(2.0*np.pi) * b1.T @ np.imag(B @ B.T) @ b1
-    K2 = 1.0/(2.0*np.pi) * b2.T @ np.imag(B @ B.T) @ b2
-    K12 = 1.0/np.pi * b2.T @ np.imag(B @ B.T) @ b1
+    stroh_us2 = partial(stroh_u0_s0, p=p, A=A, B=B, \
+        b=b2, X=X2, Y=Y2, cut=cut2)
+
+
     
-    print('==> K1, K2, K12:', K1, K2, K12)
-
-
+    if 'pos_in' in param: 
+        calc_pos_out(stroh_us1, stroh_us2, param['pos_in'])
 
 
 #     r12=8
@@ -56,6 +81,10 @@ def calc_stroh(self, slip_system='basal_a_edge', bp=None):
 #     print(disptot)
 
 
+
+
+
+# ===========================
 
 def calc_N_p_A_B(c):
 
@@ -136,27 +165,94 @@ def calc_N_p_A_B(c):
 
 
 
+def calc_K(b1, b2, B):
+    K1  = 1.0/(2.0*np.pi) * b1.T @ np.imag(B @ B.T) @ b1
+    K2  = 1.0/(2.0*np.pi) * b2.T @ np.imag(B @ B.T) @ b2
+    K12 = 1.0/np.pi * b2.T @ np.imag(B @ B.T) @ b1
+        
+    print('==>  K1, K2, K12 [eV/Ang]:', K1, K2, K12 )
+    return K1, K2, K12
 
 
 
 
 
 
-# def  stroh_aniso_energy(self, mm, b1, b2, theta, r12, LMdata, Ldispl) :
+
+# ===========================
    
+def myacos(y, x):
+    r = np.sqrt(x**2 + y**2)
+    hy = (np.heaviside(y,0.5)-0.5) *2.0 \
+        + np.heaviside(y,0.5) *np.heaviside(-y,0.5) *4.0
+    t = (1.0-hy)*np.pi + hy*np.arccos(x/r)
+    return t
 
 
-#     if r12 == 0:
-#         r12 = K12/gamma
-#         r12 = r12[0,0]
-#     if r12 < 2.0*r0 :
-#         print(r12,2.0*r0)
-#         print("r12<2*r0")
 
-#     X1 = 0.
-#     Y1 = 0.
-#     X2 = X1+r12*np.cos(theta)
-#     Y2 = Y1+r12*np.sin(theta)
+def stroh_u0_s0(p, A, B, b, X, Y, cut,  x, y):
+
+    fz     = np.zeros([3,3], dtype = complex)
+    P      = np.zeros([3,3], dtype = complex)
+    Lambda = np.zeros([3,3], dtype = complex)
+
+    for i in np.arange(3):
+        tx = (x-X)+np.real(p[i,0])*(y-Y)
+        ty =       np.imag(p[i,0])*(y-Y)
+        tr = np.sqrt(tx**2+ty**2)
+        
+        if cut == 0:
+            fz[i,i] = np.log(tr) + 1.0j * myacos(ty, tx)
+        elif cut == -np.pi:
+            fz[i,i] = np.log(tr) + 1.0j * np.arctan2(ty, tx)   
+
+        P[i,i] = p[i,0]
+        Lambda[i,i] = 1.0/((x-X)+p[i,0]*(y-Y))
+    
+    u0 = np.imag(A @ fz @ B.T) @ b /np.pi
+
+    S1 = -1.0/np.pi* np.imag( B @ P @ Lambda @ B.T) @ b       
+    S2 = 1.0/np.pi* np.imag( B @ Lambda @ B.T ) @ b       
+
+    s0 = np.zeros([3,3])
+    
+    s0[0:3,0] = S1[0:3,0]
+    s0[0:3,1] = S2[0:3,0]
+   
+    s0[0,2] = s0[2,0]
+    s0[1,2] = s0[2,1]
+    
+    return u0, s0
+    
+
+
+
+
+
+
+
+def calc_pos_out(stroh_us1, stroh_us2, pos_in):
+      
+    natoms = pos_in.shape[0]
+    disp1 = np.empty(shape=(natoms,3))
+    disp2 = np.empty(shape=(natoms,3))
+        
+    for i in np.arange(natoms):
+        disp1[i] = stroh_us1(x=pos_in[i,0], y=pos_in[i,1])[0].T
+        disp2[i] = stroh_us2(x=pos_in[i,0], y=pos_in[i,1])[0].T
+    
+    pos_out = pos_in + disp1 + disp2
+    np.savetxt('stroh_pos_out.txt', pos_out)
+        
+
+
+
+
+
+
+
+
+
     
     
 #     import fun_Ec as tem
