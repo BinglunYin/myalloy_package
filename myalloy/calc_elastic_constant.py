@@ -233,7 +233,7 @@ def rotate_Cij(brav_latt, Cij, mm):
                                         + a[i,p]*a[j,q] *E[p,q,r,s] *a[k,r]*a[l,s]
 
     CIJ2 = calc_CIJ_from_E(E2) 
-    return CIJ2
+    return E2, CIJ2
 
 
 

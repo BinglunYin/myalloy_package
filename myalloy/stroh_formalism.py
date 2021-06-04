@@ -31,7 +31,7 @@ def calc_stroh(self, slip_system='basal_a_edge', bp=None):
     cut2 = 0 
     
     from myalloy import calc_elastic_constant as cec 
-    CIJ2, E2 = cec.rotate_Cij(brav_latt, Cij, mm)
+    E2, CIJ2 = cec.rotate_Cij(brav_latt, Cij, mm)
     E2 = E2*1.0e9*(1.0/qe/1.0e30)
 
 
