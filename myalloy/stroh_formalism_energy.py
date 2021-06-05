@@ -111,7 +111,7 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2):
 
 
 
-    check_Ec(Ec)
+    # check_Ec(Ec)
     return Ec 
 
 
