@@ -7,9 +7,10 @@ from scipy import integrate
 
 # integrate each return of f 
 def myint(f, x1, x2):
-    F = np.array([])
+    nf = len(f(0))   # number of returns of f 
 
-    for i in len(f):  
+    F = np.array([])
+    for i in np.arange(nf):  
         def g(x):
             return f(x)[i]
 
