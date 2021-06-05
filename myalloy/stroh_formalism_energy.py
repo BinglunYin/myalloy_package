@@ -18,7 +18,7 @@ def myint(f, x1, x2):
         def g(x):
             return f(x)[i]
 
-        temp = integrate.quad(g, x1, x2 )
+        temp = integrate.quad(g, x1, x2 , epsabs=0, epsrel=1.0e-10)
         F = np.append(F, temp[0])
 
     return F

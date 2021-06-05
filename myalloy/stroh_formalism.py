@@ -292,7 +292,7 @@ def write_output(output_name, qe, \
     K1, K2, K12, r12, X1, Y1, X2, Y2, Er, Et, Ec, \
     mm, CIJ, CIJ2, N, p, A, B ):
 
-    
+    np.set_printoptions(linewidth=1000)
 
 
     filen = 'stroh_' + output_name + '.txt'
