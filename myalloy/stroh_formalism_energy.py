@@ -1,17 +1,17 @@
 
 # schematic:
-# https://ars.els-cdn.com/content/image/1-s2.0-S1359645416305808-fx2_lrg.jpg
+# https://ars.els-cdn.com/content/image/1-s2.0-S1359645416305808-fx2_lrg.jpg 
   
 
 
-import scipy as sc
 import numpy as np
+import scipy as sc
 from scipy import integrate
 
 
-# integrate each return of f 
+# integrate each return of f(x)
 def myint(f, x1, x2):
-    nf = len(f(0))   # number of returns of f 
+    nf = len(f(0))   # number of returns of f(x)
 
     F = np.array([])
     for i in np.arange(nf):  
@@ -22,6 +22,7 @@ def myint(f, x1, x2):
         F = np.append(F, temp[0])
 
     return F
+
 
 
 
@@ -49,7 +50,7 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2):
 
     Ec = np.zeros([4,5])
 
-# S(C1) ===============================
+    # S(C1) ===============================
     def fec_C1(alpha):
         x = X1+r0*np.cos(alpha)
         y = Y1+r0*np.sin(alpha)
@@ -60,18 +61,18 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2):
    
 
  
-# S(R) ===============================
+    # S(R) ===============================
     def fec_R(alpha):
         x = R0*np.cos(alpha)
         y = R0*np.sin(alpha)
-        n0 = np.array([[-np.cos(alpha)], [-np.sin(alpha)], [0.]])
+        n0 = np.array([[np.cos(alpha)], [np.sin(alpha)], [0.]])
         return fec(x, y, n0)
     
     Ec[:,1]  = myint(fec_R, 0, 2.0*np.pi)*(R0) 
 
 
 
-# S(C2) ===============================
+    # S(C2) ===============================
     def fec_C2(alpha):
         x = X2+r0*np.cos(alpha)
         y = Y2+r0*np.sin(alpha)
@@ -82,9 +83,9 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2):
 
 
 
-# S(1) ===============================
+    # S(1) ===============================
     def fec_11(x):
-        n1 = [[0.],[1.],[0.]]
+        n1 = [[0.],[-1.],[0.]]
         return fec(x, Y1+1e-100, n1) 
     
     def fec_12(x):
@@ -96,9 +97,9 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2):
 
 
 
-# S(2) ===============================
+    # S(2) ===============================
     def fec_21(x):
-        n1 = [[0.],[1.],[0.]]
+        n1 = [[0.],[-1.],[0.]]
         return fec(x, Y2+1e-100, n1) 
            
     def fec_22(x):
@@ -107,6 +108,8 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2):
     
     Ec[:,4]  = myint(fec_21, X2+r0, sc.sqrt(R0**2-Y2**2) ) \
              + myint(fec_22, X2+r0, sc.sqrt(R0**2-Y2**2) ) 
+
+
 
 
     return Ec 
