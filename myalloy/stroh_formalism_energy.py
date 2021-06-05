@@ -83,20 +83,30 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2):
 
 
 # S(1) ===============================
-    def fec_1(x):
+    def fec_11(x):
         n1 = [[0.],[1.],[0.]]
-        return fec(x, Y1+1e-100, n1) + fec(x, Y1-1e-100, n1)
+        return fec(x, Y1+1e-100, n1) 
     
-    Ec[:,3]  = myint(fec_1, -sc.sqrt(R0**2-Y1**2), X1-r0 )
+    def fec_12(x):
+        n1 = [[0.],[1.],[0.]]
+        return fec(x, Y1-1e-100, n1) 
+
+    Ec[:,3]  = myint(fec_11, -sc.sqrt(R0**2-Y1**2), X1-r0 ) \
+             + myint(fec_12, -sc.sqrt(R0**2-Y1**2), X1-r0 ) \
 
 
 
 # S(2) ===============================
-    def fec_2(x):
+    def fec_21(x):
         n1 = [[0.],[1.],[0.]]
-        return fec(x, Y2+1e-100, n1) + fec(x, Y2-1e-100, n1)
+        return fec(x, Y2+1e-100, n1) 
+           
+    def fec_22(x):
+        n1 = [[0.],[1.],[0.]]
+        return fec(x, Y2-1e-100, n1) 
     
-    Ec[:,4]  = myint(fec_2, X2+r0, sc.sqrt(R0**2-Y2**2) )
+    Ec[:,4]  = myint(fec_21, X2+r0, sc.sqrt(R0**2-Y2**2) ) \
+             + myint(fec_22, X2+r0, sc.sqrt(R0**2-Y2**2) ) 
 
 
     return Ec 
