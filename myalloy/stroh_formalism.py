@@ -65,10 +65,22 @@ def calc_stroh(self, slip_system='basal_a_edge', bp=None, param={}):
     stroh_us2 = partial(stroh_u0_s0, p=p, A=A, B=B, \
         b=b2, X=X2, Y=Y2, cut=cut2)
 
-
     
     if 'pos_in' in param: 
         calc_pos_out(stroh_us1, stroh_us2, param['pos_in'])
+
+
+
+
+    from myalloy import stroh_formalism_energy 
+    Ec = stroh_formalism_energy.calc_Ec(stroh_us1, stroh_us2, \
+        r0, R0, X1, Y1, cut1, cut2)
+    
+    #     Ec,disptot = tem.fun_Ec(p, A, B, b1, X1, Y1, cut1, b2, X2, Y2, cut2, r0, R0, coor ) 
+# #    print(disptot)
+
+
+
 
 
 #     r12=8
@@ -238,8 +250,8 @@ def calc_pos_out(stroh_us1, stroh_us2, pos_in):
     disp2 = np.empty(shape=(natoms,3))
         
     for i in np.arange(natoms):
-        disp1[i] = stroh_us1(x=pos_in[i,0], y=pos_in[i,1])[0].T
-        disp2[i] = stroh_us2(x=pos_in[i,0], y=pos_in[i,1])[0].T
+        disp1[i,:] = stroh_us1(x=pos_in[i,0], y=pos_in[i,1])[0].T
+        disp2[i,:] = stroh_us2(x=pos_in[i,0], y=pos_in[i,1])[0].T
     
     pos_out = pos_in + disp1 + disp2
     np.savetxt('stroh_pos_out.txt', pos_out)
@@ -255,9 +267,6 @@ def calc_pos_out(stroh_us1, stroh_us2, pos_in):
 
     
     
-#     import fun_Ec as tem
-#     Ec,disptot = tem.fun_Ec(p, A, B, b1, X1, Y1, cut1, b2, X2, Y2, cut2, r0, R0, coor ) 
-# #    print(disptot)
     
 #     Ect1 = np.zeros([1,5])
 #     for i in np.arange(0,5,1):
