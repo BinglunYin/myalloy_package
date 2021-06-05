@@ -50,11 +50,11 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, cut1, cut2):
         x = X1+r0*np.cos(alpha)
         y = Y1+r0*np.sin(alpha)
         n0 = np.array([[-np.cos(alpha)],[-np.sin(alpha)],[0.]])
-        return fec(x, y, n0)*r0  
+        return fec(x, y, n0)  
    
-    eci1 = myint(feci1, cut1, cut1+2.0*sc.pi)
+    eci1 = myint(feci1, cut1, cut1+2.0*sc.pi)*r0
     print(eci1)
-    eci1 = myint(feci1, cut2, cut2+2.0*sc.pi)
+    eci1 = myint(feci1, cut2, cut2+2.0*sc.pi)*r0
     print(eci1)
 
  
@@ -63,9 +63,9 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, cut1, cut2):
         x = R0*np.cos(alpha)
         y = R0*np.sin(alpha)
         n0 = np.array([[-np.cos(alpha)],[-np.sin(alpha)],[0.]])
-        return fec(x, y, n0)*(-R0) 
+        return fec(x, y, n0)
     
-    eci2 = myint(feci2, cut1, cut1+2.0*sc.pi)
+    eci2 = myint(feci2, cut1, cut1+2.0*sc.pi)*(-R0) 
 
 
 
