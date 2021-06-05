@@ -52,7 +52,7 @@ def calc_N_p_A_B(c):
 
     for i in np.arange(0,3,1):
         t1 = abs( p[i,0].real / p[i+3,0].real -1 )
-        t2 = abs( p[i,0].imag / p[i+3,0].imag -1 ) 
+        t2 = abs( p[i,0].imag / p[i+3,0].imag +1 ) 
         if t1 > 1e-6 or t2 > 1e-6 :     
             print(p, i, t1, t2)  
             sys.exit('ABORT: wrong order of p') 
