@@ -184,6 +184,7 @@ def myint(f, x1, x2):
         temp = integrate.quad(g, x1, x2 , epsabs=0, limit=100)
         F = np.append(F, temp[0])
 
+    print('==> myint done.')
     return F
 
 
