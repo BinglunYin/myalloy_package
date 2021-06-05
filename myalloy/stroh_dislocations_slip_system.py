@@ -3,7 +3,7 @@ import numpy as np
 import sys 
 
 
-def stroh_slip_system(self, slip_system='111_a_edge', bp=None):
+def slip_system(self, slip_system='111_a_edge', bp=None):
 
     a=self.a
     c=self.c
@@ -85,7 +85,7 @@ def stroh_slip_system(self, slip_system='111_a_edge', bp=None):
         sys.exit('ABORT: wrong mm order.')
 
 
-    return mm, bt, theta, xx, yy, b1, b2
+    return mm, theta, b1, b2
     
 
 
