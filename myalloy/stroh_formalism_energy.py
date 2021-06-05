@@ -14,7 +14,7 @@ def myint(f, x1, x2):
         def g(x):
             return f(x)[i]
 
-        temp = integrate.quad(g, x1, x2 )
+        temp, = integrate.quad(g, x1, x2 )
         F = np.append(F, temp)
 
     return F
@@ -50,8 +50,7 @@ def calc_Ec(stroh_us1, stroh_us2, r0, R0, X1, Y1, cut1, cut2):
         
         return ec11, ec21, ec31, ec41
         
-    F = myint(feci1, cut1, cut1+2.0*sc.pi)
-    eci1 = F.T
+    eci1 = myint(feci1, cut1, cut1+2.0*sc.pi)
     print(eci1)
 
 #     def fec21(alpha):
