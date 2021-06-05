@@ -25,78 +25,50 @@ def myint(f, x1, x2):
 
 
 
-def calc_Ec(stroh_us1, stroh_us2, r0, R0, X1, Y1, cut1, cut2):
+
+
+def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, cut1, cut2):
+
+    # energy contributions
+    def fec(x, y, n0):
+        u1 = stroh_u1s1(x=x, y=y)[0] 
+        s1 = stroh_u1s1(x=x, y=y)[1] 
+        u2 = stroh_u2s2(x=x, y=y)[0] 
+        s2 = stroh_u2s2(x=x, y=y)[1] 
+
+        ec1 = ((s1 @ n0).T @ u1 ) / 2.0
+        ec2 = ((s1 @ n0).T @ u2 ) / 2.0
+        ec3 = ((s2 @ n0).T @ u1 ) / 2.0
+        ec4 = ((s2 @ n0).T @ u2 ) / 2.0
+        
+        return ec1, ec2, ec3, ec4
+
+
 
 # ec11 ~ ec41  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
-    def x1y1(alpha):
+    def feci1(alpha):
         x = X1+r0*np.cos(alpha)
         y = Y1+r0*np.sin(alpha)
         n0 = np.array([[-np.cos(alpha)],[-np.sin(alpha)],[0.]])
-        n1 = [[0.],[1.],[0.]]
-        return x, y, n0, n1 
-    
-
-    def feci1(alpha):
-        x, y, n0, n1 = x1y1(alpha) 
-        u1 = stroh_us1(x=x, y=y)[0] 
-        s1 = stroh_us1(x=x, y=y)[1] 
-        u2 = stroh_us2(x=x, y=y)[0] 
-        s2 = stroh_us2(x=x, y=y)[1] 
-
-        ec11 = ((s1 @ n0).T @ u1 ) * r0 / 2.0
-        ec21 = ((s1 @ n0).T @ u2 ) * r0 / 2.0
-        ec31 = ((s2 @ n0).T @ u1 ) * r0 / 2.0
-        ec41 = ((s2 @ n0).T @ u2 ) * r0 / 2.0
-        
-        return ec11, ec21, ec31, ec41
-        
+        return fec(x, y, n0)*r0  
+   
     eci1 = myint(feci1, cut1, cut1+2.0*sc.pi)
     print(eci1)
+    eci1 = myint(feci1, cut2, cut2+2.0*sc.pi)
+    print(eci1)
 
-#     def fec21(alpha):
-#         x, y, n0, n1 = x1y1(alpha) 
-#         s1 = stroh_us1(x=x, y=y)[1] 
-#         u2 = stroh_us2(x=x, y=y)[0]
-        
-#         return ec
-#     ec21 = sc.integrate.quad(fec21, cut2, cut2+2.0*sc.pi )
+ 
+# ec12 ~ ec42 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
+    def feci2(alpha):
+        x = R0*np.cos(alpha)
+        y = R0*np.sin(alpha)
+        n0 = np.array([[-np.cos(alpha)],[-np.sin(alpha)],[0.]])
+        return fec(x, y, n0)*(-R0) 
+    
+    eci2 = myint(feci2, cut1, cut1+2.0*sc.pi)
 
-#     def fec31(alpha):
-#         x = X1+r0*np.cos(alpha)
-#         y = Y1+r0*np.sin(alpha)
-#         n0 = np.array([[-np.cos(alpha)],[-np.sin(alpha)],[0.]])
-#         n1 = [[0.],[1.],[0.]]
-        
-#         s2 = stroh_Stroh_u0_s0(p, A, B, x, y, b2, X2, Y2, cut2)[1] 
-#         u1 = stroh_Stroh_u0_s0(p, A, B, x, y, b1, X1, Y1, cut1)[0]
-            
-        
-#         return ec
-#     ec31 = sc.integrate.quad(fec31, cut1, cut1+2.0*sc.pi )
 
-#     def fec41(alpha):
-#         x = X1+r0*np.cos(alpha)
-#         y = Y1+r0*np.sin(alpha)
-#         n0 = np.array([[-np.cos(alpha)],[-np.sin(alpha)],[0.]])
-#         n1 = [[0.],[1.],[0.]]
-        
-#         s2 = stroh_Stroh_u0_s0(p, A, B, x, y, b2, X2, Y2, cut2)[1] 
-#         u2 = stroh_Stroh_u0_s0(p, A, B, x, y, b2, X2, Y2, cut2)[0]
-            
-        
-#         return ec
-#     ec41 = sc.integrate.quad(fec41, cut2, cut2+2.0*sc.pi )
 
-#     #  ec12 ~ ec42 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
-#     def fec12(alpha):
-#         x = R0*np.cos(alpha)
-#         y = R0*np.sin(alpha)
-#         n0 = np.array([[-np.cos(alpha)],[-np.sin(alpha)],[0.]])
-#         n1 = [[0.],[1.],[0.]]
-        
-#         s1 = stroh_Stroh_u0_s0(p, A, B, x, y, b1, X1, Y1, cut1)[1] 
-#         u1 = stroh_Stroh_u0_s0(p, A, B, x, y, b1, X1, Y1, cut1)[0]
-            
 #         ec = -((s1 @ n0).T @ u1 ) * R0 / 2.0
         
 #         return ec
