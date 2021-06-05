@@ -18,7 +18,7 @@ def myint(f, x1, x2):
         def g(x):
             return f(x)[i]
 
-        temp = integrate.quad(g, x1, x2 , epsabs=0, epsrel=1.0e-10)
+        temp = integrate.quad(g, x1, x2 , epsabs=0, limit=1000)
         F = np.append(F, temp[0])
 
     return F
@@ -110,8 +110,9 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2):
              + myint(fec_22, X2+r0, sc.sqrt(R0**2-Y2**2) ) 
 
 
-
-    # check_Ec(Ec)
+    print('==> Ec:')
+    print(Ec)
+    check_Ec(Ec)
     return Ec 
 
 
@@ -124,26 +125,25 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2):
 
 
 def check_Ec(Ec):
-   
+    import sys 
     tola = 1.0e-6
-    check_value = 0
 
-    if abs(Ec[0,0]/Ec[0,1]+1) > tola:
-        check_value = check_value + 1
-        print('wrong Ec[0,0] in Ec')
+    temp = abs(Ec[0,0]/Ec[0,1]+1)
+    if temp > tola:
+        print(temp)
+        sys.exit('ABORT: Ec[0,0] in Ec')
 
-    elif abs(Ec[3,1]/Ec[3,2]+1) > tola*1.0e+2:
-        check_value = check_value + 1
-        print('wrong Ec[3,1] in Ec')
+    temp = abs(Ec[3,1]/Ec[3,2]+1) *1e-2
+    if temp > tola:
+        print(temp)
+        sys.exit('ABORT: wrong Ec[3,1] in Ec')
 
-    if abs( np.sum(Ec[1,:]) / np.sum(Ec[2,:]) -1 ) > tola:
-        check_value = check_value + 1
-        print('wrong Ec[1,:] in Ec')
+    temp = abs( np.sum(Ec[1,:]) / np.sum(Ec[2,:]) -1 )
+    if temp > tola:
+        print(temp)
+        sys.exit('ABORT: wrong Ec[1,:] in Ec')
 
-    if check_value != 0:
-        import sys 
-        sys.exit('ABORT: wrong Ec.')
-
+   
 
 
 
