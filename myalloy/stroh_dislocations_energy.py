@@ -50,6 +50,7 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2, cut1, cut2):
 
 
     # S(C1) =====================================
+    print('==> S_C1')
     def S_C1(alpha):
         x = X1+r0*np.cos(alpha)
         y = Y1+r0*np.sin(alpha)
@@ -70,6 +71,7 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2, cut1, cut2):
 
  
     # S(R) ======================================
+    print('==> S_R')
     def S_R(alpha):
         x = R0*np.cos(alpha)
         y = R0*np.sin(alpha)
@@ -90,6 +92,7 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2, cut1, cut2):
 
 
     # S(C2) =====================================
+    print('==> S_C2')
     def S_C2(alpha):
         x = X2+r0*np.cos(alpha)
         y = Y2+r0*np.sin(alpha)
@@ -110,6 +113,7 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2, cut1, cut2):
 
 
     # S(1) ======================================
+    print('==> S_1')
     def S_11():    # S(1+)
         y = Y1+1e-100
         n0 = [[0.],[-1.],[0.]]
@@ -134,6 +138,7 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2, cut1, cut2):
 
 
     # S(2) ======================================
+    print('==> S_2')
     def S_21():    # S(2+)
         y = Y2+1e-100
         n0 = [[0.],[-1.],[0.]]
