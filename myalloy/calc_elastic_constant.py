@@ -136,8 +136,8 @@ def calc_Cijavg_from_Cij(brav_latt, Cij):
 
 
 
-# E is 3*3*3*3, CIJ is 6*6
-def calc_E_from_CIJ(CIJ):
+# CIJKL is 3*3*3*3, CIJ is 6*6
+def calc_CIJKL_from_CIJ(CIJ):
     data = np.array([ 
         [1, 1, 1, 1, CIJ[0, 0] ], 
         [2, 2, 2, 2, CIJ[1, 1] ], 
@@ -168,18 +168,18 @@ def calc_E_from_CIJ(CIJ):
         [2, 1, 2, 1, CIJ[5, 5] ],  
     ])
 
-    E = np.zeros([3, 3, 3, 3])
+    CIJKL = np.zeros([3, 3, 3, 3])
     for i1 in np.arange(data.shape[0]):
         [i, j, k, l] = np.array( data[i1, 0:4]-1,  dtype='int' )
-        E[i, j, k, l] = data[i1, 4]
+        CIJKL[i, j, k, l] = data[i1, 4]
 
-    return E 
-
-
+    return CIJKL 
 
 
 
-def calc_CIJ_from_E(E):
+
+
+def calc_CIJ_from_CIJKL(CIJKL):
     CIJ = np.zeros([6,6])
     
     for i in np.arange(1,4,1):
@@ -196,7 +196,7 @@ def calc_CIJ_from_E(E):
                     else:
                         n = 9-k-l
                     
-                    CIJ[m-1, n-1] = E[i-1, j-1, k-1, l-1]
+                    CIJ[m-1, n-1] = CIJKL[i-1, j-1, k-1, l-1]
     return CIJ 
 
 
@@ -206,20 +206,20 @@ def calc_CIJ_from_E(E):
 
 def rotate_Cij(brav_latt, Cij, mm):
 
-    CIJ = calc_CIJ_from_Cij(brav_latt, Cij)
-    E   = calc_E_from_CIJ(CIJ)
+    CIJ   = calc_CIJ_from_Cij(brav_latt, Cij)
+    CIJKL = calc_CIJKL_from_CIJ(CIJ)
 
-    temp = calc_CIJ_from_E(E)
+    temp = calc_CIJ_from_CIJKL(CIJKL)
     if np.linalg.norm( CIJ-temp ) > 1e-10:
-        print(E, CIJ, temp, CIJ-temp)
-        sys.exit('ABORT: wrong CIJ and E.')
+        print(CIJKL, CIJ, temp, CIJ-temp)
+        sys.exit('ABORT: wrong CIJ and CIJKL.')
     
 
     ee = np.eye(3)
     a = np.dot(mm, ee.T)
 
-    # E2 is the rotated E
-    E2 = np.zeros([3, 3, 3, 3])
+    # CIJKL2 is the rotated CIJKL
+    CIJKL2 = np.zeros([3, 3, 3, 3])
     for i in np.arange(3):
         for j in np.arange(3):
             for k in np.arange(3):
@@ -229,11 +229,12 @@ def rotate_Cij(brav_latt, Cij, mm):
                         for r in np.arange(3):
                             for q in np.arange(3):
                                 for p in np.arange(3):
-                                    E2[i,j,k,l] = E2[i,j,k,l] \
-                                        + a[i,p]*a[j,q] *E[p,q,r,s] *a[k,r]*a[l,s]
 
-    CIJ2 = calc_CIJ_from_E(E2) 
-    return E2, CIJ2
+                                    CIJKL2[i,j,k,l] = CIJKL2[i,j,k,l] \
+                                        + a[i,p]*a[j,q] *CIJKL[p,q,r,s] *a[k,r]*a[l,s]
+
+    CIJ2 = calc_CIJ_from_CIJKL(CIJKL2) 
+    return CIJ, CIJKL, CIJKL2, CIJ2
 
 
 
