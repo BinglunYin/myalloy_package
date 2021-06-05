@@ -96,7 +96,7 @@ class alloy_class:
 
 
     def calc_stroh(self, slip_system='basal_a_edge', bp=None, param={}):
-        from myalloy import stroh_formalism as stroh 
+        from myalloy import stroh_dislocations as stroh 
         stroh.calc_stroh(self, \
             slip_system=slip_system, bp=bp, param=param)
 
