@@ -3,7 +3,7 @@ import numpy as np
 import sys 
 
 
-def slip_system(self, slip_system='111_a_edge', bp=None):
+def slip_system(self, slip_system='111_a_edge', param={}):
 
     a=self.a
     c=self.c
@@ -28,7 +28,9 @@ def slip_system(self, slip_system='111_a_edge', bp=None):
             xx = bt
             yy=np.array([[0.],[0.],[-a/np.sqrt(2)*np.sqrt(3)/2]])
 
-            if bp == None:
+            if 'bp' in param: 
+                bp = param['bp']
+            else:
                 bp=np.array([ 1/2, 1/3 ])
             
 
@@ -51,7 +53,9 @@ def slip_system(self, slip_system='111_a_edge', bp=None):
             xx = np.array([[(1.0/2.0)*a*np.sqrt(3.0)], [(1.0/2.0)*a*c/np.sqrt(a**2+c**2)], [(1.0/2.0)*a**2/np.sqrt(a**2+c**2)]])
             yy = bt+1.0/2.0*xx
             
-            if bp == None:
+            if 'bp' in param: 
+                bp = param['bp']
+            else:
                 bp=np.array([ 0, 0.40 ])
             
             
@@ -68,7 +72,9 @@ def slip_system(self, slip_system='111_a_edge', bp=None):
             xx = np.array([[a*np.sqrt(3.0)], [0.], [0.] ])
             yy = bt
     
-            if bp == None:
+            if 'bp' in param: 
+                bp = param['bp']
+            else:
                 bp=np.array([ 0, 0.48 ])
             
 

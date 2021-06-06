@@ -95,10 +95,10 @@ class alloy_class:
         sst.calc_yield_strength(self, param=param)
 
 
-    def calc_stroh(self, slip_system='basal_a_edge', bp=None, param={}):
+    def calc_stroh(self, slip_system='basal_a_edge', param={}):
         from myalloy import stroh_dislocations as stroh 
         stroh.calc_stroh(self, \
-            slip_system=slip_system, bp=bp, param=param)
+            slip_system=slip_system, param=param)
 
 
 

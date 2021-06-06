@@ -9,7 +9,7 @@ import sys
 
 
 
-def calc_stroh(self, slip_system='basal_a_edge', bp=None, param={}):
+def calc_stroh(self, slip_system='basal_a_edge', param={}):
     qe=1.60217657e-19   #  :??
 
     if not hasattr(self, 'c'):
@@ -17,7 +17,7 @@ def calc_stroh(self, slip_system='basal_a_edge', bp=None, param={}):
 
     from myalloy import stroh_dislocations_slip_system as ss
     mm, theta, b1, b2 = \
-        ss.slip_system(self, slip_system=slip_system, bp=bp)
+        ss.slip_system(self, slip_system=slip_system, param=param)
     
 
     
