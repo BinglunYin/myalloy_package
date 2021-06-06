@@ -111,7 +111,7 @@ def write_output(output_name, qe, slip_system, \
 
 
     f.write('# stroh formalism for two dislocations: \n' )
-    f.write('# slip system: %s \n' \
+    f.write('# slip system: %s \n\n' \
         %(slip_system) )
 
 
