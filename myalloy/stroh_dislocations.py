@@ -10,7 +10,7 @@ import sys
 
 
 def calc_stroh(self, slip_system='basal_a_edge', param={}):
-    qe=1.60217657e-19   #  :??
+    qe=1.602176208e-19   #  :??
 
     if not hasattr(self, 'c'):
         self.c = self.a
