@@ -11,7 +11,8 @@ import sys
 
 
 
-def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2, cut1, cut2):
+def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, \
+    b1, b2, X1, Y1, X2, Y2, cut1, cut2):
   
 # Ec, 4*5:
 #        C1   R   C2   1   2
@@ -114,51 +115,79 @@ def calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, X1, Y1, X2, Y2, cut1, cut2):
 
     # S(1) ======================================
     print('==> S_1')
-    def S_11():    # S(1+)
-        y = Y1+1e-100
+    def fec_u1_1(x):
         n0 = [[0.],[-1.],[0.]]
-        return y, n0
 
-    def fec_u1_11(x):
-        y, n0 = S_11() 
-        return fec_u1(x, y, n0)
+        s1 = stroh_u1s1(x=x, y=Y1)[1] 
+        s2 = stroh_u2s2(x=x, y=Y1)[1] 
 
-    def S_12():   # S(1-)
-        y = Y1-1e-100
-        n0 = [[0.],[1.],[0.]]
-        return y, n0
+        ec1 = ((s1 @ n0).T @ b1 ) / 2.0
+        ec2 = ((s2 @ n0).T @ b1 ) / 2.0
+    
+        return ec1, ec2
 
-    def fec_u1_12(x):
-        y, n0 = S_12() 
-        return fec_u1(x, y, n0)
+    Ec[0:2,3] = myint(fec_u1_1, -sc.sqrt(R0**2-Y1**2), X1-r0 ) 
 
-    Ec[0:2,3] = myint(fec_u1_11, -sc.sqrt(R0**2-Y1**2), X1-r0 ) \
-              + myint(fec_u1_12, -sc.sqrt(R0**2-Y1**2), X1-r0 ) 
+
+    # def S_11():    # S(1+)
+    #     y = Y1+1e-100
+    #     n0 = [[0.],[-1.],[0.]]
+    #     return y, n0
+
+    # def fec_u1_11(x):
+    #     y, n0 = S_11() 
+    #     return fec_u1(x, y, n0)
+
+    # def S_12():   # S(1-)
+    #     y = Y1-1e-100
+    #     n0 = [[0.],[1.],[0.]]
+    #     return y, n0
+
+    # def fec_u1_12(x):
+    #     y, n0 = S_12() 
+    #     return fec_u1(x, y, n0)
+
+    # Ec[0:2,3] = myint(fec_u1_11, -sc.sqrt(R0**2-Y1**2), X1-r0 ) \
+    #           + myint(fec_u1_12, -sc.sqrt(R0**2-Y1**2), X1-r0 ) 
 
 
 
     # S(2) ======================================
     print('==> S_2')
-    def S_21():    # S(2+)
-        y = Y2+1e-100
+    def fec_u2_2(x):
         n0 = [[0.],[-1.],[0.]]
-        return y, n0
 
-    def fec_u2_21(x):
-        y, n0 = S_21() 
-        return fec_u2(x, y, n0)
+        s1 = stroh_u1s1(x=x, y=Y2)[1] 
+        s2 = stroh_u2s2(x=x, y=Y2)[1] 
 
-    def S_22():   # S(2-)
-        y = Y2-1e-100
-        n0 = [[0.],[1.],[0.]]
-        return y, n0
+        ec3 = ((s1 @ n0).T @ b2 ) / 2.0 *(-1)
+        ec4 = ((s2 @ n0).T @ b2 ) / 2.0 *(-1)
+    
+        return ec3, ec4
 
-    def fec_u2_22(x):
-        y, n0 = S_22() 
-        return fec_u2(x, y, n0)
+    Ec[2:4,4] = myint(fec_u2_2, X2+r0, sc.sqrt(R0**2-Y2**2)  ) 
 
-    Ec[2:4,4] = myint(fec_u2_21, X2+r0, sc.sqrt(R0**2-Y2**2)  ) \
-              + myint(fec_u2_22, X2+r0, sc.sqrt(R0**2-Y2**2)  ) 
+
+    # def S_21():    # S(2+)
+    #     y = Y2+1e-100
+    #     n0 = [[0.],[-1.],[0.]]
+    #     return y, n0
+
+    # def fec_u2_21(x):
+    #     y, n0 = S_21() 
+    #     return fec_u2(x, y, n0)
+
+    # def S_22():   # S(2-)
+    #     y = Y2-1e-100
+    #     n0 = [[0.],[1.],[0.]]
+    #     return y, n0
+
+    # def fec_u2_22(x):
+    #     y, n0 = S_22() 
+    #     return fec_u2(x, y, n0)
+
+    # Ec[2:4,4] = myint(fec_u2_21, X2+r0, sc.sqrt(R0**2-Y2**2)  ) \
+    #           + myint(fec_u2_22, X2+r0, sc.sqrt(R0**2-Y2**2)  ) 
 
 
 
@@ -202,17 +231,17 @@ def myint(f, x1, x2):
 def check_Ec(Ec):
     tola = 1.0e-6
 
-    temp = np.abs(Ec[0,0]/Ec[0,1]+1)
+    temp = np.abs(Ec[0,0]/Ec[0,1] +1)
     if temp > tola:
         print(temp)
         sys.exit('ABORT: wrong Ec[0,0] in Ec.')
 
-    temp = np.abs(Ec[3,1]/Ec[3,2]+1) *1e-2
+    temp = np.abs(Ec[3,1]/Ec[3,2] +1) *1e-2
     if temp > tola:
         print(temp)
         sys.exit('ABORT: wrong Ec[3,1] in Ec.')
 
-    temp = np.abs( np.sum(Ec[1,:]) / np.sum(Ec[2,:]) -1 )
+    temp = np.abs( np.sum(Ec[1,:]) / np.sum(Ec[2,:]) -1)
     if temp > tola:
         print(temp)
         sys.exit('ABORT: wrong Ec[1,:] in Ec.')

@@ -3,14 +3,17 @@
 # 2021.06.04
 
 
-
 import numpy as np
 import sys 
 
 
-
 def calc_stroh(self, slip_system='basal_a_edge', param={}):
+    
     qe=1.6021766208e-19   #  :??
+
+    #--------------------------------------------
+    # pre    
+    #--------------------------------------------
 
     if not hasattr(self, 'c'):
         self.c = self.a
@@ -20,7 +23,6 @@ def calc_stroh(self, slip_system='basal_a_edge', param={}):
         ss.slip_system(self, slip_system=slip_system, param=param)
     
 
-    
     a   = self.a
     c   = self.c
     Cij = self.Cij 
@@ -31,14 +33,16 @@ def calc_stroh(self, slip_system='basal_a_edge', param={}):
     R0 = 1e7*a
        
 
-
     from myalloy import calc_elastic_constant as cec 
     CIJ, CIJKL, CIJKL2, CIJ2 = cec.rotate_Cij(brav_latt, Cij, mm)
 
     CIJKL2 = CIJKL2 *1.0e9 *(1.0/qe/1.0e30)  # to [eV/Ang^3]
 
-    
-    
+
+    #--------------------------------------------
+    # p, A, B; K, E_r, E_theta; u, s
+    #--------------------------------------------
+
     from myalloy import stroh_dislocations_formalism as fm 
     N, p, A, B = fm.calc_N_p_A_B(CIJKL2)
     K1, K2, K12 = fm.calc_K(b1, b2, B) 
@@ -68,17 +72,18 @@ def calc_stroh(self, slip_system='basal_a_edge', param={}):
     stroh_u2s2 = partial(fm.stroh_u0_s0, p=p, A=A, B=B, \
         b=b2, X=X2, Y=Y2, cut=cut2)
 
-
     
     if 'pos_in' in param: 
-        calc_pos_out(stroh_u1s1, stroh_u2s2, param['pos_in'])
+        fm.calc_pos_out(stroh_u1s1, stroh_u2s2, param['pos_in'])
 
 
+    #--------------------------------------------
+    # energy Ec 
+    #--------------------------------------------
 
     from myalloy import stroh_dislocations_energy as en
-    Ec = en.calc_Ec(stroh_u1s1, stroh_u2s2, \
-         r0, R0, X1, Y1, X2, Y2, cut1, cut2)
-    
+    Ec = en.calc_Ec(stroh_u1s1, stroh_u2s2, r0, R0, \
+        b1, b2, X1, Y1, X2, Y2, cut1, cut2)
 
 
     if 'output_name' in param: 
@@ -88,28 +93,6 @@ def calc_stroh(self, slip_system='basal_a_edge', param={}):
             mm, CIJ, CIJ2, N, p, A, B )
 
 
-
-
-
-
-
-
-
-# ===========================
-   
-def calc_pos_out(stroh_u1s1, stroh_u2s2, pos_in):
-      
-    natoms = pos_in.shape[0]
-    disp1 = np.empty(shape=(natoms,3))
-    disp2 = np.empty(shape=(natoms,3))
-        
-    for i in np.arange(natoms):
-        disp1[i,:] = stroh_u1s1(x=pos_in[i,0], y=pos_in[i,1])[0].T
-        disp2[i,:] = stroh_u2s2(x=pos_in[i,0], y=pos_in[i,1])[0].T
-    
-    pos_out = pos_in + disp1 + disp2
-    np.savetxt('stroh_pos_out.txt', pos_out)
-        
 
 
 
@@ -190,6 +173,13 @@ def write_output(output_name, qe, slip_system, \
 
         f.write('Energy contribution, Ec (eV/Ang) \n')
         f.write(str(Ec)+'\n\n')
+
+        f.write('np.sum(Ec, axis=0) \n')
+        f.write(str(np.sum(Ec, axis=0))+'\n\n')
+        
+        f.write('np.sum(Ec, axis=1) \n')
+        f.write(str(np.sum(Ec, axis=1))+'\n\n')
+                
                 
     
         f.write('\n\nmm\n')
