@@ -82,7 +82,7 @@ def calc_stroh(self, slip_system='basal_a_edge', param={}):
 
 
     if 'output_name' in param: 
-        write_output(param['output_name'], qe, \
+        write_output(param['output_name'], qe, slip_system, \
             a, c, r0, R0, theta, b1, b2, gamma, \
             K1, K2, K12, r12, X1, Y1, X2, Y2, Er, Et, Ec, \
             mm, CIJ, CIJ2, N, p, A, B )
@@ -117,20 +117,21 @@ def calc_pos_out(stroh_u1s1, stroh_u2s2, pos_in):
 
 
 
-def write_output(output_name, qe, \
+def write_output(output_name, qe, slip_system, \
     a, c, r0, R0, theta, b1, b2, gamma, \
     K1, K2, K12, r12, X1, Y1, X2, Y2, Er, Et, Ec, \
     mm, CIJ, CIJ2, N, p, A, B ):
 
-    np.set_printoptions(linewidth=200)
-    np.set_printoptions(precision=4)
 
     filen = 'stroh_' + output_name + '.txt'
     f = open(filen,"w+")
 
 
     f.write('# stroh formalism for two dislocations: \n' )
-    
+    f.write('# slip system: %s \n' \
+        %(slip_system) )
+
+
     f.write('%16s %16s %16s %16s \n' \
         %('a (Ang)', 'c/a', 'r0/a', 'R0/a' ) )
     f.write('%16.8f %16.8f %16.8f %16.4e \n\n' \
@@ -182,32 +183,40 @@ def write_output(output_name, qe, \
         %(Ec.sum(), Ec.sum()+Esf ) )
 
 
-    f.write('Energy contribution, Ec (eV/Ang) \n')
-    f.write(str(Ec)+'\n\n')
-            
 
-    f.write('\n\nmm\n')
-    f.write(str(mm)+'\n\n')
+
+    with np.printoptions(linewidth=200, \
+        precision=8, suppress=True):
+
+        f.write('Energy contribution, Ec (eV/Ang) \n')
+        f.write(str(Ec)+'\n\n')
+                
+    
+        f.write('\n\nmm\n')
+        f.write(str(mm)+'\n\n')
+           
+        f.write('Cij(GPa) before rotation\n')
+        f.write(str(CIJ)+'\n\n')
+                
+        f.write('Cij(GPa) after rotation\n')
+        f.write(str(CIJ2)+'\n\n')
+                
+        f.write('N \n')
+        f.write(str(N)+'\n\n')
+                
+        f.write('p \n')
+        f.write(str(p)+'\n\n')
+                
+        f.write('A \n')
+        f.write(str(A)+'\n\n')        
+    
+        f.write('B \n')
+        f.write(str(B)+'\n\n')
        
-    f.write('Cij(GPa) before rotation\n')
-    f.write(str(CIJ)+'\n\n')
-            
-    f.write('Cij(GPa) after rotation\n')
-    f.write(str(CIJ2)+'\n\n')
-            
-    f.write('N \n')
-    f.write(str(N)+'\n\n')
-            
-    f.write('p \n')
-    f.write(str(p)+'\n\n')
-            
-    f.write('A \n')
-    f.write(str(A)+'\n\n')        
 
-    f.write('B \n')
-    f.write(str(B)+'\n\n')
-   
     f.close()
+
+
 
 
 
