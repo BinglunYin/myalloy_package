@@ -229,9 +229,17 @@ def plot_MC(EPI_beta, Ef_all, T):
 
 def analyze_dump(jobname):
 
-    # make it up to 9 shells
-    temp =  np.loadtxt('../y_post_EPI.beta_4.txt')
-    EPI_beta = np.append(temp, np.zeros(10-len(temp)) )  
+    atoms = vf.my_read_vasp('../CONTCAR')
+    nelem = len( atoms.cn )
+
+    EPI_beta =  np.loadtxt('../y_post_EPI.beta_4.txt')
+
+    # make it up to 9 shells for binary alloys
+    if nelem == 2:
+        EPI_beta = np.append(EPI_beta, np.zeros(10-len(EPI_beta)) )  
+
+    print('==> EPI_beta:')
+    print( EPI_beta )
 
 
 
