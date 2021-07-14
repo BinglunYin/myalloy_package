@@ -80,6 +80,66 @@ def slip_system(self, slip_system='111_a_edge', param={}):
 
 
 
+
+
+
+# <a> cross-slip in hcp
+
+        elif slip_system == 'basal_a_screw' :
+            mm = np.array([ [0.0, 1, 0], 
+                            [  0, 0, 1], 
+                            [  1, 0, 0] ])
+
+            bt = np.array([ [0.], [0.], [a] ])
+            theta = 0.
+            xx = bt 
+            yy = np.array([ [np.sqrt(3)/2*a], [0], [0] ])
+    
+            if 'bp' in param: 
+                bp = param['bp']
+            else:
+                bp=np.array([ 0.5, 1/3 ])
+            
+
+
+        elif slip_system == 'prism_a_screw' :
+            mm = np.array([ [0.0, 1, 0], 
+                            [  0, 0, 1], 
+                            [  1, 0, 0] ])
+
+            bt = np.array([ [0.], [0.], [a] ])
+            theta = np.pi/2
+            xx = bt 
+            yy = np.array([ [0.0], [c], [0] ])
+    
+            if 'bp' in param: 
+                bp = param['bp']
+            else:
+                bp=np.array([ 0.5, 0 ])
+            
+
+
+        elif slip_system == 'pyr1_a_screw' :
+            mm = np.array([ [0.0, 1, 0], 
+                            [  0, 0, 1], 
+                            [  1, 0, 0] ])
+
+            bt = np.array([ [0.], [0.], [a] ])
+            theta = np.arctan( c/(np.sqrt(3)/2*a) )
+            xx = bt 
+            yy = np.array([ [np.sqrt(3)/2*a], [c], [0] ])
+    
+            if 'bp' in param: 
+                bp = param['bp']
+            else:
+                bp=np.array([ 0.5, -0.116 ])
+            
+
+
+
+
+
+
     
     b1 = bp[0]* xx + bp[1]* yy
     b2 = bt - b1
