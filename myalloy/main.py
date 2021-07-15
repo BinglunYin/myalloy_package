@@ -99,13 +99,15 @@ class alloy_class:
     # get EPI
     def get_EPI_from_file(self, filename='y_post_EPI.beta2_4.txt'):
         data = np.loadtxt(filename)
-        self.EPI = EPI_reshape(self, data)
-    
-    
+        EPI, shellmax = EPI_reshape(self, data)
+        self.EPI = EPI 
+        self.shellmax = shellmax 
+
     # get SRO
     def get_SRO_from_file(self, filename='y_post_WC_SRO_shell_avg.txt'):
         data = np.loadtxt(filename)
-        self.SRO = EPI_reshape(self, data)
+        SRO, shellmax = EPI_reshape(self, data)
+        self.SRO = SRO
 
 
 
@@ -157,6 +159,7 @@ def EPI_reshape(self, A):
             for k in np.arange(j+1, nelem):
                 m = m+1  
                 A3[i, j, k] = A2[i, m]
-    return A3 
+    
+    return A3, shellmax  
 
 

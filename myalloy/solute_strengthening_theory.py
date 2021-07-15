@@ -20,14 +20,14 @@ def calc_yield_strength(self, param={}):
     else:                     
         model_type = 'aniso'
 
-    if (model_type is 'aniso') and (self.brav_latt is 'fcc'):
+    if (model_type == 'aniso') and (self.brav_latt == 'fcc'):
         print('==>  applying fcc ANISOtropic model, sigmay [MPa]')
         self.calc_Cijavg_from_Cij()
         A = self.Cijavg['A']
         mu111 = self.Cijavg['mu_111']  
         muV = self.Cijavg['mu_V']
         nuV = self.Cijavg['nu_V']
-    elif model_type is 'iso':
+    elif model_type == 'iso':
         print('==>  applying ISOtropic model, sigmay [MPa]')
         A = 1
         mu111 = self.poly['mu']
@@ -38,12 +38,12 @@ def calc_yield_strength(self, param={}):
         A = param['A']
     
 
-    if self.brav_latt is 'fcc':
+    if self.brav_latt == 'fcc':
         At = 0.04865* (1- (A-1)/40 )
         AE = 2.5785 * (1- (A-1)/80 )
         alpha = 0.125
         b = (V0*4)**(1/3) / np.sqrt(2)
-    elif self.brav_latt is 'bcc':
+    elif self.brav_latt == 'bcc':
         At = 0.040 * (16/3)**(2/3)
         AE = 2.00  * (16/3)**(1/3)
         alpha = 0.0833
@@ -140,30 +140,45 @@ def calc_yield_strength(self, param={}):
 
 
 
-        if 'sigma_ratio' in param: 
+        if hasattr(self, 'EPI'):
+
+            from myalloy import solute_strengthening_theory_EPI as sstEPI 
+
+            sigma_dUss = sstEPI.calc_sigma_dUss(self, b, wc, zetac, t='fcc_partial')
+
+
+            sigma_dUtot = np.sqrt( sigma_dUsd**2 + sigma_dUss**2 )
+            sigma_ratio = sigma_dUtot / sigma_dUsd
+
+
             sigma_ratio = param['sigma_ratio']
             f.write('\n# Add solute-solute interaction: \n' )
+
+            f.write('%16s %16s \n' \
+            %('sigma_dUss', 'sigma_dUtot') )
+            f.write('%16.4f %16.4f \n\n' \
+            %(sigma_dUss, sigma_dUtot) )
 
             f.write('%16s %16s %16s \n' \
             %('sigma_ratio', 'ratio**(4/3)', 'ratio**(2/3)') )
             f.write('%16.4f %16.4f %16.4f \n\n' \
             %(sigma_ratio, sigma_ratio**(4/3), sigma_ratio**(2/3)) )
 
-            ty0_ss = ty0*sigma_ratio**(4/3)
-            dEb_ss = dEb*sigma_ratio**(2/3)
-            sigmay_ss = 3.06*calc_ty(et0, T, et, ty0_ss, dEb_ss)
+            ty0_tot = ty0*sigma_ratio**(4/3)
+            dEb_tot = dEb*sigma_ratio**(2/3)
+            sigmay_tot = 3.06*calc_ty(et0, T, et, ty0_tot, dEb_tot)
 
             f.write('%16s %16s %16s \n' \
-            %('ty0_ss (MPa)', 'dEb_ss (eV)', 'sigmay_ss (MPa)' ) )
+            %('ty0_tot (MPa)', 'dEb_tot (eV)', 'sigmay_tot (MPa)' ) )
             f.write('%16.4f %16.4f %16.4f \n\n' \
-            %(ty0_ss, dEb_ss/qe, sigmay_ss) )
+            %(ty0_tot, dEb_tot/qe, sigmay_tot) )
 
 
 
 
 
 
-        f.write('\n\n alloy properties: \n')
+        f.write('\n\n# alloy properties: \n')
 
         if hasattr(self, 'V0'):
             f.write('\n%16s \n' \
@@ -257,9 +272,9 @@ def fcc_Vegard_strength( ROMtype, cn, param = {}):
     from myalloy import main 
     from myalloy import solute_strengthening_theory_database as sstb 
 
-    if ROMtype is 'polyelem':
+    if ROMtype == 'polyelem':
         data1 = sstb.fcc_elem_poly()
-    elif ROMtype is 'Cijelem':
+    elif ROMtype == 'Cijelem':
         data1 = sstb.fcc_elem_Cij()
 
     n0 = data1.shape[0] - cn.shape[0]
@@ -269,12 +284,12 @@ def fcc_Vegard_strength( ROMtype, cn, param = {}):
     alloy1.Velem = data1[:,0]
     alloy1.calc_from_Velem()
 
-    if ROMtype is 'polyelem':
+    if ROMtype == 'polyelem':
         alloy1.polyelem = data1[:, 1:3]
         alloy1.calc_from_polyelem()
         param.update({'model_type': 'iso'})
 
-    elif ROMtype is 'Cijelem':
+    elif ROMtype == 'Cijelem':
         alloy1.Cijelem = data1[:, 1:4]
         alloy1.calc_from_Cijelem()
         param.update({'model_type': 'aniso'})
