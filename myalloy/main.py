@@ -34,9 +34,9 @@ class alloy_class:
         if hasattr(self, 'V0'):
             sys.exit('ABORT: V0 exists. Double check!')
         else:
-            if self.brav_latt is 'fcc':
+            if self.brav_latt == 'fcc':
                 self.V0 = self.a **3/4 
-            elif self.brav_latt is 'bcc':
+            elif self.brav_latt == 'bcc':
                 self.V0 = self.a **3/2 
 
 
@@ -150,7 +150,7 @@ def EPI_reshape(self, A):
     temp = int(len(A)/shellmax)        
     A2 = A.reshape(shellmax, temp)
 
-    A3 = np.zeros(shellmax, nelem, nelem)
+    A3 = np.zeros((shellmax, nelem, nelem))
     for i in np.arange(shellmax):
         m = -1
         for j in np.arange(nelem-1):
