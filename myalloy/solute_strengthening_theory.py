@@ -151,7 +151,6 @@ def calc_yield_strength(self, param={}):
             sigma_ratio = sigma_dUtot / sigma_dUsd
 
 
-            sigma_ratio = param['sigma_ratio']
             f.write('\n# Add solute-solute interaction: \n' )
 
             f.write('%16s %16s \n' \

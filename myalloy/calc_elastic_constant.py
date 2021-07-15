@@ -51,7 +51,7 @@ def symmetrize_matrix(C_in):
 # CIJ is 6*6 
 def calc_CIJ_from_Cij(brav_latt, Cij):
 
-    if (brav_latt is 'fcc') or (brav_latt is 'bcc'):
+    if (brav_latt == 'fcc') or (brav_latt == 'bcc'):
         [C11, C12, C44] = Cij
         
         CIJ=np.array([
@@ -63,7 +63,7 @@ def calc_CIJ_from_Cij(brav_latt, Cij):
             [  0,   0,   0,   0,   0, C44],
         ])
     
-    elif (brav_latt is 'hcp'):
+    elif (brav_latt == 'hcp'):
         [C11, C12, C13, C33, C44] = Cij
         
         CIJ=np.array([
@@ -89,7 +89,7 @@ def calc_Cijavg_from_Cij(brav_latt, Cij):
         
     Cijavg={}
 
-    if brav_latt is 'fcc':
+    if brav_latt == 'fcc':
         [C11, C12, C44] = Cij
         mu_111 = C44 - ( 2*C44 +C12 -C11 )/3
         Cijavg['mu_111'] = mu_111
