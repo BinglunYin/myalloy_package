@@ -141,6 +141,12 @@ class alloy_class:
 def EPI_reshape(self, A):
     nelem = self.nelem 
     shellmax = len(A)/ (nelem*(nelem-1)/2) 
+
+    if np.abs(shellmax - int(shellmax)) > 1e-10:
+        sys.exit('ABORT: wrong shellmax.')
+    else:
+        shellmax = int(shellmax)
+
     temp = int(len(A)/shellmax)        
     A2 = A.reshape(shellmax, temp)
 
