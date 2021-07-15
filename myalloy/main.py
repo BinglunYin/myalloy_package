@@ -89,17 +89,68 @@ class alloy_class:
         
 
 
+
+
+
+
+
+
+
+    # get EPI
+    def get_EPI_from_file(self, filename='y_post_EPI.beta2_4.txt'):
+        data = np.loadtxt(filename)
+        self.EPI = EPI_reshape(self, data)
+    
+    
+    # get SRO
+    def get_SRO_from_file(self, filename='y_post_WC_SRO_shell_avg.txt'):
+        data = np.loadtxt(filename)
+        self.SRO = EPI_reshape(self, data)
+
+
+
+    
+
+
+
+
+
     # solute strengthening theory
     def calc_yield_strength(self, param={}):
         from myalloy import solute_strengthening_theory as sst 
         sst.calc_yield_strength(self, param=param)
 
 
+
+
+
+
+
+    # Stroh's formalism
     def calc_stroh(self, slip_system='basal_a_edge', param={}):
         from myalloy import stroh_dislocations as stroh 
         stroh.calc_stroh(self, \
             slip_system=slip_system, param=param)
 
 
+
+
+
+
+
+def EPI_reshape(self, A):
+    nelem = self.nelem 
+    shellmax = len(A)/ (nelem*(nelem-1)/2) 
+    temp = int(len(A)/shellmax)        
+    A2 = A.reshape(shellmax, temp)
+
+    A3 = np.zeros(shellmax, nelem, nelem)
+    for i in np.arange(shellmax):
+        m = -1
+        for j in np.arange(nelem-1):
+            for k in np.arange(j+1, nelem):
+                m = m+1  
+                A3[i, j, k] = A2[i, m]
+    return A3 
 
 

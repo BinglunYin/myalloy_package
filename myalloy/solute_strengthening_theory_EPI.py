@@ -5,6 +5,23 @@ from myalloy import calc_elastic_constant as cec
 
 
 
+
+
+def calc_ss_strengthening(self):
+    EPIs = self.EPIs
+
+
+
+    
+
+
+
+
+
+
+
+
+
 def calc_yield_strength(self, param={}):
     if not hasattr(self, 'V0'):
         self.calc_V0_from_a()
@@ -160,10 +177,6 @@ def calc_yield_strength(self, param={}):
 
 
 
-
-
-
-        f.write('\n\n alloy properties: \n')
 
         if hasattr(self, 'V0'):
             f.write('\n%16s \n' \
