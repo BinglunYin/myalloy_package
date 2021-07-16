@@ -153,11 +153,25 @@ def write_output(output_name, qe, slip_system, \
         %(X1, Y1, X2, Y2) )
 
 
+
+    f.write('\n# approximate results:\n')
+
     Esf = gamma*r12
     f.write('%16s %16s %16s \n' \
         %('E_r (eV/Ang)', 'E_theta', 'E_sf' ) )
     f.write('%16.8f %16.8f %16.8f \n\n' \
         %(Er, Et, Esf) )
+
+
+    f.write(' E_tot - Ec = Er - E_theta + E_sf \n' ) 
+    f.write('%16.8f \n\n' \
+        %(Er-Et+Esf) )
+
+
+
+
+
+    f.write('\n# exact results:\n')
 
 
     f.write('%16s %16s \n' \
