@@ -44,15 +44,17 @@ def slip_system(self, slip_system='111_a_edge', param={}):
                             [       a/2.0, -np.sqrt(3.0)/2.0*a, a*a/c], 
                             [       a/2.0, -np.sqrt(3.0)/2.0*a,    -c]   ])
 
-            bt = np.array([[0.], [0.], [-np.sqrt(a**2+c**2)]])
+            ca = np.sqrt(a**2+c**2)
+
+            bt = np.array([[0.], [0.], [-ca]])
            
+            xx = np.array([[(1.0/2.0)*a*np.sqrt(3.0)], [(1.0/2.0)*a*c/ca], [(1.0/2.0)*a**2/ca]])
+            yy = bt+1.0/2.0*xx
+            
             t1 = np.cross(xx.T,bt.T)
             t2 = np.array([[0.],[1.],[0.]])
             theta = np.arccos(np.dot(t1,t2)/np.dot(np.linalg.norm(t1,2),np.linalg.norm(t2,2)))
-          
-            xx = np.array([[(1.0/2.0)*a*np.sqrt(3.0)], [(1.0/2.0)*a*c/np.sqrt(a**2+c**2)], [(1.0/2.0)*a**2/np.sqrt(a**2+c**2)]])
-            yy = bt+1.0/2.0*xx
-            
+                      
             if 'bp' in param: 
                 bp = param['bp']
             else:
