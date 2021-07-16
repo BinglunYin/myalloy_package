@@ -34,6 +34,7 @@ def calc_sigma_dUss(self, b, wc, zetac, t='fcc_partial'):
         Theta = load_Theta_fcc_partial()
 
 
+    print('step 1')
     s2 = 0 
     for n1 in np.arange(nelem):
         for n2 in np.arange(nelem):
@@ -41,9 +42,10 @@ def calc_sigma_dUss(self, b, wc, zetac, t='fcc_partial'):
                 for d2 in np.arange(shellmax):
 
                     s2 = s2 +1/4 * cn[n1]*cn[n2] * EPI[d1, n1, n2]*EPI[d2, n1, n2] * Theta[d1, d2]
+                    print(s2)
 
 
-    
+    print('step 2')
     for n1 in np.arange(nelem):
         for n2 in np.arange(nelem):
             for n3 in np.arange(nelem):
@@ -51,8 +53,9 @@ def calc_sigma_dUss(self, b, wc, zetac, t='fcc_partial'):
                     for d2 in np.arange(shellmax):
 
                         s2 = s2 -1/2 * cn[n1]*cn[n2]*cn[n3] * EPI[d1, n1, n2]*EPI[d2, n1, n3] * Theta[d1, d2]
+                        print(s2)
 
-    
+    print('step 3')
     for n1 in np.arange(nelem):
         for n2 in np.arange(nelem):
             for n3 in np.arange(nelem):
@@ -61,8 +64,9 @@ def calc_sigma_dUss(self, b, wc, zetac, t='fcc_partial'):
                         for d2 in np.arange(shellmax):
 
                             s2 = s2 +1/4 * cn[n1]*cn[n2]*cn[n3]*cn[n4] * EPI[d1, n1, n2]*EPI[d2, n3, n4] * Theta[d1, d2]
-
+                            print(s2)
     
+
     sigma_dUss = np.sqrt( zetac/np.sqrt(3)/b * 4*wc/b * s2)
     return sigma_dUss 
             

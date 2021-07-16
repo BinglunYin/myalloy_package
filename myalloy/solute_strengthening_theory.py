@@ -239,11 +239,23 @@ def calc_yield_strength(self, param={}):
                 f.write('%16.1f %16.1f %16.1f \n' \
                 %(self.Cijelem[i,0], self.Cijelem[i,1], self.Cijelem[i,2]) )
             f.write(' \n')
-            
+
+
+
+
+        with np.printoptions(linewidth=200, \
+            precision=8, suppress=True):
+
+            if hasattr(self, 'EPI'):
+                f.write(' EPI (eV): \n')
+                f.write(str(self.EPI)+'\n\n')
+
+       
+
         f.close() 
 
 
-        self.write_attributes(filen)
+        # self.write_attributes(filen)
 
 
 
