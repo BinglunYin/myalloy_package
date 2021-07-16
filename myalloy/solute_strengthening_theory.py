@@ -151,7 +151,7 @@ def calc_yield_strength(self, param={}):
             sigma_ratio = sigma_dUtot / sigma_dUsd
 
 
-            f.write('\n# Add solute-solute interaction: \n' )
+            f.write('\n# Add solute-solute interaction strengthening: \n' )
 
             f.write('%16s %16s \n' \
             %('sigma_dUss', 'sigma_dUtot') )
@@ -243,6 +243,7 @@ def calc_yield_strength(self, param={}):
         f.close() 
 
 
+        self.write_attributes(filen)
 
 
 

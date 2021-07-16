@@ -14,17 +14,10 @@ def load_Theta_fcc_partial():
         [0,  0,  2, -2],
         [0,  0,  0, 14],
     ])
-    t = make_sym(t)
+    t = cec.symmetrize_matrix(t)
     print(t)
     return t
 
-
-def make_sym(t):
-    t2 = t.copy()
-    for i in np.arange(1, t.shape[0]):
-        for j in np.arange(i):
-            t2[i, j] = t2[j,i]
-    return t2 
 
 
 
@@ -47,10 +40,29 @@ def calc_sigma_dUss(self, b, wc, zetac, t='fcc_partial'):
             for d1 in np.arange(shellmax):
                 for d2 in np.arange(shellmax):
 
-                    s2 = s2+ 1/4* cn[n1]*cn[n2]* EPI[d1, n1, n2]*EPI[d2, n1, n2]* Theta[d1, d2]
+                    s2 = s2 +1/4 * cn[n1]*cn[n2] * EPI[d1, n1, n2]*EPI[d2, n1, n2] * Theta[d1, d2]
+
 
     
+    for n1 in np.arange(nelem):
+        for n2 in np.arange(nelem):
+            for n3 in np.arange(nelem):
+                for d1 in np.arange(shellmax):
+                    for d2 in np.arange(shellmax):
 
+                        s2 = s2 -1/2 * cn[n1]*cn[n2]*cn[n3] * EPI[d1, n1, n2]*EPI[d2, n1, n3] * Theta[d1, d2]
+
+    
+    for n1 in np.arange(nelem):
+        for n2 in np.arange(nelem):
+            for n3 in np.arange(nelem):
+                for n4 in np.arange(nelem):
+                    for d1 in np.arange(shellmax):
+                        for d2 in np.arange(shellmax):
+
+                            s2 = s2 +1/4 * cn[n1]*cn[n2]*cn[n3]*cn[n4] * EPI[d1, n1, n2]*EPI[d2, n3, n4] * Theta[d1, d2]
+
+    
     sigma_dUss = np.sqrt( zetac/np.sqrt(3)/b * 4*wc/b * s2)
     return sigma_dUss 
             

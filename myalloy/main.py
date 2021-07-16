@@ -16,16 +16,19 @@ class alloy_class:
 
 
 
-    # print
-    def print_alloy(self):
-        print(self.name, self.cn)
 
 
-
-    def dump(self):
+    def write_attributes(self, filename):
+        
+        f = open(filename, 'a')
+        f.write('\n# alloy attributes: \n' )
+        
         for attr in dir(self):
-            if hasattr(self, attr):
-                print('self.%s = %s' % (attr, getattr(self, attr)))
+            f.write(' %s: \n%s \n\n' %(attr, getattr(self, attr)) )
+
+        f.close()
+
+     
 
 
 
@@ -159,6 +162,7 @@ def EPI_reshape(self, A):
             for k in np.arange(j+1, nelem):
                 m = m+1  
                 A3[i, j, k] = A2[i, m]
+                A3[i, k, j] = A2[i, m]
     
     return A3, shellmax  
 
