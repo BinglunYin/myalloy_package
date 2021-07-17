@@ -30,7 +30,7 @@ def calc_sigma_dUss(self, b, wc, zetac, t='fcc_partial'):
     if t=='fcc_partial':
         Theta = load_Theta_fcc_partial()
 
-    nn = np.min([ nelem, t.shape[0] ])
+    nn = np.min([ nelem, Theta.shape[0] ])
 
 
     print('step 1')
