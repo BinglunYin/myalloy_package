@@ -32,7 +32,7 @@ def calc_sigma_dUss(self, b, wc, zetac, t='fcc_partial'):
         Theta = load_Theta_fcc_partial()
 
 
-    dn = np.min([ EPI.shape[0], t.shape[0] ])
+    dn = np.min([ EPI.shape[0], Theta.shape[0] ])
 
 
 
