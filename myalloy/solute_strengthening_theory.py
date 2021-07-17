@@ -82,8 +82,7 @@ def calc_yield_strength(self, param={}):
     #-------------------
     wc = (np.pi/(2**(5/2) -1))**(1/3) *(dEb**2/(Gamma*b*ty0))**(1/3) *1e15  # [Ang]
     zetac = np.pi *dEb /( 2 *wc *b *ty0) *1e24   # [Ang]
-    qe = 1.602176634e-19 
-    sigma_dUsd = ( (2**(5/2)-1)**(-1) * 4 ) *dEb /qe   # [eV]
+    sigma_dUsd = ( 4 / (2**(5/2)-1) ) *dEb /self.qe   # [eV]
     
     
     #-------------------
@@ -121,7 +120,7 @@ def calc_yield_strength(self, param={}):
         f.write('%16s %16s \n' \
         %('ty0 (MPa)', 'dEb (eV)' ) )
         f.write('%16.4f %16.8f \n\n' \
-        %(ty0, dEb/qe) )
+        %(ty0, dEb/self.qe) )
 
         f.write('%16s %16s \n' \
         %('ty (MPa)', 'sigmay (MPa)' ) )
@@ -146,12 +145,11 @@ def calc_yield_strength(self, param={}):
 
             sigma_dUss = sstEPI.calc_sigma_dUss(self, b, wc, zetac, t='fcc_partial')
 
-
             sigma_dUtot = np.sqrt( sigma_dUsd**2 + sigma_dUss**2 )
             sigma_ratio = sigma_dUtot / sigma_dUsd
 
 
-            f.write('\n# Add solute-solute interaction strengthening: \n' )
+            f.write('\n# With solute-solute interaction strengthening in ideal random alloy: \n' )
 
             f.write('%16s %16s \n' \
             %('sigma_dUss', 'sigma_dUtot') )
@@ -170,7 +168,7 @@ def calc_yield_strength(self, param={}):
             f.write('%16s %16s %16s \n' \
             %('ty0_tot (MPa)', 'dEb_tot (eV)', 'sigmay_tot (MPa)' ) )
             f.write('%16.4f %16.4f %16.4f \n\n' \
-            %(ty0_tot, dEb_tot/qe, sigmay_tot) )
+            %(ty0_tot, dEb_tot/self.qe, sigmay_tot) )
 
 
 
@@ -185,7 +183,8 @@ def calc_yield_strength(self, param={}):
             
             gamma_APB = tauA *1e6 *b *1e-10 *1e3
 
-            f.write('\n# average strengthening due to SRO: \n' )
+
+            f.write('\n# SRO average strengthening: \n' )
 
             f.write('%16s %16s \n' \
             %('tauA (MPa)', 'gamma_APB (mJ/m^2)') )
@@ -198,13 +197,7 @@ def calc_yield_strength(self, param={}):
 
 
 
-        f.write('\n\n# alloy properties: \n')
-
-        if hasattr(self, 'V0'):
-            f.write('\n%16s \n' \
-            %('V0_alloy (Ang^3)') )
-            f.write('%16.8f \n\n' \
-            %(self.V0) )
+        f.write('\n\n\n# alloy properties: \n')
         
         if hasattr(self, 'dV'):
             f.write('%16s %16s %16s \n' \
@@ -219,11 +212,7 @@ def calc_yield_strength(self, param={}):
             f.write('%16.8f \n\n' \
             %(self.cn @ self.dV) )
         
-        if hasattr(self, 'Cij'):
-            f.write('%16s \n' \
-            %('Cij_alloy (GPa)') )
-            f.write('%16.1f %16.1f %16.1f \n\n' \
-            %(self.Cij[0], self.Cij[1], self.Cij[2]) )
+
 
         if hasattr(self, 'Cijavg'):
             f.write(' Cij average: B, mu, nu, E \n')
@@ -245,38 +234,46 @@ def calc_yield_strength(self, param={}):
             f.write('%10s %16.1f %16.1f %16.4f %16.1f \n\n' \
             %('Hill:', B, mu, nu, cec.calc_E_from_mu_nu(mu, nu)  ))
 
-        if hasattr(self, 'polyelem'):
-            f.write(' elemental poly: \n')
-            f.write('%16s %16s \n' \
-            %('mu (GPa)', 'nu') )
-            for i in np.arange(self.nelem):
-                f.write('%16.1f %16.4f \n' \
-                %(self.polyelem[i,0], self.polyelem[i,1]) )
-            f.write(' \n')
-
-        if hasattr(self, 'Cijelem'):
-            f.write(' elemental Cij: \n')
-            for i in np.arange(self.nelem):
-                f.write('%16.1f %16.1f %16.1f \n' \
-                %(self.Cijelem[i,0], self.Cijelem[i,1], self.Cijelem[i,2]) )
-            f.write(' \n')
-
-
 
 
         with np.printoptions(linewidth=200, \
             precision=8, suppress=True):
 
+            if hasattr(self, 'V0'):
+                f.write(' V0 \n')
+                f.write(str(self.V0)+'\n\n')
+
+            if hasattr(self, 'Cij'):
+                f.write(' Cij (GPa) \n')
+                f.write(str(self.Cij)+'\n\n')
+
+            if hasattr(self, 'polyelem'):
+                f.write(' polyelem: mu (GPa), nu \n')
+                f.write(str(self.polyelem)+'\n\n')
+
+            if hasattr(self, 'Cijelem'):
+                f.write(' Cijelem: elemental Cij: \n')
+                f.write(str(self.Cijelem)+'\n\n')
+
             if hasattr(self, 'EPI'):
                 f.write(' EPI (eV): \n')
                 f.write(str(self.EPI)+'\n\n')
 
-       
+            if hasattr(self, 'SRO'):
+                f.write(' SRO: \n')
+                f.write(str(self.SRO)+'\n\n')
 
         f.close() 
 
 
-        # self.write_attributes(filen)
+
+
+
+
+
+
+
+
 
 
 

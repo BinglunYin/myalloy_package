@@ -7,6 +7,10 @@ from myalloy import calc_elastic_constant as cec
 
 
 class alloy_class:
+    
+    qe = 1.602176634e-19
+
+
     def __init__(self, name, cn, brav_latt = 'fcc'):
         self.name = name
         self.cn = cn / cn.sum()
@@ -16,19 +20,9 @@ class alloy_class:
 
 
 
-
-
-    def write_attributes(self, filename):
-        
-        f = open(filename, 'a')
-        f.write('\n# alloy attributes: \n' )
-        
+    def print_attributes(self):
         for attr in dir(self):
-            f.write(' %s: \n%s \n\n' %(attr, getattr(self, attr)) )
-
-        f.close()
-
-     
+            print('%s:\n%s \n\n' %(attr, getattr(self, attr)) )
 
 
 
@@ -102,14 +96,14 @@ class alloy_class:
     # get EPI
     def get_EPI_from_file(self, filename='y_post_EPI.beta2_4.txt'):
         data = np.loadtxt(filename)
-        EPI, shellmax = EPI_reshape(self, data)
+        EPI, shellmax = EPI_reshape(self.nelem, data)
         self.EPI = EPI 
         self.shellmax = shellmax 
 
     # get SRO
     def get_SRO_from_file(self, filename='y_post_WC_SRO_shell_avg.txt'):
         data = np.loadtxt(filename)
-        SRO, shellmax = EPI_reshape(self, data)
+        SRO, shellmax = EPI_reshape(self.nelem, data)
         self.SRO = SRO
 
 
@@ -143,8 +137,7 @@ class alloy_class:
 
 
 
-def EPI_reshape(self, A):
-    nelem = self.nelem 
+def EPI_reshape(nelem, A):
     shellmax = len(A)/ (nelem*(nelem-1)/2) 
 
     if np.abs(shellmax - int(shellmax)) > 1e-10:
