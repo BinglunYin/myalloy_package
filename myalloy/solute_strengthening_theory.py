@@ -186,9 +186,9 @@ def calc_yield_strength(self, param={}):
 
             f.write('\n# SRO average strengthening: \n' )
 
-            f.write('%16s %16s \n' \
+            f.write('%16s %33s \n' \
             %('tauA (MPa)', 'gamma_APB (mJ/m^2)') )
-            f.write('%16.4f %16.4f \n\n' \
+            f.write('%16.4f %33.4f \n\n' \
             %(tauA, gamma_APB) )
 
 
@@ -197,7 +197,7 @@ def calc_yield_strength(self, param={}):
 
 
 
-        f.write('\n\n\n# alloy properties: \n')
+        f.write('\n# ====================\n# alloy properties: \n')
         
         if hasattr(self, 'dV'):
             f.write('%16s %16s %16s \n' \
@@ -240,27 +240,27 @@ def calc_yield_strength(self, param={}):
             precision=8, suppress=True):
 
             if hasattr(self, 'V0'):
-                f.write(' V0 \n')
+                f.write('V0 \n')
                 f.write(str(self.V0)+'\n\n')
 
             if hasattr(self, 'Cij'):
-                f.write(' Cij (GPa) \n')
+                f.write('Cij (GPa) \n')
                 f.write(str(self.Cij)+'\n\n')
 
             if hasattr(self, 'polyelem'):
-                f.write(' polyelem: mu (GPa), nu \n')
+                f.write('polyelem: mu (GPa), nu \n')
                 f.write(str(self.polyelem)+'\n\n')
 
             if hasattr(self, 'Cijelem'):
-                f.write(' Cijelem: elemental Cij: \n')
+                f.write('Cijelem: elemental Cij: \n')
                 f.write(str(self.Cijelem)+'\n\n')
 
             if hasattr(self, 'EPI'):
-                f.write(' EPI (eV): \n')
+                f.write('EPI (eV): \n')
                 f.write(str(self.EPI)+'\n\n')
 
             if hasattr(self, 'SRO'):
-                f.write(' SRO: \n')
+                f.write('SRO: \n')
                 f.write(str(self.SRO)+'\n\n')
 
         f.close() 
