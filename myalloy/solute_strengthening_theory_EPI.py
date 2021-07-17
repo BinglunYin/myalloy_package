@@ -117,7 +117,7 @@ def load_ndd_fcc_full():
 
 
 
-def calc_tau_A(self, a, t='fcc_full'):
+def calc_tau_A(self, b, t='fcc_full'):
 
     cn = self.cn 
     nelem = self.nelem 
@@ -145,7 +145,7 @@ def calc_tau_A(self, a, t='fcc_full'):
 
     qe = 1.602176634e-19 
     
-    tauA = 2*np.sqrt(2/3) /a**3 * tauA    *qe*1e30/1e6    #[MPa]
+    tauA = 2*np.sqrt(2/3) /( b*np.sqrt(2) )**3 * tauA    *qe*1e30/1e6    #[MPa]
     return tauA 
 
 

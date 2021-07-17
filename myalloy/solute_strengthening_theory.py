@@ -177,6 +177,27 @@ def calc_yield_strength(self, param={}):
 
 
 
+        if hasattr(self, 'EPI') and hasattr(self, 'SRO'):
+
+            from myalloy import solute_strengthening_theory_EPI as sstEPI 
+
+            tauA = sstEPI.calc_tau_A(self, b, t='fcc_full')
+            
+            gamma_APB = tauA *1e6 *b *1e-10 *1e3
+
+            f.write('\n# average strengthening due to SRO: \n' )
+
+            f.write('%16s %16s \n' \
+            %('tauA (MPa)', 'gamma_APB (mJ/m^2)') )
+            f.write('%16.4f %16.4f \n\n' \
+            %(tauA, gamma_APB) )
+
+
+
+
+
+
+
         f.write('\n\n# alloy properties: \n')
 
         if hasattr(self, 'V0'):
