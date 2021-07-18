@@ -40,6 +40,8 @@ def calc_sigma_dUss(self, wc, zetac, t='fcc_partial'):
 
     if t=='fcc_partial':
         Theta = load_Theta_fcc_partial()
+    elif t=='fcc_full':
+        Theta = load_Theta_fcc_full()
 
     dmax = np.min([ EPI.shape[0], Theta.shape[0] ])
 
