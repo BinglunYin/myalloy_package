@@ -6,13 +6,17 @@ from myalloy import calc_elastic_constant as cec
 
 
 def calc_yield_strength(self, param={}):
-    if not hasattr(self, 'V0'):
-        self.calc_V0_from_a()
+  
+    self.calc_b_from_V0()
+    b = self.b 
     V0 = self.V0
 
+
+    
     if not hasattr(self, 'delta'):
-        self.calc_delta()
+        self.calc_delta_from_dV()
     delta = self.delta
+
 
 
     if 'model_type' in param: 
@@ -42,12 +46,11 @@ def calc_yield_strength(self, param={}):
         At = 0.04865* (1- (A-1)/40 )
         AE = 2.5785 * (1- (A-1)/80 )
         alpha = 0.125
-        b = (V0*4)**(1/3) / np.sqrt(2)
+
     elif self.brav_latt == 'bcc':
         At = 0.040 * (16/3)**(2/3)
         AE = 2.00  * (16/3)**(1/3)
         alpha = 0.0833
-        b = (V0*2)**(1/3) *np.sqrt(3)/2
   
 
     if 'alpha' in param: 
@@ -69,6 +72,7 @@ def calc_yield_strength(self, param={}):
         et = 1e-3
         
 
+
     #-------------------
     Gamma = alpha * mu111 * b**2
     P = muV*(1+nuV)/(1-nuV)
@@ -85,6 +89,7 @@ def calc_yield_strength(self, param={}):
     sigma_dUsd = ( 4 / (2**(5/2)-1) ) *dEb /self.qe   # [eV]
     
     
+
     #-------------------
     if 'filename' in param: 
     
@@ -143,7 +148,7 @@ def calc_yield_strength(self, param={}):
 
             from myalloy import solute_strengthening_theory_EPI as sstEPI 
 
-            sigma_dUss = sstEPI.calc_sigma_dUss(self, b, wc, zetac, t='fcc_partial')
+            sigma_dUss = sstEPI.calc_sigma_dUss(self, wc, zetac, t='fcc_partial')
 
             sigma_dUtot = np.sqrt( sigma_dUsd**2 + sigma_dUss**2 )
             sigma_ratio = sigma_dUtot / sigma_dUsd
@@ -284,6 +289,50 @@ def calc_ty(et0, T, et, ty0, dEb):
     k = 1.380649e-23
     ty = ty0 *(1 - (k*T/dEb *np.log(et0/et))**(2/3) )  # [MPa]
     return ty
+
+
+
+
+
+
+
+
+
+
+#==============================
+
+def calc_std_gamma_APB(self, l1, l2, param):
+
+    from myalloy import solute_strengthening_theory_EPI as sstEPI 
+
+    self.calc_b_from_V0()
+    b = self.b
+    
+    sigma_dUss = sstEPI.calc_sigma_dUss(self, l1, l2, t='fcc_full')
+    sigma_gamma_APB = sigma_dUss / (l1 * l2) *self.qe*1e20*1e3
+
+
+    if 'filename' in param: 
+    
+        filen = 'slip_' + param['filename'] + '.txt'
+        f = open(filen,"w+")
+        
+        f.write('# std of gamma_APB with full slip: \n' )
+        f.write('%16s %16s %16s \n' \
+        %('b (Ang)', 'l1/b', 'l2/b' ) )
+        f.write('%16.8f %16.8f %16.8f \n\n' \
+        %(b, l1/b, l2/b ) )
+
+        f.write('%16s %33s \n' \
+        %('sigma_dUss (eV)', 'sigma_gamma_APB (mJ^2)' ) )
+        f.write('%16.8f %33.8f \n\n' \
+        %(sigma_dUss, sigma_gamma_APB ) )
+
+        f.close() 
+
+
+
+
 
 
 

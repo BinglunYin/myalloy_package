@@ -26,6 +26,9 @@ class alloy_class:
 
 
 
+
+
+
     # volume
     def calc_V0_from_a(self):
         if hasattr(self, 'V0'):
@@ -38,16 +41,30 @@ class alloy_class:
 
 
 
+    def calc_b_from_V0(self):
+        if not hasattr(self, 'V0'):
+            self.calc_V0_from_a()
+
+        if self.brav_latt == 'fcc':
+            self.b = (self.V0*4)**(1/3) / np.sqrt(2)
+        elif self.brav_latt == 'bcc':
+            self.b = (self.V0*2)**(1/3) *np.sqrt(3)/2
+
+
+
     def calc_from_Velem(self):
         self.V0 = self.cn @ self.Velem
         self.dV = self.Velem - self.V0
 
 
 
-    def calc_delta(self):
+    def calc_delta_from_dV(self):
         if not hasattr(self, 'V0'):
             self.calc_V0_from_a()
         self.delta = np.sqrt( self.cn @ np.square(self.dV) ) /self.V0/3
+
+
+
 
 
 
@@ -83,10 +100,6 @@ class alloy_class:
 
     def calc_from_Cijelem(self):
         self.Cij = self.cn @ self.Cijelem
-        
-
-
-
 
 
 
@@ -100,15 +113,14 @@ class alloy_class:
         self.EPI = EPI 
         self.shellmax = shellmax 
 
+
+
     # get SRO
     def get_SRO_from_file(self, filename='y_post_WC_SRO_shell_avg.txt'):
         data = np.loadtxt(filename)
         SRO, shellmax = EPI_reshape(self.nelem, data)
         self.SRO = SRO
 
-
-
-    
 
 
 
@@ -124,12 +136,14 @@ class alloy_class:
 
 
 
-
     # Stroh's formalism
     def calc_stroh(self, slip_system='basal_a_edge', param={}):
         from myalloy import stroh_dislocations as stroh 
         stroh.calc_stroh(self, \
             slip_system=slip_system, param=param)
+
+
+
 
 
 
@@ -158,5 +172,8 @@ def EPI_reshape(nelem, A):
                 A3[i, k, j] = A2[i, m]
     
     return A3, shellmax  
+
+
+
 
 

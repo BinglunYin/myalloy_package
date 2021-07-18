@@ -32,7 +32,8 @@ def load_Theta_fcc_full():
 
 
 
-def calc_sigma_dUss(self, b, wc, zetac, t='fcc_partial'):
+def calc_sigma_dUss(self, wc, zetac, t='fcc_partial'):
+    b = self.b 
     cn = self.cn 
     nelem = self.nelem 
     EPI = self.EPI
