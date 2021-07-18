@@ -22,7 +22,7 @@ class alloy_class:
 
     def print_attributes(self):
         for attr in dir(self):
-            print('%s:\n%s \n\n' %(attr, getattr(self, attr)) )
+            print('%s:\n%s \n' %(attr, getattr(self, attr)) )
 
 
 
@@ -130,6 +130,16 @@ class alloy_class:
     def calc_yield_strength(self, param={}):
         from myalloy import solute_strengthening_theory as sst 
         sst.calc_yield_strength(self, param=param)
+
+
+
+
+
+
+   # full slip 
+    def calc_std_gamma_APB(self, l1, l2, param={}):
+        from myalloy import solute_strengthening_theory_EPI as sstEPI 
+        sstEPI.calc_std_gamma_APB(self, l1, l2, param=param)
 
 
 

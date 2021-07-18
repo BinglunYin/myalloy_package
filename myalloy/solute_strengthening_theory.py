@@ -301,7 +301,7 @@ def calc_ty(et0, T, et, ty0, dEb):
 
 #==============================
 
-def calc_std_gamma_APB(self, l1, l2, param):
+def calc_std_gamma_APB(self, l1, l2, param={}):
 
     from myalloy import solute_strengthening_theory_EPI as sstEPI 
 
