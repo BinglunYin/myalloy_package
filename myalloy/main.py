@@ -138,8 +138,8 @@ class alloy_class:
 
    # full slip 
     def calc_std_gamma_APB(self, l1, l2, param={}):
-        from myalloy import solute_strengthening_theory_EPI as sstEPI 
-        sstEPI.calc_std_gamma_APB(self, l1, l2, param=param)
+        from myalloy import solute_strengthening_theory as sst 
+        sst.calc_std_gamma_APB(self, l1, l2, param=param)
 
 
 
