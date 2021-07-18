@@ -299,43 +299,6 @@ def calc_ty(et0, T, et, ty0, dEb):
 
 
 
-#==============================
-
-def calc_std_gamma_APB(self, l1, l2, param={}):
-
-    from myalloy import solute_strengthening_theory_EPI as sstEPI 
-
-    self.calc_b_from_V0()
-    b = self.b
-    
-    sigma_dUss = sstEPI.calc_sigma_dUss(self, l1, l2, t='fcc_full')
-    sigma_gamma_APB = sigma_dUss / (l1 * l2) *self.qe*1e20*1e3
-
-
-    if 'filename' in param: 
-    
-        filen = 'slip_' + param['filename'] + '.txt'
-        f = open(filen,"w+")
-        
-        f.write('# std of gamma_APB with full slip: \n' )
-        f.write('%16s %16s %16s \n' \
-        %('b (Ang)', 'l1/b', 'l2/b' ) )
-        f.write('%16.8f %16.8f %16.8f \n\n' \
-        %(b, l1/b, l2/b ) )
-
-        f.write('%16s %33s \n' \
-        %('sigma_dUss (eV)', 'sigma_gamma_APB (mJ^2)' ) )
-        f.write('%16.8f %33.8f \n\n' \
-        %(sigma_dUss, sigma_gamma_APB ) )
-
-        f.close() 
-
-
-
-
-
-
-
 
 
 

@@ -85,6 +85,61 @@ def calc_sigma_dUss(self, wc, zetac, t='fcc_partial'):
 
 
 
+#==============================
+
+def calc_std_gamma_APB(self, l1, l2, param={}):
+
+    self.calc_b_from_V0()
+    b = self.b
+
+    sigma_dUss  = calc_sigma_dUss(self, l1, l2, t='fcc_partial')
+    sigma_gamma_APB  = sigma_dUss / (l1 * l2) *self.qe*1e20*1e3
+
+    sigma_dUss2 = calc_sigma_dUss(self, l1, l2, t='fcc_full')
+    sigma_gamma_APB2 = sigma_dUss / (l1 * l2) *self.qe*1e20*1e3
+
+
+    if 'filename' in param: 
+    
+        filen = 'slip_' + param['filename'] + '.txt'
+        f = open(filen,"w+")
+        
+        f.write('# std of gamma_APB in one slip: \n' )
+        f.write('%16s %16s %16s \n' \
+        %('b (Ang)', 'l1/b', 'l2/b' ) )
+        f.write('%16.8f %16.8f %16.8f \n\n' \
+        %(b, l1/b, l2/b ) )
+
+
+        f.write('# partial: \n' )
+        f.write('%16s %33s \n' \
+        %('sigma_dUss (eV)', 'sigma_gamma_APB (mJ^2)' ) )
+        f.write('%16.8f %33.8f \n\n' \
+        %(sigma_dUss, sigma_gamma_APB ) )
+
+
+        f.write('# full: \n' )
+        f.write('%16s %33s \n' \
+        %('sigma_dUss2 (eV)', 'sigma_gamma_APB2 (mJ^2)' ) )
+        f.write('%16.8f %33.8f \n\n' \
+        %(sigma_dUss2, sigma_gamma_APB2 ) )
+
+
+        f.close() 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # =====================================
 # average strengthening of SRO
