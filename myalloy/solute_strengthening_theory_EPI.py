@@ -40,8 +40,11 @@ def calc_sigma_dUss(self, wc, zetac, t='fcc_partial'):
 
     if t=='fcc_partial':
         Theta = load_Theta_fcc_partial()
+        tk = 2
+
     elif t=='fcc_full':
         Theta = load_Theta_fcc_full()
+        tk = 1
 
     dmax = np.min([ EPI.shape[0], Theta.shape[0] ])
 
@@ -75,7 +78,7 @@ def calc_sigma_dUss(self, wc, zetac, t='fcc_partial'):
     print(s2)
     
 
-    sigma_dUss = np.sqrt( zetac/np.sqrt(3)/b * 4*wc/b * s2)
+    sigma_dUss = np.sqrt( tk *zetac/(np.sqrt(3)*b) *wc/(b/2) * s2)
     return sigma_dUss 
             
 
@@ -95,8 +98,8 @@ def calc_std_gamma_APB(self, l1, l2, param={}):
     sigma_dUss  = calc_sigma_dUss(self, l1, l2, t='fcc_partial')
     sigma_gamma_APB  = sigma_dUss / (l1 * l2) *self.qe*1e20*1e3
 
-    sigma_dUss2 = calc_sigma_dUss(self, l1, l2, t='fcc_full')
-    sigma_gamma_APB2 = sigma_dUss2 / (l1 * l2) *self.qe*1e20*1e3
+    sigma_dUss_f = calc_sigma_dUss(self, l1, l2, t='fcc_full')
+    sigma_gamma_APB_f = sigma_dUss_f / (l1 * l2) *self.qe*1e20*1e3
 
 
     if 'filename' in param: 
@@ -120,9 +123,9 @@ def calc_std_gamma_APB(self, l1, l2, param={}):
 
         f.write('# full: \n' )
         f.write('%16s %33s \n' \
-        %('sigma_dUss2 (eV)', 'sigma_gamma_APB2 (mJ^2)' ) )
+        %('sigma_dUss_f (eV)', 'sigma_gamma_APB_f (mJ^2)' ) )
         f.write('%16.8f %33.8f \n\n' \
-        %(sigma_dUss2, sigma_gamma_APB2 ) )
+        %(sigma_dUss_f, sigma_gamma_APB_f ) )
 
 
         f.close() 
