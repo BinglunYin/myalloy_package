@@ -96,7 +96,7 @@ def calc_std_gamma_APB(self, l1, l2, param={}):
     sigma_gamma_APB  = sigma_dUss / (l1 * l2) *self.qe*1e20*1e3
 
     sigma_dUss2 = calc_sigma_dUss(self, l1, l2, t='fcc_full')
-    sigma_gamma_APB2 = sigma_dUss / (l1 * l2) *self.qe*1e20*1e3
+    sigma_gamma_APB2 = sigma_dUss2 / (l1 * l2) *self.qe*1e20*1e3
 
 
     if 'filename' in param: 
