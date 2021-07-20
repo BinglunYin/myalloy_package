@@ -114,10 +114,16 @@ def calc_stroh_2(self, slip_system='basal_a_edge', param={}):
 
 
 
-    if 'pos_in' in param: 
-        fm.calc_pos_out(stroh_u1s1, stroh_u2s2, param['pos_in'])
+    if ('pos_in' in param) and ('output_name' in param): 
+        pos_in = param['pos_in']       
+        pos_in_2 = (R @ pos_in.T).T
 
-    
+        pos_out_2 = fm.calc_pos_out(stroh_u1s1, stroh_u2s2, pos_in_2 )
+        pos_out = (np.linalg.inv(R) @ pos_out_2.T).T
+
+        filen = 'stroh_' + param['output_name'] + '_pos_out.txt'
+        np.savetxt(filen, pos_out)
+
     
 
 

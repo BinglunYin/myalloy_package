@@ -184,7 +184,8 @@ def calc_pos_out(stroh_u1s1, stroh_u2s2, pos_in):
         disp2[i,:] = stroh_u2s2(x=pos_in[i,0], y=pos_in[i,1])[0].T
     
     pos_out = pos_in + disp1 + disp2
-    np.savetxt('stroh_pos_out.txt', pos_out)
+
+    return pos_out
         
 
 
