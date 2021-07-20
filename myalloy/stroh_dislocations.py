@@ -189,11 +189,12 @@ def write_output(output_name, qe, slip_system, \
                 
                 
     
+    
         f.write('\n\nmm\n')
         f.write(str(mm)+'\n\n')
 
         f.write('b1\n')
-        f.write(str(b1, b2)+'\n\n')
+        f.write(str(b1)+'\n\n')
 
         f.write('b2\n')
         f.write(str(b2)+'\n\n')
@@ -205,7 +206,7 @@ def write_output(output_name, qe, slip_system, \
 
 
            
-        f.write('Cij(GPa) before rotation\n')
+        f.write('\n\nCij(GPa) before rotation\n')
         f.write(str(CIJ)+'\n\n')
                 
         f.write('Cij(GPa) after rotation\n')
