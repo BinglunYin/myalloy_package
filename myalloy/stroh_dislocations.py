@@ -127,13 +127,6 @@ def write_output(output_name, qe, slip_system, \
         %(theta, theta/np.pi*180, gamma, gamma*(qe*1e3)/(1e-20)) )
   
             
-    f.write('%16s %16s %16s \n' \
-        %('b1 (Ang)', 'b2', 'b1+b2' ) )
-    for i in np.arange(3):
-        f.write('%16.8f %16.8f %16.8f \n' \
-        %(b1[i], b2[i], b1[i]+b2[i]) )            
-    f.write('\n')
-    
 
     f.write('%16s %16s %16s \n' \
         %('K1 (eV/Ang)', 'K2', 'K12' ) )
@@ -198,6 +191,19 @@ def write_output(output_name, qe, slip_system, \
     
         f.write('\n\nmm\n')
         f.write(str(mm)+'\n\n')
+
+        f.write('b1\n')
+        f.write(str(b1, b2)+'\n\n')
+
+        f.write('b2\n')
+        f.write(str(b2)+'\n\n')
+
+        f.write('b1+b2\n')
+        f.write(str(b1+b2)+'\n\n')
+
+
+
+
            
         f.write('Cij(GPa) before rotation\n')
         f.write(str(CIJ)+'\n\n')

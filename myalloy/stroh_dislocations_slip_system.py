@@ -56,9 +56,6 @@ def slip_system(self, slip_system='111_a_edge', param={}):
             temp = np.dot(t1, t2)
             theta = np.arccos( temp[0,0]/( np.linalg.norm(t1, 2) * np.linalg.norm(t2, 2)) )
                       
-            print(t1, t2, np.dot(t1, t2), np.linalg.norm(t1, 2), np.linalg.norm(t2, 2), theta)
-
-
             if 'bp' in param: 
                 bp = param['bp']
             else:
@@ -158,7 +155,6 @@ def slip_system(self, slip_system='111_a_edge', param={}):
 
 
 
-    # print( mm, theta, b1, b2 )
     return mm, theta, b1, b2
     
 
