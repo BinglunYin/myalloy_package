@@ -153,6 +153,8 @@ def slip_system(self, slip_system='111_a_edge', param={}):
         sys.exit('ABORT: wrong mm order.')
 
 
+
+    print( mm, theta, b1, b2 )
     return mm, theta, b1, b2
     
 
