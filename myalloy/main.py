@@ -153,6 +153,12 @@ class alloy_class:
             slip_system=slip_system, param=param)
 
 
+    def calc_stroh_2(self, slip_system='basal_a_edge', param={}):
+        from myalloy import stroh_dislocations_2 as stroh_2 
+        stroh_2.calc_stroh_2(self, \
+            slip_system=slip_system, param=param)
+
+
 
 
 
