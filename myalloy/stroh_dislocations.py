@@ -75,7 +75,8 @@ def calc_stroh(self, slip_system='basal_a_edge', param={}):
     
     if 'pos_in' in param: 
         pos_out = fm.calc_pos_out(stroh_u1s1, stroh_u2s2, param['pos_in'])
-        np.savetxt('stroh_pos_out.txt', pos_out)
+        filen = 'stroh_' + param['output_name'] + '_pos_out.txt'
+        np.savetxt(filen, pos_out)
 
 
 
