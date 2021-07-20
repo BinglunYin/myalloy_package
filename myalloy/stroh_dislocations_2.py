@@ -117,9 +117,9 @@ def calc_stroh_2(self, slip_system='basal_a_edge', param={}):
     if 'output_name' in param: 
         from myalloy import stroh_dislocations as sd 
 
-        Er = 0
-        Et = 0
-        Ec = 0
+        Er = np.array([0])
+        Et = np.array([0])
+        Ec = np.array([0])
 
         sd.write_output(param['output_name'], qe, slip_system, \
             a, c, r0, R0, theta, b1, b2, gamma, \
