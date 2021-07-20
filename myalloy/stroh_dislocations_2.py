@@ -119,7 +119,12 @@ def calc_stroh_2(self, slip_system='basal_a_edge', param={}):
 
         Er = np.array([0])
         Et = np.array([0])
-        Ec = np.array([0])
+        Ec = np.array([
+            [0, 0, 0, 0, 0], 
+            [0, 0, 0, 0, 0], 
+            [0, 0, 0, 0, 0], 
+            [0, 0, 0, 0, 0], 
+        ])
 
         sd.write_output(param['output_name'], qe, slip_system, \
             a, c, r0, R0, theta, b1, b2, gamma, \
