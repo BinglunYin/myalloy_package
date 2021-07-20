@@ -45,6 +45,8 @@ def calc_stroh_2(self, slip_system='basal_a_edge', param={}):
         [-np.sin(theta), np.cos(theta),  0],
         [             0,             0,  1],
     ])
+    print(R)
+
     b1 = R @ b1
     b2 = R @ b2
 
@@ -90,6 +92,11 @@ def calc_stroh_2(self, slip_system='basal_a_edge', param={}):
         sys.exit('ABORT: r12<2*r0.')
 
 
+
+    Er, Et = fm.calc_Er_Et(theta, b1, b2, r0,   p, B, K12, r12)
+
+
+
     X1 = -r12/2
     Y1 = 0
     X2 =  r12/2
@@ -117,8 +124,6 @@ def calc_stroh_2(self, slip_system='basal_a_edge', param={}):
     if 'output_name' in param: 
         from myalloy import stroh_dislocations as sd 
 
-        Er = np.array([0])
-        Et = np.array([0])
         Ec = np.array([
             [0, 0, 0, 0, 0], 
             [0, 0, 0, 0, 0], 
