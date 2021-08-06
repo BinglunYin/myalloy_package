@@ -338,7 +338,7 @@ def calc_yield_strength_et_T(self):
     fig_subp = [1, 1]
     fig1, ax1 = vf.my_plot(fig_wh, fig_subp)
 
-    fig_pos  = np.array([0.18, 0.16, 0.75, 0.8])
+    fig_pos  = np.array([0.20, 0.16, 0.75, 0.8])
     ax1.set_position(fig_pos)
    
     xi = 10.0**et_list
@@ -350,7 +350,12 @@ def calc_yield_strength_et_T(self):
         ax1.plot(xi, sigmay_all[i,:], '-o', label = str1)
         
     ax1.legend(loc='best')  
-          
+
+
+    [ymin, ymax] = ax1.get_ylim()
+    ax1.set_ylim([0, ymax])        
+
+
     ax1.set_xlabel('strain rate $\\dot{\\epsilon}$ (s$^{-1}$)')        
     ax1.set_ylabel('yield strength $\\sigma_y$ (MPa)')        
 
