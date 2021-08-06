@@ -315,7 +315,7 @@ def calc_ty(et0, T, et, ty0, dEb):
 def calc_yield_strength_et_T(self):
 
     T_list  = np.array([77, 300, 500])
-    et_list = np.arange(-9, -1, 1)
+    et_list = np.arange(-10, -1, 3)
 
     sigmay_all = np.zeros( [len(T_list), len(et_list)] )
 
@@ -338,7 +338,7 @@ def calc_yield_strength_et_T(self):
     fig_subp = [1, 1]
     fig1, ax1 = vf.my_plot(fig_wh, fig_subp)
 
-    fig_pos  = np.array([0.23, 0.20, 0.60, 0.6])
+    fig_pos  = np.array([0.2, 0.17, 0.7, 0.7])
     ax1.set_position(fig_pos)
    
     xi = 10.0**et_list
@@ -351,7 +351,7 @@ def calc_yield_strength_et_T(self):
         
     ax1.legend(loc='best')  
           
-    ax1.set_xlabel('strain rate $\\dot{\\epsilon}$ (1/s)')        
+    ax1.set_xlabel('strain rate $\\dot{\\epsilon}$ (s$^{-1}$)')        
     ax1.set_ylabel('yield strength $\\sigma_y$ (MPa)')        
 
         
