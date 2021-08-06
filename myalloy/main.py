@@ -129,8 +129,9 @@ class alloy_class:
     # solute strengthening theory
     def calc_yield_strength(self, param={}):
         from myalloy import solute_strengthening_theory as sst 
-        sst.calc_yield_strength(self, param=param)
-
+        sigmay = sst.calc_yield_strength(self, param=param)
+        return sigmay 
+        
 
 
     def calc_yield_strength_et_T(self):
