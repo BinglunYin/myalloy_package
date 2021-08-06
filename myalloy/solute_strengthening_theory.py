@@ -315,7 +315,7 @@ def calc_ty(et0, T, et, ty0, dEb):
 def calc_yield_strength_et_T(self):
 
     T_list  = np.array([77, 300, 500])
-    et_list = np.arange(-9, 2, 1)
+    et_list = np.arange(-10, 3, 1)
 
     sigmay_all = np.zeros( [len(T_list), len(et_list)] )
 
