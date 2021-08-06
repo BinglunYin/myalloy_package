@@ -351,8 +351,8 @@ def calc_yield_strength_et_T(self):
         
     ax1.legend(loc='best')  
           
-    ax1.xlabel('strain rate $\\dot{\\epsilon}$ (1/s)')        
-    ax1.ylabel('yield strength $\\sigma_y$ (MPa)')        
+    ax1.set_xlabel('strain rate $\\dot{\\epsilon}$ (1/s)')        
+    ax1.set_ylabel('yield strength $\\sigma_y$ (MPa)')        
 
         
     
