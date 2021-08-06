@@ -315,7 +315,7 @@ def calc_ty(et0, T, et, ty0, dEb):
 def calc_yield_strength_et_T(self):
 
     T_list  = np.array([77, 300, 500])
-    et_list = np.arange(-7, -1, 1)
+    et_list = np.arange(-9, -1, 1)
 
     sigmay_all = np.zeros( [len(T_list), len(et_list)] )
 
@@ -325,10 +325,39 @@ def calc_yield_strength_et_T(self):
             sigmay_all[i, j] = self.calc_yield_strength(
                 param = { 'T': T_list[i], 'et': 10.0**(et_list[j]) } )
         
-    print(sigmay_all)
+    print('==> sigmay:', sigmay_all)
 
 
 
+    from myvasp import vasp_func as vf 
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
+    fig_wh = [3.15, 3]
+    fig_subp = [1, 1]
+    fig1, ax1 = vf.my_plot(fig_wh, fig_subp)
+
+    fig_pos  = np.array([0.23, 0.20, 0.60, 0.6])
+    ax1.set_position(fig_pos)
+   
+    xi = 10.0**et_list
+
+    ax1.xscale('log')
+
+    for i in np.arange( len(T_list) ):
+        str1 = '%d K' %(T_list[i])
+        ax1.plot(xi, sigmay_all[i,:], '-o', label = str1)
+        
+    ax1.legend(loc='best')  
+          
+    ax1.xlabel('strain rate $\\dot{\\epsilon}$ (1/s)')        
+    ax1.ylabel('yield strength $\\sigma_y$ (MPa)')        
+
+        
+    
+    plt.savefig('fig_sigmay_et_T.pdf')
+    plt.close('all')
 
 
 
