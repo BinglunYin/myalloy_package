@@ -343,7 +343,7 @@ def calc_yield_strength_et_T(self):
    
     xi = 10.0**et_list
 
-    ax1.xscale('log')
+    ax1.set_xscale('log')
 
     for i in np.arange( len(T_list) ):
         str1 = '%d K' %(T_list[i])
