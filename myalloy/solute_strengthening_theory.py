@@ -323,7 +323,7 @@ def calc_yield_strength_et_T(self):
         for j in np.arange(len(et_list)):
 
             sigmay_all[i, j] = self.calc_yield_strength(
-                param = { 'T': T_list[i], 'et': 10**(et_list[j]) } )
+                param = { 'T': T_list[i], 'et': 10.0**(et_list[j]) } )
         
     print(sigmay_all)
 
