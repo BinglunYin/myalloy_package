@@ -133,6 +133,16 @@ class alloy_class:
 
 
 
+    def calc_yield_strength_et_T(self):
+        from myalloy import solute_strengthening_theory as sst 
+        sst.calc_yield_strength_et_T(self)
+
+
+
+
+
+
+
 
 
 

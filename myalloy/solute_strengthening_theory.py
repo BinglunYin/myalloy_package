@@ -273,7 +273,7 @@ def calc_yield_strength(self, param={}):
 
 
 
-
+    return sigmay
 
 
 
@@ -309,6 +309,43 @@ def calc_ty(et0, T, et, ty0, dEb):
 
 
 #==============================
+
+
+
+def calc_yield_strength_et_T(self):
+
+    T_list  = np.array([77, 300, 500])
+    et_list = np.arange(-7, -1, 1)
+
+    sigmay_all = np.zeros( [len(T_list), len(et_list)] )
+
+    for i in np.arange(len(T_list)):
+        for j in np.arange(len(et_list)):
+
+            sigmay_all[i, j] = self.calc_yield_strength(
+                param = { 'T': T_list[i], 'et': 10**(et_list[j]) } )
+        
+    print(sigmay_all)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def fcc_Vegard_strength( ROMtype, cn, param = {}):
     from myalloy import main 
