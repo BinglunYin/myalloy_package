@@ -213,3 +213,71 @@ def read_pressure(filename='OUTCAR'):
 
 
     
+
+
+
+
+
+
+
+
+
+
+
+
+def calc_strain(latt1, latt2):
+    # latt1 - ref
+    # latt2 - deformed 
+
+    F = np.linalg.solve(latt1, latt2)
+    F = F.T 
+   
+    # ================================
+    e_ss      = 1/2*( F+F.T ) - np.eye(3)
+    e_green   = 1/2*( F.T@F - np.eye(3) )
+    e_almansi = 1/2*( np.eye(3) - np.linalg.inv(F@F.T) )
+
+    e_ss_V = calc_to_Voigt(e_ss)
+
+    # ================================
+    filen = 'y_post_calc_strain.txt'
+    f = open(filen,"w+")
+
+    f.write('# strain of latt2 with respect to latt1: \n\n' )
+    with np.printoptions(linewidth=200, \
+        precision=8, suppress=True):
+
+        f.write('latt1 \n')
+        f.write(str(latt1)+'\n\n')
+  
+        f.write('latt2 \n')
+        f.write(str(latt2)+'\n\n\n')
+
+        f.write('deformation gradient F \n')
+        f.write(str(F)+'\n\n')
+
+        f.write('strain e_ss e_green e_almansi \n')
+        f.write(str(e_ss)+'\n\n')
+        f.write(str(e_green)+'\n\n')
+        f.write(str(e_almansi)+'\n\n')
+        
+        f.write('strain (Voigt notation) e_ss_V \n')
+        f.write(str(e_ss_V)+'\n\n')
+    f.close()
+
+    return e_ss_V 
+
+
+def calc_to_Voigt(e):
+    e2 = np.zeros(6)
+    e2[0] = e[0, 0]
+    e2[1] = e[1, 1]
+    e2[2] = e[2, 2]
+    e2[3] = e[1, 2] + e[2, 1]
+    e2[4] = e[0, 2] + e[2, 0]
+    e2[5] = e[0, 1] + e[1, 0]
+    return e2 
+
+
+
+
