@@ -35,6 +35,24 @@ def create_random_alloys(*args, **kwargs):
 
 
 # vasp_io.py
+
+
+def bestsqs_to_POSCAR(*args, **kwargs):
+    from myvasp import vasp_io as tmp 
+    tmp.bestsqs_to_POSCAR(*args, **kwargs)
+
+
+
+def write_poscar(*args, **kwargs):
+    from myvasp import vasp_io as tmp 
+    tmp.write_poscar(*args, **kwargs)
+
+
+
+
+
+
+
 def get_list_of_outcar(*args, **kwargs):
     from myvasp import vasp_io as tmp 
     atoms = tmp.get_list_of_outcar(*args, **kwargs)

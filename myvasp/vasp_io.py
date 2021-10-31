@@ -7,6 +7,94 @@ from myvasp import vasp_func as vf
 
 
 
+
+
+def bestsqs_to_POSCAR(filename='bestsqs-1.out'):
+
+    with open(filename) as f:
+        sqs = f.read().splitlines()
+
+
+    latt = np.zeros([3, 3])
+    for i in np.arange(3):
+        temp = sqs[3+i].split(' ')
+
+        for j in np.arange(3):
+            latt[i, j] = float( temp[j] )
+
+
+    natoms = len(sqs)-6
+    pos = np.zeros([natoms, 3])
+    lelem = np.zeros( natoms )
+
+    for i in np.arange(natoms):
+        temp = sqs[6+i].split(' ')
+
+        for j in np.arange(3):
+            pos[i, j] = float( temp[j] )
+    
+        s = temp[3]
+        if s == 'A':
+            t = 1
+        elif s == 'B':
+            t = 2
+        elif s == 'C':
+            t = 3
+        elif s == 'D':
+            t = 4
+        elif s == 'E':
+            t = 5
+        elif s == 'F':
+            t = 6
+        elif s == 'G':
+            t = 7
+        lelem[i] = t 
+    
+    temp = lelem[:].argsort()
+    pos   =   pos[ temp, :]
+    lelem = lelem[ temp   ]
+
+    temp = 'POSCAR_'+filename[8]
+    write_poscar(4.0, latt, lelem, pos, filename=temp)
+
+
+
+
+
+
+
+def write_poscar(a_pos, latt, lelem, pos, filename='POSCAR'):
+
+    nelem = int( lelem[-1] )
+    ns = np.zeros(nelem) 
+
+    for i in np.arange(nelem):
+        mask = lelem[:]==(i+1) 
+        temp = lelem[mask]
+        ns[i] = temp.shape[0]
+
+    f = open(filename, 'w+')
+    f.write('system name \n %22.16f \n' %(a_pos) )
+
+    for i in np.arange(3):
+        f.write(' %22.16f %22.16f %22.16f \n' %(latt[i,0], latt[i,1], latt[i,2])  )
+
+    for i in np.arange(len(ns)):
+        f.write(' %d ' %(ns[i]) )
+    f.write('\nS \nC \n')
+
+    for i in np.arange(pos.shape[0]):
+        f.write(' %22.16f %22.16f %22.16f   T T T \n' %(pos[i,0], pos[i,1], pos[i,2])  )
+
+    f.close() 
+
+   
+
+
+
+
+
+
 def get_list_of_outcar():
     from ase.io.vasp import read_vasp_out
 
