@@ -135,13 +135,14 @@ def get_list_of_atoms():
 
 def my_read_vasp(filename):
     from ase.io.vasp import read_vasp 
+    import types 
     
     atoms = read_vasp(filename)
     with open(filename, 'r') as f:
         atoms.pos_a0 = float( f.readlines()[1] )
 
-    cn = get_cn(atoms)
-    atoms.cn = cn 
+    atoms.get_cn = types.MethodType(get_cn, atoms) 
+
     return atoms
 
 
@@ -189,11 +190,4 @@ def my_write_vasp(atoms_in, filename='POSCAR', vasp5=True):
         f.writelines(lines)
     os.remove('POSCAR_temp')
 
-
-
-def my_rm(filename):
-    try:
-        os.remove(filename)
-    except OSError:
-        pass
 

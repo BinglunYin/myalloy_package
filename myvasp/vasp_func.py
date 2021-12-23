@@ -76,10 +76,13 @@ def my_write_vasp(*args, **kwargs):
     tmp.my_write_vasp(*args, **kwargs)
 
 
-def my_rm(*args, **kwargs):
-    from myvasp import vasp_io as tmp 
-    tmp.my_rm(*args, **kwargs)
 
+
+def my_rm(filename):
+    try:
+        os.remove(filename)
+    except OSError:
+        pass
 
 
 

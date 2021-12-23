@@ -156,7 +156,7 @@ def eval_Ef_from_EPI(atoms_in, EPI_beta):
     from myvasp import vasp_EPI_dp_shell as vf2
 
     atoms = copy.deepcopy( atoms_in )
-    nelem = len( atoms.cn )
+    nelem = len( atoms.get_cn() )
 
     shellmax = (len(EPI_beta)-1)/ (nelem*(nelem-1)/2) 
     vf.confirm_int(shellmax)
@@ -227,7 +227,7 @@ def plot_MC(EPI_beta, Ef_all, T):
 
 def calc_shellmax(atoms_in, EPI_beta):
     atoms = copy.deepcopy(atoms_in)
-    nelem = len( atoms.cn )
+    nelem = len( atoms.get_cn() )
     shellmax = (len(EPI_beta)-1)/ (nelem*(nelem-1)/2) 
     vf.confirm_int(shellmax)
     shellmax = int(shellmax)
@@ -242,7 +242,7 @@ def calc_shellmax(atoms_in, EPI_beta):
 def analyze_dump(jobname):
 
     atoms = vf.my_read_vasp('../CONTCAR')
-    nelem = len( atoms.cn )
+    nelem = len( atoms.get_cn() )
 
     EPI_beta =  np.loadtxt('../y_post_EPI.beta_4.txt')
 
@@ -326,7 +326,7 @@ def plot_dp_shell(atoms_in, EPI_beta=np.array([]), dp_shell=np.array([]), dp_typ
 
     atoms = copy.deepcopy(atoms_in)
 
-    nelem = len( atoms.cn )
+    nelem = len( atoms.get_cn() )
     shellmax = (len(EPI_beta)-1)/ (nelem*(nelem-1)/2) 
     vf.confirm_int(shellmax)
     shellmax = int(shellmax)

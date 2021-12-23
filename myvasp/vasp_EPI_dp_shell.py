@@ -24,7 +24,7 @@ def calc_pairs_per_shell(atoms_in, shellmax=4, write_dp=True):
     natoms = atoms.get_positions().shape[0]
     V0 = atoms.get_volume() / natoms
     a0 = (V0*4)**(1/3)
-    cn = atoms.cn
+    cn = atoms.get_cn() 
     print('==> a0: ', a0, '; cn: ', cn )
 
     cc_scale = calc_cc_scale(cn)
