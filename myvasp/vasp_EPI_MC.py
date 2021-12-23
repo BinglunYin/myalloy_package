@@ -225,6 +225,18 @@ def plot_MC(EPI_beta, Ef_all, T):
 
 
 
+def calc_shellmax(atoms_in, EPI_beta):
+    atoms = copy.deepcopy(atoms_in)
+    nelem = len( atoms.cn )
+    shellmax = (len(EPI_beta)-1)/ (nelem*(nelem-1)/2) 
+    vf.confirm_int(shellmax)
+    shellmax = int(shellmax)
+    return shellmax 
+
+
+
+
+
 
 
 def analyze_dump(jobname):
@@ -234,11 +246,24 @@ def analyze_dump(jobname):
 
     EPI_beta =  np.loadtxt('../y_post_EPI.beta_4.txt')
 
-    # make it up to 9 shells for binary alloys
+    # extend EPIs to 10 shells 
     if nelem == 2:
-        EPI_beta = np.append(EPI_beta, np.zeros(10-len(EPI_beta)) )  
+        EPI_beta = np.append(EPI_beta, np.zeros(11-len(EPI_beta)) )  
 
-    print('==> EPI_beta:')
+    else:
+        shellmax = calc_shellmax( atoms, EPI_beta )
+
+        beta2 = EPI_beta[1:].copy() 
+        temp = int(len(beta2)/shellmax)
+        beta2 = beta2.reshape(shellmax, temp)
+
+        temp2 = np.zeros(10-shellmax, temp)
+        beta2 = np.vstack([beta2, temp2])
+
+        beta2 = beta2.reshape(10*temp)
+        EPI_beta = np.append( EPI_beta[0], beta2 )
+
+    print('==> extended EPI_beta:')
     print( EPI_beta )
 
 
@@ -289,11 +314,14 @@ def analyze_dump(jobname):
     filename2 = 'y_post_WC_SRO_shell_avg_%s.txt' %(jobname)
     np.savetxt(filename2, WC_SRO_avg )
 
+    plot_dp_shell(atoms, EPI_beta, dp_shell=WC_SRO_avg, dp_type='SRO')
+    filename2 = 'fig_WC_SRO_shell_avg_%s.pdf' %(jobname)
+    os.rename('y_post_WC_SRO_shell.pdf', filename2)
 
 
 
 
-def plot_dp_shell(atoms_in, EPI_beta=np.array([]), dp_shell=np.array([]) ) :
+def plot_dp_shell(atoms_in, EPI_beta=np.array([]), dp_shell=np.array([]), dp_type='dp' ) :
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
@@ -345,7 +373,8 @@ def plot_dp_shell(atoms_in, EPI_beta=np.array([]), dp_shell=np.array([]) ) :
                 k = k+1
 
                 elems_name = '%s%s' %( elem_sym[i], elem_sym[j] )
-                str1 = '$\\Delta \\eta_{\\mathrm{%s}, d}$' %(elems_name)
+                # str1 = '$\\Delta \\eta_{\\mathrm{%s}, d}$' %(elems_name)
+                str1 = '%s' %(elems_name)
                 mycolor, mymarker =  mycolors(elems_name)
                                
                 ax1.plot(xi,  dp_shell_2[:, k], '-', \
@@ -358,21 +387,34 @@ def plot_dp_shell(atoms_in, EPI_beta=np.array([]), dp_shell=np.array([]) ) :
         fontsize=7)
 
     ax1.set_xlabel('Pair distance $d/a$')
-    ax1.set_ylabel('$\\Delta \\eta_{nm, d}$')
+    
     ax1.set_xlim( fig_xlim )
     # ax1.set_ylim( fig_ylim )
     fig_ylim = ax1.get_ylim()
 
-    if len(EPI_beta) > 0.1 :
-        Ef = -0.5 * np.dot( dp_shell, EPI_beta[1:])
 
-        str1 = '$E_{f, \\mathrm{Pred}} - {E}^\\mathrm{rand}_{f}$\n= %.3f meV/atom' %( Ef*1e3 )
-        ax1.text( 
-            fig_xlim[0]+(fig_xlim[1]-fig_xlim[0])*0.95, \
-            fig_ylim[0]+(fig_ylim[1]-fig_ylim[0])*0.06, str1, \
-            horizontalalignment='right' )
+    if dp_type == 'dp':
+        ax1.set_ylabel('$\\Delta \\eta_{nm, d}$')
+    
+        if len(EPI_beta) > 0.1 :
+            Ef = -0.5 * np.dot( dp_shell, EPI_beta[1:])
+    
+            str1 = '$E_{f, \\mathrm{Pred}} - {E}^\\mathrm{rand}_{f}$\n= %.3f meV/atom' %( Ef*1e3 )
+            ax1.text( 
+                fig_xlim[0]+(fig_xlim[1]-fig_xlim[0])*0.95, \
+                fig_ylim[0]+(fig_ylim[1]-fig_ylim[0])*0.06, str1, \
+                horizontalalignment='right' )
+    
+        filename = 'y_post_dp_shell.pdf'
 
-    plt.savefig('y_post_dp_shell.pdf')
+
+    elif dp_type == 'SRO':
+        ax1.set_ylabel('Warren-Cowley SRO $\\alpha_{nm, d}$')
+             
+        filename = 'y_post_WC_SRO_shell.pdf'
+
+
+    plt.savefig(filename)
     plt.close('all')
     return dp_shell
 
