@@ -257,7 +257,7 @@ def analyze_dump(jobname):
         temp = int(len(beta2)/shellmax)
         beta2 = beta2.reshape(shellmax, temp)
 
-        temp2 = np.zeros(10-shellmax, temp)
+        temp2 = np.zeros([10-shellmax, temp])
         beta2 = np.vstack([beta2, temp2])
 
         beta2 = beta2.reshape(10*temp)
