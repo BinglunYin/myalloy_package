@@ -253,15 +253,10 @@ def analyze_dump(jobname):
     else:
         shellmax = calc_shellmax( atoms, EPI_beta )
 
-        beta2 = EPI_beta[1:].copy() 
-        temp = int(len(beta2)/shellmax)
-        beta2 = beta2.reshape(shellmax, temp)
+        temp = int( (len(EPI_beta)-1) /shellmax * (10-shellmax) )
+        temp2 = np.zeros( temp )
 
-        temp2 = np.zeros([10-shellmax, temp])
-        beta2 = np.vstack([beta2, temp2])
-
-        beta2 = beta2.reshape(10*temp)
-        EPI_beta = np.append( EPI_beta[0], beta2 )
+        EPI_beta = np.append( EPI_beta, temp2 )
 
     print('==> extended EPI_beta:')
     print( EPI_beta )
