@@ -141,7 +141,8 @@ def my_read_vasp(filename):
     with open(filename, 'r') as f:
         atoms.pos_a0 = float( f.readlines()[1] )
 
-    atoms.get_cn = types.MethodType(get_cn, atoms) 
+    atoms.get_cn    = types.MethodType(get_cn,    atoms) 
+    atoms.get_nelem = types.MethodType(get_nelem, atoms) 
 
     return atoms
 
@@ -165,6 +166,21 @@ def get_cn(atoms):
         sys.exit('==> ABORT. wrong natoms_elem. ')
     cn = natoms_elem / natoms
     return cn
+
+
+
+
+
+def get_nelem(atoms):
+    import pandas as pd
+    atoms_an = atoms.get_atomic_numbers()
+    nelem = len( pd.unique(atoms_an) ) 
+    return nelem 
+    
+
+
+
+
 
 
 
