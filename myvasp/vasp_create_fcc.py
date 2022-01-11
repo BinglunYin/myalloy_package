@@ -124,5 +124,26 @@ def vasp_create_fcc_100_min(a, ncell, bp=0):
 
 
 
+def vasp_create_fcc_111_min(a, ncell, bp=0):
+    print('==> create fcc 111 plane min: ')
+    print(a, ncell, bp)
 
+    latt = np.array([
+        [1, 0, 0],
+        [-0.5, np.sqrt(3)/2, 0],   
+        [ 0.5, np.sqrt(3)/6, np.sqrt(6)/3],
+    ]) * a/np.sqrt(2)
+   
+    motif = np.array([
+        [0, 0, 0],
+    ])
+
+    atoms = vf.create_supercell(latt, motif, ncell)
+    atoms.pos_a0 = a 
+
+    if bp == 33:
+        atoms.positions = atoms.positions + np.array([0, 0, 0.1]) *a 
+        atoms.wrap()
+
+    vf.my_write_vasp(atoms, filename='POSCAR', vasp5=True)
 
