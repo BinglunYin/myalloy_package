@@ -111,7 +111,7 @@ def make_a3_ortho(atoms_in):
 
 
 
-def create_random_alloys(atoms_in, cn, nsamples=1, id1=1, vasp5=False):
+def create_random_alloys(atoms_in, cn, nsamples=1, filename='POSCAR', id1=1, vasp5=False):
     atoms = copy.deepcopy(atoms_in)
     natoms = atoms.get_positions().shape[0]
    
@@ -141,8 +141,8 @@ def create_random_alloys(atoms_in, cn, nsamples=1, id1=1, vasp5=False):
         ind = np.argsort(temp[:, -1])
         atoms.set_positions(temp[ind, 0:3], apply_constraint=False)
   
-        filename = 'POSCAR_%03d' %( i + id1 )
-        vf.my_write_vasp(atoms, filename, vasp5=vasp5)
+        filename2 = '%s_%03d' %( filename, i+id1 )
+        vf.my_write_vasp(atoms, filename2, vasp5=vasp5)
 
 
 

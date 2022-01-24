@@ -212,6 +212,56 @@ def vasp_read_post_data(filename='y_post_data'):
 
 
 
+def calc_s_from_pres(pres1):
+    pres1 = pres1*(-0.1)
+    njobs = pres1.shape[0]
+    s1 = np.zeros([ njobs, 3, 3 ])
+    
+    for i in np.arange(njobs):
+        for j in np.arange(3):
+            s1[i, j, j] = pres1[i, j]
+       
+        s1[i, 0, 1] = pres1[i, 3]
+        s1[i, 0, 2] = pres1[i, 5]
+        s1[i, 1, 2] = pres1[i, 4]
+    
+        s1[i, 1, 0] = s1[i, 0, 1]
+        s1[i, 2, 0] = s1[i, 0, 2]
+        s1[i, 2, 1] = s1[i, 1, 2]
+
+    return s1 
+
+
+
+
+def normalize_mm(mm):
+    for i in np.arange(3):
+        mm[i,:] = mm[i,:] / np.linalg.norm(mm[i,:])
+
+    confirm_0( np.dot( mm[0,:], mm[1,:]) )
+    confirm_0( np.dot( mm[0,:], mm[2,:]) )
+    confirm_0( np.dot( mm[1,:], mm[2,:]) )
+
+    if np.dot( np.cross(mm[0,:], mm[1,:]), mm[2,:] ) <= 0:
+        sys.exit('ABORT: wrong mm order.')
+
+    return mm 
+
+
+
+    
+def rotate_stress(s1, mm):
+    mm = normalize_mm(mm) 
+    s1r = mm @ s1 @ mm.T
+    return s1r  
+
+
+
+
+
+
+
+
 def read_pressure(filename='OUTCAR'):
     y=0
     for line in open(filename):
