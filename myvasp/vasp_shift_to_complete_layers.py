@@ -3,11 +3,15 @@
 
 import numpy as np
 from myvasp import vasp_func as vf
+import copy 
 
 
 
 def shift_to_complete_layers():
-    nlayers, nmiss = check_layers()
+
+    atoms = vf.my_read_vasp(filename = 'CONTCAR')
+
+    nlayers, nmiss = check_layers(atoms) 
 
     if nmiss > 0.1:
         print('==> shift to POSCAR_layer, nmiss:', nmiss)
@@ -21,8 +25,9 @@ def shift_to_complete_layers():
 
 #==========================
 
-def check_layers(filename='CONTCAR'):
-    atoms = vf.my_read_vasp(filename = filename)
+def check_layers(atoms_in):
+    atoms = copy.deepcopy(atoms_in) 
+
 
     z = atoms.get_positions()[:,-1]
     z.sort()
