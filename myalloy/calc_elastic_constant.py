@@ -262,22 +262,18 @@ def rotate_Cij(brav_latt, Cij, mm):
 
 
 
-def calc_transverse_isotropy(cij_hcp):
+def calc_transverse_isotropy(Cij_hcp):
 
     # https://en.wikipedia.org/wiki/Transverse_isotropy
     # 5 to 5 
 
     from myvasp import vasp_func as vf 
 
-    if len(cij_hcp) != 5:
+    if len(Cij_hcp) != 5:
         sys.exit('ABORT, wrong cij_hcp')
 
-    C11 = cij_hcp[0]
-    C12 = cij_hcp[1]
-    C13 = cij_hcp[2]
-    C33 = cij_hcp[3]
-    C44 = cij_hcp[4]
-
+    [C11, C12, C13, C33, C44] = Cij_hcp
+   
     E_x = ( C11-C12 ) * ( (C11+C12)*C33 - 2* C13**2 ) / ( C11*C33 - C13**2 ) 
     E_z = C33  -  2* C13**2 / (C11+C12)
 
@@ -288,6 +284,22 @@ def calc_transverse_isotropy(cij_hcp):
     mu_xz = C44 
 
     vf.confirm_0(mu_xy - calc_mu_from_E_nu(E_x, nu_xy) )
+
+    #=====================
+
+    CIJ = calc_CIJ_from_Cij('hcp', Cij_hcp) 
+
+    S = np.array([
+        [     1/E_x,  -nu_xy/E_x, -nu_xz/E_z,   0, 0, 0],
+        [-nu_xy/E_x,       1/E_x, -nu_xz/E_z,   0, 0, 0],
+        [-nu_xz/E_z,  -nu_xz/E_z,      1/E_z,   0, 0, 0],
+        [0, 0, 0,             1/mu_xz,       0,       0],
+        [0, 0, 0,                   0, 1/mu_xz,       0],
+        [0, 0, 0,                   0,       0, 1/mu_xy],
+     ])
+
+    vf.confirm_0( np.linalg.inv(CIJ) - S )
+
 
     return E_x, E_z, nu_xy, nu_xz, mu_xz  
 
