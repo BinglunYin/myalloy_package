@@ -6,6 +6,14 @@ import sys
 
 
 
+# https://en.wikipedia.org/wiki/Hooke%27s_law
+# E  = Young's modulus
+# mu = Shear modulus
+# nu = Poisson's ratio
+# B  = Bulk modulus
+
+
+
 
 def calc_nu_from_B_mu(B, mu):
     nu = (3*B -2*mu)/(3*B +mu)/2
@@ -16,6 +24,15 @@ def calc_nu_from_B_mu(B, mu):
 def calc_nu_from_E_mu(E, mu):
     nu = E/(2*mu) -1
     return nu
+
+
+
+
+def calc_mu_from_E_nu(E, nu):
+    mu = E/2/(1+nu) 
+    return mu
+
+
 
 
 
@@ -235,6 +252,46 @@ def rotate_Cij(brav_latt, Cij, mm):
 
     CIJ2 = calc_CIJ_from_CIJKL(CIJKL2) 
     return CIJ, CIJKL, CIJKL2, CIJ2
+
+
+
+
+
+
+
+
+
+
+def calc_transverse_isotropy(cij_hcp):
+
+    # https://en.wikipedia.org/wiki/Transverse_isotropy
+    # 5 to 5 
+
+    from myvasp import vasp_func as vf 
+
+    if len(cij_hcp) != 5:
+        sys.exit('ABORT, wrong cij_hcp')
+
+    C11 = cij_hcp[0]
+    C12 = cij_hcp[1]
+    C13 = cij_hcp[2]
+    C33 = cij_hcp[3]
+    C44 = cij_hcp[4]
+
+    E_x = ( C11-C12 ) * ( (C11+C12)*C33 - 2* C13**2 ) / ( C11*C33 - C13**2 ) 
+    E_z = C33  -  2* C13**2 / (C11+C12)
+
+    nu_xy = ( C13**2 - C12*C33 ) / ( C13**2 - C11*C33 )
+    nu_xz = C13 / (C11+C12)
+
+    mu_xy = (C11-C12)/2
+    mu_xz = C44 
+
+    vf.confirm_0(mu_xy - calc_mu_from_E_nu(E_x, nu_xy) )
+
+    return E_x, E_z, nu_xy, nu_xz, mu_xz  
+
+
 
 
 
