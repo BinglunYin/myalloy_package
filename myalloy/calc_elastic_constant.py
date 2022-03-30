@@ -278,11 +278,14 @@ def calc_transverse_isotropy(Cij_hcp):
     E_z = C33  -  2* C13**2 / (C11+C12)
 
     nu_xy = ( C13**2 - C12*C33 ) / ( C13**2 - C11*C33 )
-    nu_xz = C13 / (C11+C12)
+    nu_zx = C13 / (C11+C12)
 
-    mu_xy = (C11-C12)/2
     mu_xz = C44 
 
+
+    nu_xz = nu_zx / E_z * E_x 
+
+    mu_xy = (C11-C12)/2
     vf.confirm_0(mu_xy - calc_mu_from_E_nu(E_x, nu_xy) )
 
     #=====================
@@ -290,9 +293,9 @@ def calc_transverse_isotropy(Cij_hcp):
     CIJ = calc_CIJ_from_Cij('hcp', Cij_hcp) 
 
     S = np.array([
-        [     1/E_x,  -nu_xy/E_x, -nu_xz/E_z,   0, 0, 0],
-        [-nu_xy/E_x,       1/E_x, -nu_xz/E_z,   0, 0, 0],
-        [-nu_xz/E_z,  -nu_xz/E_z,      1/E_z,   0, 0, 0],
+        [     1/E_x,  -nu_xy/E_x, -nu_zx/E_z,   0, 0, 0],
+        [-nu_xy/E_x,       1/E_x, -nu_zx/E_z,   0, 0, 0],
+        [-nu_xz/E_x,  -nu_xz/E_x,      1/E_z,   0, 0, 0],
         [0, 0, 0,             1/mu_xz,       0,       0],
         [0, 0, 0,                   0, 1/mu_xz,       0],
         [0, 0, 0,                   0,       0, 1/mu_xy],
