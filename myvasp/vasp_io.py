@@ -77,6 +77,9 @@ def write_poscar(a_pos, latt, lelem, pos, filename='POSCAR'):
         temp = lelem[mask]
         ns[i] = temp.shape[0]
 
+    mask = ns[:] != 0
+    ns = ns[mask]
+
     f = open(filename, 'w+')
     f.write('system name \n %22.16f \n' %(a_pos) )
 
