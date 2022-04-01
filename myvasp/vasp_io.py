@@ -70,7 +70,8 @@ def write_poscar(a_pos, latt, lelem, pos, filename='POSCAR'):
     pos  = pos/a_pos 
 
     temp = lelem.max()
-    ns = np.zeros(temp) 
+    vf.confirm_int(temp)
+    ns = np.zeros(int(temp)) 
 
     for i in np.arange( len(ns) ):
         mask = lelem[:]==(i+1) 
