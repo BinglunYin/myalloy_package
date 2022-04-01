@@ -69,10 +69,10 @@ def write_poscar(a_pos, latt, lelem, pos, filename='POSCAR'):
     latt = latt/a_pos 
     pos  = pos/a_pos 
 
-    nelem = int( lelem[-1] )
-    ns = np.zeros(nelem) 
+    temp = lelem.max()
+    ns = np.zeros(temp) 
 
-    for i in np.arange(nelem):
+    for i in np.arange( len(ns) ):
         mask = lelem[:]==(i+1) 
         temp = lelem[mask]
         ns[i] = temp.shape[0]
