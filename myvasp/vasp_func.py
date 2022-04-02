@@ -88,6 +88,27 @@ def my_rm(filename):
 
 
 
+def my_rm_dir(dirname):
+    try:
+        delete_folder(dirname) 
+    except:
+        print('Folder does not exist.')
+
+
+def delete_folder(dirname):
+    for i in os.listdir(dirname):
+        path_file = os.path.join(dirname, i)
+        if os.path.isfile(path_file):
+            os.remove(path_file)
+        else:
+            delete_folder(path_file)
+    os.removedirs(dirname)
+
+
+
+
+
+
 
 
 # math
