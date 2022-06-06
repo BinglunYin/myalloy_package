@@ -156,7 +156,8 @@ def vasp_create_twin(atoms_in):
 
     atoms = copy.deepcopy(atoms_in)
 
-    nlayers, nmiss = vfs.check_layers(atoms) 
+    latt   = atoms.get_cell()[:]
+    vf.confirm_0( latt[2, 0:2] )
 
     pos = atoms.get_positions()
     an  = atoms.get_atomic_numbers()
@@ -166,6 +167,7 @@ def vasp_create_twin(atoms_in):
     data = data[mask,:]
     
     natoms = pos.shape[0]
+    nlayers, nmiss = vfs.check_layers(atoms) 
     vf.confirm_int( natoms/nlayers )
     vf.confirm_int( natoms/2 ) 
 
@@ -177,7 +179,6 @@ def vasp_create_twin(atoms_in):
     data = data[mask,:]
     
     pos_a0 = atoms.pos_a0
-    latt   = atoms.get_cell()[:]
     lelem  = data[:, 3]
     pos    = data[:, 0:3]
     
