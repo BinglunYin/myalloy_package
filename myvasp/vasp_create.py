@@ -160,13 +160,15 @@ def create_twin(atoms_in):
     vf.confirm_0( latt[2, 0:2] )
 
     pos = atoms.get_positions()
+    natoms = pos.shape[0]
     an  = atoms.get_atomic_numbers()
-    data = np.hstack([ pos, an[:, np.newaxis ] ])
+
+    temp = np.arange(natoms)  # index 
+    data = np.hstack([ pos, an[:, np.newaxis], temp[:, np.newaxis] ])
    
     mask = np.argsort( data[:,2] )   # by z
     data = data[mask,:]
     
-    natoms = pos.shape[0]
     nlayers, nmiss = vfs.check_layers(atoms) 
     vf.confirm_int( natoms/nlayers )
     vf.confirm_int( natoms/2 ) 
@@ -175,7 +177,7 @@ def create_twin(atoms_in):
         data[natoms-i, 0:2] = data[i, 0:2].copy()  
         data[natoms-i,   3] = data[i,   3].copy()   
     
-    mask = np.argsort( data[:,3] )
+    mask = np.argsort( data[:,4] )   # by index 
     data = data[mask,:]
     
     pos_a0 = atoms.pos_a0
