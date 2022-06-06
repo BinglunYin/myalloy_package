@@ -55,8 +55,8 @@ def bestsqs_to_POSCAR(filename='bestsqs-1.out'):
     lelem = lelem[ temp   ]
 
     temp = 'POSCAR_'+filename[8]
-    a_pos = 4.0
-    write_poscar(a_pos, latt*a_pos, lelem, pos*a_pos, filename=temp)
+    pos_a0 = 4.0
+    write_poscar(pos_a0, latt*pos_a0, lelem, pos*pos_a0, filename=temp)
 
 
 
@@ -64,10 +64,10 @@ def bestsqs_to_POSCAR(filename='bestsqs-1.out'):
 
 
 
-def write_poscar(a_pos, latt, lelem, pos, filename='POSCAR'):
+def write_poscar(pos_a0, latt, lelem, pos, filename='POSCAR'):
 
-    latt = latt/a_pos 
-    pos  = pos/a_pos 
+    latt = latt/pos_a0 
+    pos  = pos/pos_a0 
 
     temp = lelem.max()
     vf.confirm_int(temp)
@@ -82,7 +82,7 @@ def write_poscar(a_pos, latt, lelem, pos, filename='POSCAR'):
     ns = ns[mask]
 
     f = open(filename, 'w+')
-    f.write('system name \n %22.16f \n' %(a_pos) )
+    f.write('system name \n %22.16f \n' %(pos_a0) )
 
     for i in np.arange(3):
         f.write(' %22.16f %22.16f %22.16f \n' %(latt[i,0], latt[i,1], latt[i,2])  )

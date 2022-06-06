@@ -147,3 +147,39 @@ def create_random_alloys(atoms_in, cn, nsamples=1, filename='POSCAR', id1=1, vas
 
 
 
+
+
+
+
+def vasp_create_twin(atoms_in):
+    from myvasp import vasp_shift_to_complete_layers as vfs
+
+    atoms = copy.deepcopy(atoms_in)
+
+    nlayers, nmiss = vfs.check_layers(atoms) 
+
+    pos = atoms.get_positions()
+    an  = atoms.get_atomic_numbers()
+    data = np.hstack([ pos, an[:, np.newaxis ] ])
+   
+    mask = np.argsort( data[:,2] )   # by z
+    data = data[mask,:]
+    
+    natoms = pos.shape[0]
+    vf.confirm_int( natoms/nlayers )
+    vf.confirm_int( natoms/2 ) 
+
+    for i in np.arange( int(natoms/nlayers), int(natoms/2) ):
+        data[natoms-i, 0:2] = data[i, 0:2].copy()  
+        data[natoms-i,   3] = data[i,   3].copy()   
+    
+    mask = np.argsort( data[:,3] )
+    data = data[mask,:]
+    
+    pos_a0 = atoms.pos_a0
+    latt   = atoms.get_cell()[:]
+    lelem  = data[:, 3]
+    pos    = data[:, 0:3]
+    
+    vf.write_poscar(pos_a0, latt, lelem, pos, filename='POSCAR_twin')
+
