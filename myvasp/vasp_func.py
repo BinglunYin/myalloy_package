@@ -31,6 +31,11 @@ def create_random_alloys(*args, **kwargs):
     tmp.create_random_alloys(*args, **kwargs)
     
 
+def create_twin(*args, **kwargs):
+    from myvasp import vasp_create as tmp 
+    tmp.create_twin(*args, **kwargs)
+    
+
 
 
 

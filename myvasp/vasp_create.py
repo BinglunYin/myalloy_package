@@ -151,7 +151,7 @@ def create_random_alloys(atoms_in, cn, nsamples=1, filename='POSCAR', id1=1, vas
 
 
 
-def vasp_create_twin(atoms_in):
+def create_twin(atoms_in):
     from myvasp import vasp_shift_to_complete_layers as vfs
 
     atoms = copy.deepcopy(atoms_in)
