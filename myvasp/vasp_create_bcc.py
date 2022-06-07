@@ -87,6 +87,8 @@ def vasp_create_bcc_112(a, ncell, bp=0):
         [ 3/2,  -1/2,   1/2],
     ]) *a
 
+    latt[2,:] = latt[2,:] - latt[1,:] 
+
    
     motif = np.array([
         [0, 0, 0],
@@ -123,7 +125,9 @@ def vasp_create_bcc_123(a, ncell, bp=0):
         [ 5/2,  -1/2,   1/2],
     ]) *a
 
-   
+    latt[2,:] = latt[2,:] - 2*latt[1,:] 
+
+
     motif = np.array([
         [0, 0, 0],
     ])
