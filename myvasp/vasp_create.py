@@ -151,7 +151,7 @@ def create_random_alloys(atoms_in, cn, nsamples=1, filename='POSCAR', id1=1, vas
 
 
 
-def create_twin(atoms_in):
+def create_twin(atoms_in, bp='reflection'):
     from myvasp import vasp_shift_to_complete_layers as vfs
 
     atoms = copy.deepcopy(atoms_in)
@@ -177,6 +177,11 @@ def create_twin(atoms_in):
         data[natoms-i, 0:2] = data[i, 0:2].copy()  
         data[natoms-i,   3] = data[i,   3].copy()   
     
+
+    if bp == 'bcc_112':
+        data[0:int(natoms/2), 0] = data[0:int(natoms/2), 0] + (np.sqrt(3)/12)*atoms.pos_a0
+
+
     mask = np.argsort( data[:,4] )   # by index 
     data = data[mask,:]
     
