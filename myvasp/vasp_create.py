@@ -179,7 +179,7 @@ def create_twin(atoms_in, bp='reflection'):
     
 
     if bp == 'bcc_112':
-        data[0:int(natoms/2), 0] = data[0:int(natoms/2), 0] + (np.sqrt(3)/12)*atoms.pos_a0
+        data[int(natoms/2):, 0] = data[int(natoms/2):, 0] - (np.sqrt(3)/12)*atoms.pos_a0
 
 
     mask = np.argsort( data[:,4] )   # by index 
