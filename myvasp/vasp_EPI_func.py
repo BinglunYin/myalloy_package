@@ -55,7 +55,7 @@ def check_latt(latoms1_in, latoms2_in, latt_type='same', k=1/4):
 
         elif latt_type == 'tilt':            
             vf.confirm_0(lattd[0:2,:])
-            vf.confirm_0(lattd[2,:] - k*lattd[0,:] )
+            vf.confirm_0(lattd[2,:] - k*latt1[0,:] )
 
         else:
             sys.exit('ABORT: wrong latt. ')
