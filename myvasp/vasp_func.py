@@ -150,6 +150,14 @@ def confirm_0(x):
 
 
 
+def calc_RMSE(a, b):
+    RMSE = np.sqrt( np.mean( (a-b)**2 ) )
+    return RMSE 
+
+
+
+
+
 
 
 
@@ -172,6 +180,20 @@ def my_plot(fig_wh, fig_subp, fig_sharex=True):
     sharex=fig_sharex, figsize=(fig_wh[0], fig_wh[1]) )
     
     return fig1, ax1
+
+
+
+
+
+def my_text(ax1, str1, x, y, ha='left', weight='normal'):
+    fig_xlim = ax1.get_xlim()
+    fig_ylim = ax1.get_ylim()
+
+    ax1.text( 
+        fig_xlim[0] + np.diff(fig_xlim) *x, \
+        fig_ylim[0] + np.diff(fig_ylim) *y, str1, \
+        horizontalalignment=ha, weight=weight )
+
 
 
 
@@ -234,6 +256,20 @@ def vasp_read_post_data(filename='y_post_data'):
     # print(jobn, Etot, Eent, pres)
 
     return jobn, Etot, Eent, pres
+
+
+
+
+
+
+def vasp_read_dir(dirname):
+    os.chdir(dirname)
+    print( os.getcwd() )
+    jobn, Etot, Eent, pres = vasp_read_post_data()
+    latoms = get_list_of_atoms()
+    os.chdir('..')
+    return jobn, Etot, Eent, pres, latoms
+
 
 
 
