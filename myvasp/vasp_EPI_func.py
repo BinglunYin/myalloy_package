@@ -149,8 +149,6 @@ def calc_urms(atoms1_in, atoms2_in):
     pos1  = atoms1.get_positions()
     pos2  = atoms2.get_positions()
 
-    vf.confirm_0( latt2 - latt1) 
-
     dpos = pos2 - pos1
     natoms = dpos.shape[0]
 
