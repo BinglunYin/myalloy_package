@@ -438,15 +438,14 @@ def plot_EPI(shellmax, X, Ef, ntest, beta):
     vf.confirm_0(temp[1,1]    - np.std(e_train)**2   )
     vf.confirm_0(np.sum(temp) - np.std(Ef2_train)**2 )
 
-    str3 = 'Ep_train=$%.3f \pm %.3f$\n\ne_train=$%.3f \pm %.3f$' \
+    str3 = 'Ep_train=$%.3f \pm %.3f$\ne_train=$%.3f \pm %.3f$\ncov^1/2=%.3f' \
         %( np.mean(Ep_train), np.std(Ep_train),  \
            np.mean(e_train),  np.std(e_train) ,  \
+           temp[0,1]**(1/2)
         )  
 
 
-
-
-    ax1[1].text( zlim[0]+ np.diff(zlim)*0.05, zlim[0]+ np.diff(zlim)*0.65, \
+    ax1[1].text( zlim[0]+ np.diff(zlim)*0.05, zlim[0]+ np.diff(zlim)*0.6, \
         str3, fontsize=5.5, horizontalalignment='left' ) 
 
 
