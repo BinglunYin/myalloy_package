@@ -423,14 +423,28 @@ def plot_EPI(shellmax, X, Ef, ntest, beta):
     ax1[1].set_xlim(zlim) 
     ax1[1].set_ylim(zlim) 
 
-    str3 = '# of structures:\ntrain=%d, test=%d\n\nmean(train)=%.3f\nstd(train)=%.3f' \
+    str3 = '# of structures:\ntrain=%d, test=%d\n\ntrain=$%.3f \pm %.3f$' \
         %( len(Ef2_train), len(Ef2_test), np.mean(Ef2_train), np.std(Ef2_train) )  
 
     ax1[1].text( zlim[0]+ np.diff(zlim)*0.95, zlim[0]+ np.diff(zlim)*0.1, \
         str3, fontsize=5.5, horizontalalignment='right' ) 
 
-    str3 = 'mean(Ep_train)=%.3f\nstd(Ep_train)=%.3f' \
-        %( np.mean(Ep_train), np.std(Ep_train) )  
+
+    # fitting error
+    e_train = Ef2_train - Ep_train
+    temp = np.cov( np.vstack([Ep_train, e_train]),  bias=True)
+
+    vf.confirm_0(temp[0,0]    - np.std(Ep_train)**2  )
+    vf.confirm_0(temp[1,1]    - np.std(e_train)**2   )
+    vf.confirm_0(np.sum(temp) - np.std(Ef2_train)**2 )
+
+    str3 = 'Ep_train=$%.3f \pm %.3f$\n\ne_train=$%.3f \pm %.3f$' \
+        %( np.mean(Ep_train), np.std(Ep_train),  \
+           np.mean(e_train),  np.std(e_train) ,  \
+        )  
+
+
+
 
     ax1[1].text( zlim[0]+ np.diff(zlim)*0.05, zlim[0]+ np.diff(zlim)*0.65, \
         str3, fontsize=5.5, horizontalalignment='left' ) 
