@@ -141,7 +141,7 @@ def create_random_alloys(atoms_in, cn, nsamples=1, filename='POSCAR', id1=1, vas
         ind = np.argsort(temp[:, -1])
         atoms.set_positions(temp[ind, 0:3], apply_constraint=False)
   
-        filename2 = '%s_%03d' %( filename, i+id1 )
+        filename2 = '%s_%04d' %( filename, i+id1 )
         vf.my_write_vasp(atoms, filename2, vasp5=vasp5)
 
 
