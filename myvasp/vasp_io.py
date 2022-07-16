@@ -134,6 +134,27 @@ def get_list_of_atoms():
 
 
 
+
+
+def get_list_of_atoms_from_poscars2(dirname='poscars2'):
+    os.system('ls %s/POSCAR_*  >  tmp_filelist' %(dirname) )
+    latoms = []   # list of ASE_Atoms from CONTCAR
+
+    f = open('tmp_filelist', 'r')
+    for line in f:
+        atoms = my_read_vasp( line.strip('\n') )
+        latoms.append(atoms)
+    f.close() 
+    
+    os.remove('tmp_filelist')
+    return latoms
+
+
+
+
+
+
+
 #==============================
 
 

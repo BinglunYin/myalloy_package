@@ -70,6 +70,14 @@ def get_list_of_atoms(*args, **kwargs):
     return atoms
 
 
+def get_list_of_atoms_from_poscars2(*args, **kwargs):
+    from myvasp import vasp_io as tmp 
+    latoms = tmp.get_list_of_atoms_from_poscars2(*args, **kwargs)
+    return latoms
+
+
+
+
 def my_read_vasp(*args, **kwargs):
     from myvasp import vasp_io as tmp 
     atoms = tmp.my_read_vasp(*args, **kwargs)
