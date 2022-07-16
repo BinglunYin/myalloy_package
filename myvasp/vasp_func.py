@@ -134,18 +134,18 @@ def mylinreg(X, y):
     return beta, R2
 
 
-def confirm_int(x):
+def confirm_int(x, str1='hint'):
     temp = np.linalg.norm( x - np.around(x) )
     if temp > 1e-10:
         print(temp)
-        sys.exit('ABORT: x is not int. ')
+        sys.exit('ABORT: x is not int. ', str1 )
     
 
-def confirm_0(x):
+def confirm_0(x, str1='hint'):
     temp = np.linalg.norm( x )
     if temp > 1e-10:
         print(temp)
-        sys.exit('ABORT: x is not 0. ')
+        sys.exit('ABORT: x is not 0. ', str1)
     
 
 
