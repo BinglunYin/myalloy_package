@@ -138,7 +138,8 @@ def create_random_alloys(atoms_in, cn, nsamples=1, filename='POSCAR', id1=1, vas
     randid = np.random.random_sample([ natoms, nsamples ])
 
     for i in np.arange(nsamples):
-        temp = np.hstack([ atoms.positions, randid[:,i] ])
+        randid2 = randid[:, i]
+        temp = np.hstack([ atoms.positions, randid2[:, np.newaxis] ])
         ind = np.argsort(temp[:, -1])
         atoms.set_positions(temp[ind, 0:3], apply_constraint=False)
   
