@@ -146,14 +146,16 @@ def confirm_int(x, str1='hint'):
     temp = np.linalg.norm( x - np.around(x) )
     if temp > 1e-10:
         print(temp)
-        sys.exit('ABORT: x is not int. ', str1 )
+        str2 = 'ABORT: x is not int - %s'  %(str1) 
+        sys.exit(str2)
     
 
 def confirm_0(x, str1='hint'):
     temp = np.linalg.norm( x )
     if temp > 1e-10:
         print(temp)
-        sys.exit('ABORT: x is not 0. ', str1)
+        str2 = 'ABORT: x is not 0 - %s'  %(str1) 
+        sys.exit(str2) 
     
 
 
