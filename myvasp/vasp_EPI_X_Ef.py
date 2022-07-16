@@ -128,7 +128,6 @@ def calc_dn_shell_row(atoms_in, shellmax=20, write_dn=False):
     dn_shell_r  = calc_reduced_dn_shell(dn_shell,  rmid)
     sro_shell_r = calc_reduced_dn_shell(sro_shell, rmid)
 
-    vf.confirm_0( dn_shell_r.shape - sro_shell_r.shape )
 
 
     # convert to a row 
