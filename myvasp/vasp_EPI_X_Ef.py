@@ -115,7 +115,7 @@ def calc_dn_shell_row(atoms_in, shellmax=20, write_dn=False):
     rcrys, ncrys = vf.crystal_shell('fcc')
 
     cutoff = a0 * rcrys[shellmax-1] 
-    cutoff =  np.ceil(cutoff*1e3) /1e-3
+    cutoff =  np.ceil(cutoff*1e3) /1e3
 
     data_rdf = calc_ovito_rdf(cutoff)
     r, n = post_rdf(data_rdf, V0, cc_scale)
