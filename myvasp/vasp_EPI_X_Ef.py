@@ -120,9 +120,13 @@ def calc_dn_shell_row(atoms_in, shellmax=20, write_dn=False):
     data_rdf = calc_ovito_rdf(cutoff)
     r, n = post_rdf(data_rdf, V0, cc_scale)
 
-    while  n.sum() < ncrys[0:shellmax].sum() :
-        if n.sum() > ncrys[0:shellmax].sum() :
+    ncrys_tot = ncrys[0:shellmax].sum()
+    while  n.sum() < ncrys_tot :
+        print('==> n.sum() - ncrys_tot:', n.sum() - ncrys_tot )    
+
+        if n.sum() > ncrys_tot :
             sys.exit('==> ABORT. impossible cutoff. ')
+
         cutoff = cutoff + 1e-2 
         data_rdf = calc_ovito_rdf(cutoff)
         r, n = post_rdf(data_rdf, V0, cc_scale)
