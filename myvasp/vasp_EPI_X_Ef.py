@@ -118,7 +118,7 @@ def calc_dn_shell_row(atoms_in, shellmax=20, write_dn=False):
     cutoff =  np.ceil(cutoff*1e3) /1e3
 
     data_rdf = calc_ovito_rdf(cutoff)
-    r, n = post_rdf(data_rdf, V0, cc_scale)
+    n = calc_n_from_rdf(data_rdf, V0, cc_scale)
 
     ncrys_tot = ncrys[0:shellmax].sum()
     while  np.abs( n.sum() - ncrys_tot) >1e-10 :
@@ -128,7 +128,7 @@ def calc_dn_shell_row(atoms_in, shellmax=20, write_dn=False):
 
         cutoff = cutoff + 1e-2 
         data_rdf = calc_ovito_rdf(cutoff)
-        r, n = post_rdf(data_rdf, V0, cc_scale)
+        n = calc_n_from_rdf(data_rdf, V0, cc_scale)
 
     os.remove('CONTCAR_for_ovito') 
 
@@ -232,7 +232,7 @@ def calc_ovito_rdf(cutoff):
     
 
 
-def post_rdf(data_rdf, V0, cc_scale):
+def calc_n_from_rdf(data_rdf, V0, cc_scale):
     data = data_rdf.copy()
 
     r = data[:,0].copy()
@@ -249,7 +249,7 @@ def post_rdf(data_rdf, V0, cc_scale):
     vf.confirm_0( cc_scale.shape[0] - n.shape[1],  str1='wrong scaling' )
     n = n * cc_scale
 
-    return r, n
+    return n
   
 
 
