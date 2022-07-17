@@ -121,8 +121,7 @@ def calc_dn_shell_row(atoms_in, shellmax=20, write_dn=False):
     r, n = post_rdf(data_rdf, V0, cc_scale)
 
     ncrys_tot = ncrys[0:shellmax].sum()
-    while  n.sum() < ncrys_tot :
-        print('==> n.sum() - ncrys_tot:', n.sum() - ncrys_tot )    
+    while  np.abs( n.sum() - ncrys_tot) >1e-10 :
 
         if n.sum() > ncrys_tot :
             sys.exit('==> ABORT. impossible cutoff. ')
