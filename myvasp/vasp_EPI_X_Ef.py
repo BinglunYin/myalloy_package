@@ -2,7 +2,7 @@
 #!/home/yin/opt/bin/python3
 
 import numpy as np
-import sys, copy
+import sys, copy, os
 from myvasp import vasp_func as vf 
 
 
@@ -107,17 +107,20 @@ def calc_dn_shell_row(atoms_in, shellmax=20, write_dn=False):
     # struc = calc_ovito_cna(atoms)
     rcrys, ncrys = vf.crystal_shell('fcc')
 
-    cutoff =  a0 * rcrys[shellmax-1] +1e-5
+    cutoff = a0 * rcrys[shellmax-1] 
+    cutoff =  np.ceil(cutoff*1e3) /1e-3
+
     data_rdf = calc_ovito_rdf(cutoff)
     r, n = post_rdf(data_rdf, V0, cc_scale)
 
     while np.abs( n.sum() - ncrys[0:shellmax].sum() ) > 1e-10:
         if n.sum() > ncrys[0:shellmax].sum() :
             sys.exit('==> ABORT. impossible cutoff. ')
-        cutoff = cutoff+0.1
+        cutoff = cutoff + 1e-2 
         data_rdf = calc_ovito_rdf(cutoff)
         r, n = post_rdf(data_rdf, V0, cc_scale)
 
+    os.remove('CONTCAR_for_ovito') 
 
     # convert n(r) to n(shell) 
     dn_shell, sro_shell = calc_n_shell(ncrys, shellmax, n, cc_scale)
@@ -210,6 +213,10 @@ def calc_ovito_rdf(cutoff):
     data = pipeline.compute()
 
     data_rdf = data.tables['coordination-rdf'].xy()
+
+    dr = data_rdf[0,0] - data_rdf[1,0]
+    vf.confirm_0( dr - cutoff/200, str1='wrong dr')
+
     return data_rdf
 
     
