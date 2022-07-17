@@ -120,7 +120,7 @@ def calc_dn_shell_row(atoms_in, shellmax=20, write_dn=False):
     data_rdf = calc_ovito_rdf(cutoff)
     r, n = post_rdf(data_rdf, V0, cc_scale)
 
-    while np.abs( n.sum() - ncrys[0:shellmax].sum() ) > 1e-10:
+    while  n.sum() < ncrys[0:shellmax].sum() :
         if n.sum() > ncrys[0:shellmax].sum() :
             sys.exit('==> ABORT. impossible cutoff. ')
         cutoff = cutoff + 1e-2 
@@ -221,7 +221,7 @@ def calc_ovito_rdf(cutoff):
 
     data_rdf = data.tables['coordination-rdf'].xy()
 
-    dr = data_rdf[0,0] - data_rdf[1,0]
+    dr = data_rdf[1,0] - data_rdf[0,0]
     vf.confirm_0( dr - cutoff/200, str1='wrong dr')
 
     return data_rdf
