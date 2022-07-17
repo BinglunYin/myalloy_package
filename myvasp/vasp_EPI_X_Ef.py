@@ -33,6 +33,8 @@ def calc_X_Ef_from_y_dir(shellmax=20):
 
 
 
+
+
 def calc_X_from_poscars2(dirname='poscars2', shellmax=20):
     # this runs outside the dir 
     
@@ -40,6 +42,11 @@ def calc_X_from_poscars2(dirname='poscars2', shellmax=20):
     calc_X_from_latoms(latoms, shellmax=shellmax)
 
 
+
+
+
+
+#================================================
 
 
 def calc_X_from_latoms(latoms_in, shellmax=20):
@@ -227,9 +234,9 @@ def post_rdf(data_rdf, V0, cc_scale):
 
     r = data[:,0].copy()
     dr = r[1] - r[0]
-    temp = r[-1] - r[-2]
-    if np.abs(dr - temp)>1e-10:
-        sys.exit('==> ABORT. wrong dr. {0}'.format([dr, temp]))
+
+    temp = np.diff(r)
+    vf.confirm_0( temp-dr, str1='wrong dr 2')  
 
     n = data[:, 1:].copy()   # number of neighbours for each pair
 
