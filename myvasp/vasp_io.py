@@ -232,3 +232,152 @@ def my_write_vasp(atoms_in, filename='POSCAR', vasp5=True):
     os.remove('POSCAR_temp')
 
 
+
+
+#================================================
+
+
+def my_read_doscar(fname="DOSCAR"):
+    from scipy import integrate
+
+    # Read a VASP DOSCAR file
+    f = open(fname)
+    natoms = int(f.readline().split()[0])
+    [f.readline() for nn in range(4)]  # Skip next 4 lines.
+
+    # First we have a block with total and total integrated DOS
+    line = f.readline().split()
+    Emax   = float( line[0] )
+    Emin   = float( line[1] )
+    ndos   =   int( line[2] )
+    Efermi = float( line[3] )
+
+    tdos_all = vf.my_read_line(f)
+    for nd in np.arange(1, ndos):
+        tdos_all = np.vstack([tdos_all, vf.my_read_line(f)])
+
+    # Next we have one block per atom, if INCAR contains the stuff
+    # necessary for generating site-projected DOS
+    lpdos = []    # list of pdos     
+    for na in np.arange(natoms):
+        line = f.readline().split()
+        if len(line) == 0:
+            break     # No site-projected DOS            
+        else:
+            vf.confirm_0( float( line[0] ) - Emax ) 
+            vf.confirm_0( float( line[1] ) - Emin ) 
+            vf.confirm_0( float( line[2] ) - ndos ) 
+            vf.confirm_0( float( line[3] ) - Efermi ) 
+
+        pdos = vf.my_read_line(f)
+        for nd in np.arange(1, ndos):
+            pdos = np.vstack([pdos, vf.my_read_line(f)])   
+        lpdos.append(pdos)   
+
+    #------------------------
+
+    Ei = np.linspace(Emin, Emax, ndos)  - Efermi 
+    dE = (Emax - Emin)/(ndos-1)
+    vf.confirm_0( np.diff(Ei)[0] - dE ) 
+
+    if tdos_all.shape[1] == 3:
+        tdos = tdos_all[:,1].copy()
+        idos = tdos_all[:,2].copy()
+
+        tdos  = tdos[:, np.newaxis]
+        idos  = idos[:, np.newaxis]
+
+    elif tdos_all.shape[1] == 5:
+        tdos = tdos_all[:,1:3].copy()        
+        idos = tdos_all[:,3:5].copy()
+
+        tdos[:,1] = tdos[:,1]*(-1)
+        idos[:,1] = idos[:,1]*(-1)
+
+    else:
+        sys.exit('ABORT: wrong tdos_all.')
+    
+    # to compare with the output idos 
+    idos2 = integrate.cumulative_trapezoid( tdos, Ei, axis=0, initial=0)
+
+    return atoms_dos(Ei, tdos, idos, idos2, lpdos)  
+
+
+
+class atoms_dos:
+    def __init__(self, Ei, tdos, idos, idos2, lpdos):
+        self.Ei = Ei
+        self.tdos = tdos
+        self.idos = idos
+        self.idos2 = idos2
+        self.lpdos = lpdos 
+
+
+    def plot_dos(self):
+        # import matplotlib
+        # matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+         
+        Ei    = self.Ei 
+        tdos  = self.tdos.copy()
+        idos  = self.idos.copy()
+        idos2 = self.idos2.copy()
+     
+        fig_wh = [3, 4.5]
+        fig_subp = [2, 1]
+        fig1, ax1 = vf.my_plot(fig_wh, fig_subp)
+     
+        fig_pos  = np.array([0.25, 0.55, 0.7, 0.4])
+        fig_dpos = np.array([0, -0.45, 0, 0])        
+        for i in np.arange(2):    
+            ax1[i].set_position(fig_pos + fig_dpos*i)
+    
+        lc=['C0', 'C1']
+        for j in np.arange( tdos.shape[1] ):     
+            ax1[0].plot( Ei , tdos[:,j],  '-',   color=lc[j] )
+            ax1[1].plot( Ei , idos[:,j],  '-',   color=lc[j] )
+            ax1[1].plot( Ei , idos2[:,j], '--',  color=lc[j] )
+     
+        if idos.shape[1]==2:
+            ax1[1].plot( Ei , idos[:,0] - idos[:,1] , '--', color='k', linewidth=0.5 )
+            ax1[1].plot( Ei , idos[:,0] + idos[:,1] , '--', color='k', linewidth=0.5 )
+
+        fig_xlim = [Ei.min(), Ei.max()]
+        ax1[0].set_xlim( fig_xlim )
+        for i in np.arange(2):
+            ax1[i].plot( fig_xlim, [0, 0], '--', color='gray' )
+            
+            fig_ylim = ax1[i].get_ylim()
+            ax1[i].set_ylim( fig_ylim )
+            ax1[i].plot( [0, 0], fig_ylim, '--', color='gray' )
+     
+        if idos.shape[1]==1:
+            ne     = vf.my_interp(Ei, idos[:,0], 0)
+            nmag   = 0 
+            nbands = vf.my_interp(Ei, idos[:,0], Ei.max())     
+        elif idos.shape[1]==2:
+            ne     = vf.my_interp(Ei, idos[:,0] - idos[:,1], 0)
+            nmag   = vf.my_interp(Ei, idos[:,0] + idos[:,1], 0) 
+            nbands = vf.my_interp(Ei, idos[:,0] - idos[:,1], Ei.max())     
+        else:
+            sys.exit('ABORT: wrong idos.') 
+                
+        str1 = 'NELECT=%.3f\nNmag=%.3f\nNBANDS*2=%.3f'   %(ne, nmag, nbands) 
+        vf.my_text(ax1[1], str1, 0.03, 0.78)
+
+        ax1[0].set_ylabel('DOS (e/eV)')
+        ax1[1].set_ylabel('Integrated DOS (e)')
+        ax1[1].set_xlabel('$E - E_\\mathrm{Fermi}$ (eV)')
+    
+        filename = 'y_post_dos.pdf'
+        plt.savefig(filename)
+        plt.close('all')
+
+
+
+
+
+
+
+
+

@@ -91,6 +91,15 @@ def my_write_vasp(*args, **kwargs):
 
 
 
+def my_read_doscar(*args, **kwargs):
+    from myvasp import vasp_io as tmp 
+    tmp.my_read_doscar(*args, **kwargs)
+
+
+
+
+
+
 def my_rm(filename):
     try:
         os.remove(filename)
@@ -118,6 +127,10 @@ def delete_folder(dirname):
     os.removedirs(dirname)
 
 
+
+
+def my_read_line(f):
+    return np.array([float(x) for x in f.readline().split()])
 
 
 
@@ -165,6 +178,13 @@ def calc_RMSE(a, b):
     return RMSE 
 
 
+
+
+
+def my_interp(x, y, x_new):
+    from scipy import interpolate
+    func1 = interpolate.interp1d(x, y)
+    return func1(x_new)
 
 
 
