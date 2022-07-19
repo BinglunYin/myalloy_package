@@ -314,8 +314,8 @@ class atoms_dos:
 
 
     def plot_dos(self):
-        # import matplotlib
-        # matplotlib.use('Agg')
+        import matplotlib
+        matplotlib.use('Agg')
         import matplotlib.pyplot as plt
          
         Ei    = self.Ei 

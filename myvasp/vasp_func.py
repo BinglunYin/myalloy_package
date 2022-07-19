@@ -93,8 +93,8 @@ def my_write_vasp(*args, **kwargs):
 
 def my_read_doscar(*args, **kwargs):
     from myvasp import vasp_io as tmp 
-    tmp.my_read_doscar(*args, **kwargs)
-
+    atoms_dos = tmp.my_read_doscar(*args, **kwargs)
+    return atoms_dos 
 
 
 
