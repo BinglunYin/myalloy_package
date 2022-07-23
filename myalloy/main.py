@@ -108,8 +108,13 @@ class alloy_class:
 
     # get EPI
     def get_EPI_from_file(self, filename='y_post_EPI.beta2_4.txt'):
-        data = np.loadtxt(filename)
-        EPI, shellmax = EPI_reshape(self.nelem, data)
+        beta2 = np.loadtxt(filename)
+        self.set_EPI(beta2) 
+
+
+
+    def set_EPI(self, beta2):
+        EPI, shellmax = EPI_reshape(self.nelem, beta2)
         self.EPI = EPI 
         self.shellmax = shellmax 
 
@@ -150,8 +155,8 @@ class alloy_class:
    # slip 
     def calc_std_gamma_APB(self, l1, l2, param={}):
         from myalloy import solute_strengthening_theory_EPI as sstEPI 
-        sstEPI.calc_std_gamma_APB(self, l1, l2, param=param)
-
+        sigma_dUss_f = sstEPI.calc_std_gamma_APB(self, l1, l2, param=param)
+        return sigma_dUss_f 
 
 
 
