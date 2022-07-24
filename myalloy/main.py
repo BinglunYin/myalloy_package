@@ -153,10 +153,19 @@ class alloy_class:
 
 
    # slip 
+
+    def calc_sigma_dUss(self, l1, l2, t='fcc_partial'):
+        from myalloy import solute_strengthening_theory_EPI as sstEPI 
+        sigma_dUss = sstEPI.calc_sigma_dUss(self, l1, l2, t)
+        return sigma_dUss 
+
+
+
+
     def calc_std_gamma_APB(self, l1, l2, param={}):
         from myalloy import solute_strengthening_theory_EPI as sstEPI 
-        sigma_dUss_f = sstEPI.calc_std_gamma_APB(self, l1, l2, param=param)
-        return sigma_dUss_f 
+        sstEPI.calc_std_gamma_APB(self, l1, l2, param=param)
+         
 
 
 

@@ -138,7 +138,6 @@ def calc_std_gamma_APB(self, l1, l2, param={}):
 
         f.close() 
 
-    return sigma_dUss_f 
 
 
 
