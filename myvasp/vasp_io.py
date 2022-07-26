@@ -142,7 +142,8 @@ def get_list_of_atoms_from_poscars2(dirname='poscars2'):
 
     f = open('tmp_filelist', 'r')
     for line in f:
-        atoms = my_read_vasp( line.strip('\n') )
+        fname = '%s/%s' %( dirname, line.strip('\n') )
+        atoms = my_read_vasp( fname )
         latoms.append(atoms)
     f.close() 
     
