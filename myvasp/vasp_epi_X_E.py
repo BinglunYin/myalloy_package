@@ -7,12 +7,12 @@ from myvasp import vasp_func as vf
 
 
 # y_post_EPI.X.txt  - X
-# y_post_EPI.Ef.txt - Ef
+# y_post_EPI.E.txt  - E
 
 
 
 
-def calc_X_Ef_from_y_dir(shellmax=20):
+def calc_X_E_from_y_dir(shellmax=20):
     # this runs outside y_dir 
     # y_post_EPI.Ef.txt - Ef
     
@@ -22,13 +22,13 @@ def calc_X_Ef_from_y_dir(shellmax=20):
     jobn, Etot, Eent, pres = vf.vasp_read_post_data()
     njobs = len(jobn)
 
-    Ef = np.array([])  
+    E = np.array([])  
     for i in np.arange(njobs):
         natoms = latoms[i].get_positions().shape[0]
-        Ef = np.append(Ef, Etot[i]/natoms )
+        E = np.append(E, Etot[i]/natoms )
 
-    vf.confirm_0( Ef.shape - np.array([njobs, ])) 
-    np.savetxt("y_post_EPI.Ef.txt", Ef )
+    vf.confirm_0( E.shape - np.array([njobs, ])) 
+    np.savetxt('y_post_EPI.E.txt', E)
 
 
 
