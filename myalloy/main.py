@@ -154,6 +154,15 @@ class alloy_class:
 
    # slip 
 
+
+    def calc_sigma_dUss_tilde(self, t='fcc_partial'):
+        from myalloy import solute_strengthening_theory_EPI as sstEPI 
+        sigma_dUss_tilde = sstEPI.calc_sigma_dUss_tilde(self, t)
+        return sigma_dUss_tilde 
+
+
+
+
     def calc_sigma_dUss(self, l1, l2, t='fcc_partial'):
         from myalloy import solute_strengthening_theory_EPI as sstEPI 
         sigma_dUss = sstEPI.calc_sigma_dUss(self, l1, l2, t)
