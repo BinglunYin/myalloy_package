@@ -40,31 +40,28 @@ def load_Theta_fcc_full():
 
 
 
-def calc_sigma_dUss(self, wc, zetac, t='fcc_partial'):
-    b = self.b 
+def calc_sigma_dUss_tilde(self, t='fcc_partial'):
     cn = self.cn 
     nelem = self.nelem 
     EPI = self.EPI
 
     if t=='fcc_partial':
         Theta = load_Theta_fcc_partial()
-        tk = 2
 
     elif t=='fcc_full':
         Theta = load_Theta_fcc_full()
-        tk = 1
 
     dmax = np.min([ EPI.shape[0], Theta.shape[0] ])
 
 
-    print('==> calculating s2:')
+    # print('==> calculating s2:')
     s2 = 0 
     for n1 in np.arange(nelem):
         for n2 in np.arange(nelem):
             for d1 in np.arange(dmax):
                 for d2 in np.arange(dmax):
                     s2 = s2 +1/4 * cn[n1]*cn[n2] * EPI[d1, n1, n2]*EPI[d2, n1, n2] * Theta[d1, d2]
-    print(s2)
+    # print(s2)
 
 
     for n1 in np.arange(nelem):
@@ -73,7 +70,7 @@ def calc_sigma_dUss(self, wc, zetac, t='fcc_partial'):
                 for d1 in np.arange(dmax):
                     for d2 in np.arange(dmax):
                         s2 = s2 -1/2 * cn[n1]*cn[n2]*cn[n3] * EPI[d1, n1, n2]*EPI[d2, n1, n3] * Theta[d1, d2]
-    print(s2)
+    # print(s2)
 
 
     for n1 in np.arange(nelem):
@@ -83,10 +80,29 @@ def calc_sigma_dUss(self, wc, zetac, t='fcc_partial'):
                     for d1 in np.arange(dmax):
                         for d2 in np.arange(dmax):
                             s2 = s2 +1/4 * cn[n1]*cn[n2]*cn[n3]*cn[n4] * EPI[d1, n1, n2]*EPI[d2, n3, n4] * Theta[d1, d2]
-    print(s2)
+    # print(s2)
     
 
-    sigma_dUss = np.sqrt( tk *zetac/(np.sqrt(3)*b) *wc/(b/2) * s2)
+    sigma_dUss_tilde = np.sqrt(s2)
+    return sigma_dUss_tilde 
+            
+
+
+
+
+
+def calc_sigma_dUss(self, wc, zetac, t='fcc_partial'):
+    b = self.b 
+
+    if t=='fcc_partial':
+        tk = 2
+
+    elif t=='fcc_full':
+        tk = 1
+
+    sigma_dUss_tilde = calc_sigma_dUss_tilde(self, t=t)
+
+    sigma_dUss = np.sqrt( tk *zetac/(np.sqrt(3)*b) *wc/(b/2) ) * sigma_dUss_tilde
     return sigma_dUss 
             
 
