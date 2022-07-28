@@ -510,3 +510,41 @@ def crystal_shell(struc):
 
 
 
+
+
+
+def split_train_test(x, ntrain):
+    ntest = x.shape[0] - ntrain     
+    if ntest < 0.9:
+        x1 = x.copy()
+        x2 = []        
+    else:        
+        temp = int(-1*ntest)
+        x1 = x[0: temp].copy()
+        x2 = x[temp: ].copy()
+        if len( x.shape ) == 1:
+            confirm_0( np.hstack([x1, x2]) - x )
+        else:
+            confirm_0( np.vstack([x1, x2]) - x )    
+    return x1, x2
+
+
+
+
+def my_save_pkl(a, filename):
+    import pickle
+    with open(filename, 'wb') as file:
+        pickle.dump(a, file)
+
+
+
+def my_read_pkl(filename):
+    import pickle
+    with open(filename, 'rb') as file:
+        a = pickle.load(file)
+    return a 
+
+
+
+
+
