@@ -131,7 +131,17 @@ class epi_res:
         
         plt.savefig(figname) 
         plt.close('all')
+
+        self.save_epi_res(figname)
         self.write_epi_res(figname)
+        
+
+
+
+    def save_epi_res(self, figname):
+        from myvasp import vasp_func as vf         
+        filename = '%s.pkl' %(figname[0:-4])
+        vf.my_save_pkl(self, filename)  
 
 
 

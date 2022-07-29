@@ -257,7 +257,7 @@ class epi_fit:
             ax1[0].set_ylabel('mean of $  \\Delta( \\widetilde{E}_\\mathrm{tot} )$ (eV)')
             ax1[1].set_ylabel( 'std of $  \\Delta( \\widetilde{E}_\\mathrm{tot} )$ (eV)')
 
-            ax1[0].set_ylim([-0.01, 0.01 ]) 
+            ax1[0].set_ylim([-0.02, 0.02 ]) 
             ax1[1].set_ylim([0, 0.06]) 
             ax1[2].set_ylim([-0.06, 0.04]) 
 
