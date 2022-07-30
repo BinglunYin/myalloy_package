@@ -80,8 +80,8 @@ class epi_fit:
         rfcc, nfcc = vf.crystal_shell('fcc')
         xi = rfcc[0:shellmax].copy()
 
-        for i in np.arange(X.shape[0]):
-            ax1.plot(xi, X[i, 1:(shellmax+1)]/(-0.5), '-', alpha=0.3)
+        # for i in np.arange(X.shape[0]):
+        #     ax1.plot(xi, X[i, 1:(shellmax+1)]/(-0.5), '-', alpha=0.3)
     
         x_mean = np.mean(X[:,1:(shellmax+1)]/(-0.5), axis=0)
         x_std  = np.std( X[:,1:(shellmax+1)]/(-0.5), axis=0)
