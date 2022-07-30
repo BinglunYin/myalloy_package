@@ -39,13 +39,15 @@ class epi_fit:
         epi_res1 = self.calc_epi(ntrain=ntrain, shellmax=shellmax) 
         epi_res1.plot_epi_res(fname_suffix=fname_suffix) 
 
-        self.calc_lepi_res_ntrain(ntrain_range=np.arange(10, ntrain+1), shellmax=shellmax, fname_suffix=fname_suffix) 
+        temp = np.ceil( (shellmax+2)/10 )*10 
+        self.calc_lepi_res_ntrain(ntrain_range=np.arange(temp, ntrain+1), shellmax=shellmax, fname_suffix=fname_suffix) 
         fname1 = 'lepi_res_ntrain_%s.pkl'  %(fname_suffix)
         self.calc_nag_full_slip(filename=fname1) 
         self.plot_lepi_res_ntrain(filename=fname1, sd=sd) 
         self.plot_lepi_res_ntrain_2(filename=fname1) 
 
-        self.calc_lepi_res_shellmax(ntrain=ntrain, shellmax_range=np.arange(2,21), fname_suffix=fname_suffix) 
+        temp = self.X.shape[1]
+        self.calc_lepi_res_shellmax(ntrain=ntrain, shellmax_range=np.arange(1,temp), fname_suffix=fname_suffix) 
         fname2 = 'lepi_res_shellmax_%s.pkl'  %(fname_suffix)
         self.calc_nag_full_slip(filename=fname2) 
         self.plot_lepi_res_shellmax(filename=fname2) 
