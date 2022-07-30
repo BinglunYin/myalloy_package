@@ -249,10 +249,7 @@ class epi_fit:
         if self.epi_type == 'normal':
             ax1[0].set_ylabel('mean of $( \\widetilde{E}_\\mathrm{tot} - \\widetilde{E}^\\mathrm{rand}_\\mathrm{tot} )$ (eV)')
             ax1[1].set_ylabel( 'std of $( \\widetilde{E}_\\mathrm{tot} - \\widetilde{E}^\\mathrm{rand}_\\mathrm{tot} )$ (eV)')
-
-            temp = ax1[1].get_ylim() 
-            ax1[1].set_ylim([0, temp[1]]) 
-
+           
         elif self.epi_type == 'diff':
             ax1[0].set_ylabel('mean of $  \\Delta( \\widetilde{E}_\\mathrm{tot} )$ (eV)')
             ax1[1].set_ylabel( 'std of $  \\Delta( \\widetilde{E}_\\mathrm{tot} )$ (eV)')

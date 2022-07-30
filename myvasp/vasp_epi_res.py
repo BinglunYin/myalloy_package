@@ -116,9 +116,9 @@ class epi_res:
         e_train = E_train - E_train_p  
         temp = np.cov( np.vstack([E_train_p, e_train]),  bias=True)
 
-        vf.confirm_0(temp[0,0]    - np.std(E_train_p)**2 , str1='cov 0'   )
-        vf.confirm_0(temp[1,1]    - np.std(e_train)**2   , str1='cov 1'   )
-        vf.confirm_0(np.sum(temp) - np.std(E_train)**2   , str1='cov sum' )
+        vf.confirm_0( (temp[0,0]    - np.std(E_train_p)**2 )/10 , str1='cov 0'   )
+        vf.confirm_0( (temp[1,1]    - np.std(e_train)**2   )/10 , str1='cov 1'   )
+        vf.confirm_0( (np.sum(temp) - np.std(E_train)**2   )/10 , str1='cov sum' )
 
         str3 = 'fitting error:\ne_train=$%.3f \pm %.3f$\ncov=%.3f' \
             %( np.mean(e_train), np.std(e_train),       temp[0,1]  )                    

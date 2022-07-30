@@ -74,7 +74,7 @@ def calc_X_from_latoms(latoms_in, shellmax=20):
         vf.confirm_0( temp - elem_an )
 
         temp = pd.unique( latoms[i].get_chemical_symbols() )
-        if elem_sym.any() != temp.any() :
+        if (elem_sym != temp).any() :
             sys.exit('ABORT: wrong elem_sym. ')
 
         temp = calc_dn_shell_row(latoms[i], shellmax=shellmax, write_dn=False)
