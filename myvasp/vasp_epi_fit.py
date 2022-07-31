@@ -276,6 +276,8 @@ class epi_fit:
         str1 = 'EPI $d_\\mathrm{max}=d_{%d}$' %( lepi_res[0].shellmax ) 
         vf.my_text(ax1[0], str1, 0.5, 0.9, ha='center' )
 
+        create_abc(ax1)
+
         figname = '%s.pdf' %(filename[0:-4])
         plt.savefig(figname)
         plt.close('all')
@@ -409,7 +411,7 @@ class epi_fit:
 
         ax1[0].set_ylim([0, 1]) 
         ax1[1].set_ylim([0, 1]) 
-        ax1[1].set_ylim([0, 0.06]) 
+        ax1[2].set_ylim([0, 0.06]) 
 
         ax1[2].set_xlim( fig_xlim )
 
@@ -418,8 +420,20 @@ class epi_fit:
         ax1[2].set_ylabel('EPI-based theoretical $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $ (eV)')
         ax1[2].set_xlabel('$d_\\mathrm{max}$')
 
+
+        xt  = ax1[2].get_xticks()
+        xtl = ax1[2].get_xticklabels()
+
+        for i in np.arange(len(xt)):
+            str1 = '$ d_{%d} $'  %( xt[i] ) 
+            xtl[i] = str1 
+        ax1[2].set_xticklabels(xtl) 
+
+
         str1 = 'EPI $n_\\mathrm{train}=%d$' %( lepi_res[0].ntrain ) 
         vf.my_text(ax1[0], str1, 0.5, 0.9, ha='center' )
+
+        create_abc(ax1)
 
         figname = '%s_2.pdf' %(filename[0:-4])
         plt.savefig(figname)
@@ -446,7 +460,18 @@ def create_ax1():
 
 
 
+def create_abc(ax1):
+    x = -0.31
+    y =  1.02
 
+    str1 = '(a)'
+    vf.my_text(ax1[0], str1, x, y, weight='bold')
+
+    str1 = '(b)'
+    vf.my_text(ax1[1], str1, x, y, weight='bold')
+
+    str1 = '(c)'
+    vf.my_text(ax1[2], str1, x, y, weight='bold')  
 
 
 
