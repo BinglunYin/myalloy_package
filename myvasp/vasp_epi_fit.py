@@ -384,8 +384,8 @@ class epi_fit:
             ntrain     = np.append( ntrain,     lepi_res[i].ntrain     )  
             shellmax   = np.append( shellmax,   lepi_res[i].shellmax   )
             R2         = np.append( R2,         lepi_res[i].R2         )               
-            rmse_train = np.append( rmse_train, lepi_res[i].rmse_train / lepi_res[i].Etrain.std() )    
-            rmse_test  = np.append( rmse_test,  lepi_res[i].rmse_test  / lepi_res[i].Etest.std()  )    
+            rmse_train = np.append( rmse_train, lepi_res[i].rmse_train / lepi_res[i].E_train.std() )    
+            rmse_test  = np.append( rmse_test,  lepi_res[i].rmse_test  / lepi_res[i].E_test.std()  )    
 
         vf.confirm_0( ntrain.std() )
 
