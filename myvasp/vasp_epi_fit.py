@@ -427,6 +427,8 @@ class epi_fit:
         for i in np.arange(len(xt)):
             str1 = '$ d_{%d} $'  %( xt[i] ) 
             xtl[i] = str1 
+
+        ax1[2].set_xticks(xt) 
         ax1[2].set_xticklabels(xtl) 
 
 
@@ -449,7 +451,7 @@ def create_ax1():
     fig_subp = [3, 1]
     fig1, ax1 = vf.my_plot(fig_wh, fig_subp)
         
-    fig_pos  = np.array([0.24, 0.71, 0.68, 0.26])
+    fig_pos  = np.array([0.23, 0.71, 0.69, 0.26])
     for i in np.arange(fig_subp[0]):
         ax1[i].set_position( fig_pos + np.array([0, -0.32*i, 0,  0]) )
 
