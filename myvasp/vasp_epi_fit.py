@@ -47,7 +47,7 @@ class epi_fit:
         self.plot_lepi_res_ntrain_2(filename=fname1) 
 
         temp = self.X.shape[1]
-        self.calc_lepi_res_shellmax(ntrain=ntrain, shellmax_range=np.arange(1,temp), fname_suffix=fname_suffix) 
+        self.calc_lepi_res_shellmax(ntrain=ntrain, shellmax_range=np.arange(2, temp), fname_suffix=fname_suffix) 
         fname2 = 'lepi_res_shellmax_%s.pkl'  %(fname_suffix)
         self.calc_nag_full_slip(filename=fname2) 
         self.plot_lepi_res_shellmax(filename=fname2) 
@@ -172,14 +172,20 @@ class epi_fit:
 
         lepi_res = vf.my_read_pkl(filename) 
         sigma_dUss_tilde = np.array([]) 
+        sigma_dUss_tilde_2 = np.array([]) 
 
         for i in np.arange( len(lepi_res) ):
             a1.set_EPI( lepi_res[i].beta[1:] )
             temp = a1.calc_sigma_dUss_tilde(t='fcc_full')  
             sigma_dUss_tilde = np.append( sigma_dUss_tilde, temp ) 
 
+            a1.set_EPI( lepi_res[i].beta[1:3] )
+            temp = a1.calc_sigma_dUss_tilde(t='fcc_full')  
+            sigma_dUss_tilde_2 = np.append( sigma_dUss_tilde_2, temp ) 
+
         filename2 = '%s.full_slip.txt' %(filename[0:-4])
-        np.savetxt(filename2, sigma_dUss_tilde)
+        temp = np.vstack([ sigma_dUss_tilde, sigma_dUss_tilde_2 ])
+        np.savetxt(filename2, temp)
 
 
 
@@ -235,7 +241,7 @@ class epi_fit:
         filename2 = '%s.full_slip.txt' %(filename[0:-4])
         if os.path.exists(filename2):
             sigma_dUss_tilde = np.loadtxt(filename2)  
-            ax1[1].plot( ntrain, sigma_dUss_tilde, '--', color='C2', label='EPI-based theoretical $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $')
+            ax1[1].plot( ntrain, sigma_dUss_tilde[0,:], '-', color='C2', label='EPI-based theoretical $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $')
 
         for j in np.arange(1, beta.shape[1]):
             str1 = '$d_{%d}$'  %(j)
@@ -391,9 +397,11 @@ class epi_fit:
         filename2 = '%s.full_slip.txt' %(filename[0:-4])
         if os.path.exists(filename2):
             sigma_dUss_tilde = np.loadtxt(filename2)  
-            ax1[2].plot( shellmax, sigma_dUss_tilde, '-o', color='C2')
+            ax1[2].plot( shellmax, sigma_dUss_tilde[0,:], '-o',  color='C2', label='with all neighbours in EPIs')
+            ax1[2].plot( shellmax, sigma_dUss_tilde[1,:], '--s', color='C2', label='with first two neighbours in EPIs')
 
         ax1[1].legend( fontsize=6 )       
+        ax1[2].legend( fontsize=6 )       
 
         ax1[0].set_ylim([0, 1]) 
         for i in np.arange(1, 3):
@@ -404,7 +412,7 @@ class epi_fit:
 
         ax1[0].set_ylabel('$R^2$')
         ax1[1].set_ylabel('RMSE (meV/atom)')
-        ax1[2].set_ylabel('EPI-based theoretical $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $')
+        ax1[2].set_ylabel('EPI-based theoretical $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $ (eV)')
         ax1[2].set_xlabel('$d_\\mathrm{max}$')
 
         str1 = 'EPI $n_\\mathrm{train}=%d$' %( lepi_res[0].ntrain ) 
