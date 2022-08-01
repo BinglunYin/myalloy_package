@@ -34,6 +34,9 @@ class epi_res:
         self.rmse_train = vf.calc_RMSE( self.E_train, self.E_train_p )
         self.rmse_test  = vf.calc_RMSE( self.E_test,  self.E_test_p  )
 
+        self.pe_train = self.rmse_train / self.E_train.std()      # percent error 
+        self.pe_test  = self.rmse_test  / self.E_test.std() 
+
 
 
 
@@ -82,14 +85,11 @@ class epi_res:
         E_test_p  = self.E_test_p.copy()  
 
 
-        str1 = 'train, RMSE=%.3f meV/atom' %( self.rmse_train )
-        ax1[1].plot( E_train, E_train_p, '.', label=str1,  alpha=0.6) 
-
+        ax1[1].plot( E_train, E_train_p,   '.', label='training set',  alpha=0.6 ) 
         if self.ntest > 0.9:
-            str2 = 'test, RMSE=%.3f meV/atom' %( self.rmse_test )
-            ax1[1].plot( E_test, E_test_p, '.', label=str2,  alpha=0.4 )
+            ax1[1].plot( E_test, E_test_p, '.', label='testing set',   alpha=0.4 )
 
-        ax1[1].legend(fontsize=5.5, loc='upper left')   
+        ax1[1].legend(fontsize=6, loc='upper left')   
 
         xlim = ax1[1].get_xlim() 
         ylim = ax1[1].get_ylim() 
@@ -102,13 +102,16 @@ class epi_res:
 
         #=================================
 
-        str3 = '# of structures: train=%d, test=%d\n\nDFT-train=$%.3f \pm %.3f$\nEPI-train=$%.3f \pm %.3f$' \
-            %( len(E_train), len(E_test),    np.mean(E_train), np.std(E_train),   np.mean(E_train_p), np.std(E_train_p)  )
+        str3 = '# of structures: train=%d, test=%d\n\nE_train=$%.3f \pm %.3f$\nE_train_p=$%.3f \pm %.3f$\nRMSE=%.3f, pe=%.3f' \
+            %( len(E_train), len(E_test),    \
+                np.mean(E_train), np.std(E_train),   np.mean(E_train_p), np.std(E_train_p), \
+                self.rmse_train, self.pe_train  )
         vf.my_text(ax1[1], str3, 1.08, 0.7 )
 
         if self.ntest > 0.9:
-            str3 = 'DFT-test=$%.3f \pm %.3f$\nEPI-test=$%.3f \pm %.3f$' \
-                %( np.mean(E_test), np.std(E_test),   np.mean(E_test_p), np.std(E_test_p)  )
+            str3 = 'E_test=$%.3f \pm %.3f$\nE_test_p=$%.3f \pm %.3f$\nRMSE=%.3f, pe=%.3f' \
+                %( np.mean(E_test), np.std(E_test),   np.mean(E_test_p), np.std(E_test_p), \
+                    self.rmse_test, self.pe_test  )
             vf.my_text(ax1[1], str3, 1.08, -0.1 )
 
   
@@ -122,7 +125,7 @@ class epi_res:
 
         str3 = 'fitting error:\ne_train=$%.3f \pm %.3f$\ncov=%.3f' \
             %( np.mean(e_train), np.std(e_train),       temp[0,1]  )                    
-        vf.my_text(ax1[1], str3, 1.08, 0.3 )
+        vf.my_text(ax1[1], str3, 1.08, 0.2 )
 
         if fname_suffix != '':
             figname = 'epi_res_%s.pdf' %(fname_suffix)
@@ -164,8 +167,11 @@ class epi_res:
             f.write('beta = E_rand (eV), EPI (eV) \n')
             f.write(str( self.beta )+'\n\n')
 
-            temp = np.hstack([ self.X, self.E[:, np.newaxis], self.E_p[:, np.newaxis] ])
-            f.write('X, E (eV), E_p (eV) \n')
+            f.write('X \n')
+            f.write(str( self.X )+'\n\n')
+
+            temp = np.hstack([ self.E[:, np.newaxis], self.E_p[:, np.newaxis] ])
+            f.write('E (eV), E_p (eV) \n')
             f.write(str( temp )+'\n\n')
 
         f.close() 

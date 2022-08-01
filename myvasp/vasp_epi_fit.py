@@ -87,6 +87,12 @@ class epi_fit:
         x_std  = np.std( X[:,1:(shellmax+1)]/(-0.5), axis=0)
 
         ax1.errorbar(xi, x_mean, fmt="ko-", yerr=x_std)
+        
+        ylim = ax1.get_ylim() 
+        temp = np.max( np.abs( ylim )) 
+        temp = np.ceil( temp*10 )/10 
+        ax1.set_ylim([-temp, temp])              
+
         ax1.set_xlabel('Pair distance $d/a$')
 
         if self.epi_type == 'normal':
@@ -246,7 +252,7 @@ class epi_fit:
         ax1[2].plot( ntrain, sE_train_p/1e3 *Ntot2, '-', color='C3', label='from EPI-predicted energies')
 
         filename2 = '%s.full_slip.txt' %(filename[0:-4])
-        if os.path.exists(filename2):
+        if os.path.exists(filename2) and self.epi_type == 'diff':
             sigma_dUss_tilde = np.loadtxt(filename2)  
             ax1[2].plot( ntrain, sigma_dUss_tilde[0,:], '-', color='C2', label='EPI-based theoretical $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $')
 
@@ -259,6 +265,7 @@ class epi_fit:
         ax1[2].set_xlabel('$n_\\mathrm{train}$')
 
         ax1[0].set_ylabel('EPI $V_{\\mathrm{AuNi}, d}$ (eV)')
+        ax1[0].set_ylim([-0.06, 0.04]) 
 
         if self.epi_type == 'normal':
             ax1[1].set_ylabel('mean of $( \\widetilde{E}_\\mathrm{tot} - \\widetilde{E}^\\mathrm{rand}_\\mathrm{tot} )$ (eV)')
@@ -268,7 +275,6 @@ class epi_fit:
             ax1[1].set_ylabel('mean of $  \\Delta( \\widetilde{E}_\\mathrm{tot} )$ (eV)')
             ax1[2].set_ylabel( 'std of $  \\Delta( \\widetilde{E}_\\mathrm{tot} )$ (eV)')
 
-            ax1[0].set_ylim([-0.06, 0.04]) 
             ax1[1].set_ylim([-0.02, 0.02 ]) 
             ax1[2].set_ylim([0, 0.06]) 
 
@@ -288,16 +294,16 @@ class epi_fit:
     def plot_lepi_res_ntrain_2(self, filename):      
         lepi_res = vf.my_read_pkl(filename) 
 
-        ntrain     = np.array([])
-        R2         = np.array([])
-        rmse_train = np.array([])
-        rmse_test  = np.array([])
+        ntrain   = np.array([])
+        R2       = np.array([])
+        pe_train = np.array([])
+        pe_test  = np.array([])
 
         for i in np.arange( len(lepi_res) ):
-            ntrain     = np.append( ntrain,     lepi_res[i].ntrain     )  
-            R2         = np.append( R2,         lepi_res[i].R2         )    
-            rmse_train = np.append( rmse_train, lepi_res[i].rmse_train )    
-            rmse_test  = np.append( rmse_test,  lepi_res[i].rmse_test  )
+            ntrain   = np.append( ntrain,   lepi_res[i].ntrain   )  
+            R2       = np.append( R2,       lepi_res[i].R2       )    
+            pe_train = np.append( pe_train, lepi_res[i].pe_train )    
+            pe_test  = np.append( pe_test,  lepi_res[i].pe_test  )
 
 
         ax1 = create_ax1() 
@@ -305,22 +311,20 @@ class epi_fit:
 
         ax1[0].plot( ntrain, R2, '-', color='k')
         
-        ax1[1].plot( ntrain, rmse_train, '-', color='C0', label='training set')
-        ax1[1].plot( ntrain, rmse_test,  '-', color='C1', label='testing set')
+        ax1[1].plot( ntrain, pe_train, '-', color='C0', label='training set')
+        ax1[1].plot( ntrain, pe_test , '-', color='C1', label='testing set' )
        
         ax1[1].legend( fontsize=6 )       
 
-        ax1[0].set_ylim([0, 1]) 
-        for i in np.arange(1, 2):
-            temp = ax1[i].get_ylim() 
-            ax1[i].set_ylim([0, np.ceil(temp[1]*10)/10 ]) 
-
         ax1[2].set_xlim( fig_xlim )
+        ax1[2].set_xlabel('$n_\\mathrm{train}$')
+
+        ax1[0].set_ylim([0, 1]) 
+        ax1[0].set_ylim([0, 1]) 
 
         ax1[0].set_ylabel('$R^2$')
-        ax1[1].set_ylabel('RMSE (meV/atom)')
+        ax1[1].set_ylabel('percent error')
         ax1[2].set_ylabel(' ')
-        ax1[2].set_xlabel('$n_\\mathrm{train}$')
 
         str1 = 'EPI $d_\\mathrm{max}=d_{%d}$' %( lepi_res[0].shellmax ) 
         vf.my_text(ax1[0], str1, 0.5, 0.9, ha='center' )
@@ -376,28 +380,36 @@ class epi_fit:
     def plot_lepi_res_shellmax_2(self, filename):      
         lepi_res = vf.my_read_pkl(filename) 
 
-        ntrain     = np.array([])
-        shellmax   = np.array([])
-        R2         = np.array([])
-        rmse_train = np.array([])
-        rmse_test  = np.array([])
+        ntrain   = np.array([])
+        shellmax = np.array([])
+        R2       = np.array([])
+        pe_train = np.array([])
+        pe_test  = np.array([])
+        sE_train = np.array([])
+        sE_test  = np.array([])
 
         for i in np.arange( len(lepi_res) ):
-            ntrain     = np.append( ntrain,     lepi_res[i].ntrain     )  
-            shellmax   = np.append( shellmax,   lepi_res[i].shellmax   )
-            R2         = np.append( R2,         lepi_res[i].R2         )               
-            rmse_train = np.append( rmse_train, lepi_res[i].rmse_train / lepi_res[i].E_train.std() )    
-            rmse_test  = np.append( rmse_test,  lepi_res[i].rmse_test  / lepi_res[i].E_test.std()  )    
+            ntrain   = np.append( ntrain,   lepi_res[i].ntrain    )  
+            shellmax = np.append( shellmax, lepi_res[i].shellmax  )
+            R2       = np.append( R2,       lepi_res[i].R2        )               
+            pe_train = np.append( pe_train, lepi_res[i].pe_train  )    
+            pe_test  = np.append( pe_test,  lepi_res[i].pe_test   )    
+            sE_train = np.append( sE_train, lepi_res[i].E_train.std() )    
+            sE_test  = np.append( sE_test,  lepi_res[i].E_test.std()  )    
 
-        vf.confirm_0( ntrain.std() )
+        vf.confirm_0( ntrain.std()   )
+        vf.confirm_0( sE_train.std() )
+        vf.confirm_0( sE_test.std()  )
 
         ax1 = create_ax1() 
         fig_xlim = [shellmax[0], shellmax[-1]]
 
         ax1[0].plot( shellmax, R2, '-o', color='k')
 
-        ax1[1].plot( shellmax, rmse_train, '-s', color='C0',  label='training set')
-        ax1[1].plot( shellmax, rmse_test,  '-o', color='C1',  label='testing set')
+        str1 = 'training set, std= %.3f meV/atom'  %(sE_train[0])
+        str2 =  'testing set, std= %.3f meV/atom'  %(sE_test[0])
+        ax1[1].plot( shellmax, pe_train, '-s', color='C0',  label=str1)
+        ax1[1].plot( shellmax, pe_test,  '-o', color='C1',  label=str2)
       
         filename2 = '%s.full_slip.txt' %(filename[0:-4])
         if os.path.exists(filename2):
@@ -409,27 +421,25 @@ class epi_fit:
         ax1[1].legend( fontsize=6 )       
         ax1[2].legend( fontsize=6 )       
 
+        ax1[2].set_xlim( fig_xlim )
+
+        xt  = ax1[2].get_xticks()
+        xtl = ax1[2].get_xticklabels()
+        for i in np.arange(len(xt)):
+            str1 = '$ d_{%d} $'  %( xt[i] ) 
+            xtl[i] = str1 
+        ax1[2].set_xticks(xt) 
+        ax1[2].set_xticklabels(xtl) 
+
+        ax1[2].set_xlabel('$d_\\mathrm{max}$')
+
         ax1[0].set_ylim([0, 1]) 
         ax1[1].set_ylim([0, 1]) 
         ax1[2].set_ylim([0, 0.06]) 
 
-        ax1[2].set_xlim( fig_xlim )
-
         ax1[0].set_ylabel('$R^2$')
-        ax1[1].set_ylabel('RMSE/std')
-        ax1[2].set_ylabel('EPI-based theoretical $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $ (eV)')
-        ax1[2].set_xlabel('$d_\\mathrm{max}$')
-
-
-        xt  = ax1[2].get_xticks()
-        xtl = ax1[2].get_xticklabels()
-
-        for i in np.arange(len(xt)):
-            str1 = '$ d_{%d} $'  %( xt[i] ) 
-            xtl[i] = str1 
-
-        ax1[2].set_xticks(xt) 
-        ax1[2].set_xticklabels(xtl) 
+        ax1[1].set_ylabel('percent error')
+        ax1[2].set_ylabel('theoretical $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $ (eV)')
 
 
         str1 = 'EPI $n_\\mathrm{train}=%d$' %( lepi_res[0].ntrain ) 
@@ -451,7 +461,7 @@ def create_ax1():
     fig_subp = [3, 1]
     fig1, ax1 = vf.my_plot(fig_wh, fig_subp)
         
-    fig_pos  = np.array([0.23, 0.71, 0.69, 0.26])
+    fig_pos  = np.array([0.24, 0.71, 0.68, 0.26])
     for i in np.arange(fig_subp[0]):
         ax1[i].set_position( fig_pos + np.array([0, -0.32*i, 0,  0]) )
 
