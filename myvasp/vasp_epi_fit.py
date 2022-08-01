@@ -190,7 +190,7 @@ class epi_fit:
             sigma_dUss_tilde_2 = np.append( sigma_dUss_tilde_2, temp ) 
 
         filename2 = '%s.full_slip.txt' %(filename[0:-4])
-        temp = np.vstack([ sigma_dUss_tilde, sigma_dUss_tilde_2 ])
+        temp = np.hstack([ sigma_dUss_tilde[:,np.newaxis], sigma_dUss_tilde_2[:,np.newaxis] ])
         np.savetxt(filename2, temp)
 
 
@@ -254,7 +254,7 @@ class epi_fit:
         filename2 = '%s.full_slip.txt' %(filename[0:-4])
         if os.path.exists(filename2) and self.epi_type == 'diff':
             sigma_dUss_tilde = np.loadtxt(filename2)  
-            ax1[2].plot( ntrain, sigma_dUss_tilde[0,:], '-', color='C2', label='EPI-based theoretical $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $')
+            ax1[2].plot( ntrain, sigma_dUss_tilde[:,0], '-', color='C2', label='EPI-based theoretical $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $')
 
       
         ax1[0].legend( fontsize=6, loc='lower left', ncol=2)       
@@ -320,7 +320,7 @@ class epi_fit:
         ax1[2].set_xlabel('$n_\\mathrm{train}$')
 
         ax1[0].set_ylim([0, 1]) 
-        ax1[0].set_ylim([0, 1]) 
+        ax1[1].set_ylim([0, 1]) 
 
         ax1[0].set_ylabel('$R^2$')
         ax1[1].set_ylabel('percent error')
@@ -406,16 +406,16 @@ class epi_fit:
 
         ax1[0].plot( shellmax, R2, '-o', color='k')
 
-        str1 = 'training set, std= %.3f meV/atom'  %(sE_train[0])
-        str2 =  'testing set, std= %.3f meV/atom'  %(sE_test[0])
+        str1 = 'training set, std = %.3f meV/atom'  %(sE_train[0])
+        str2 =  'testing set, std = %.3f meV/atom'  %(sE_test[0])
         ax1[1].plot( shellmax, pe_train, '-s', color='C0',  label=str1)
         ax1[1].plot( shellmax, pe_test,  '-o', color='C1',  label=str2)
       
         filename2 = '%s.full_slip.txt' %(filename[0:-4])
         if os.path.exists(filename2):
             sigma_dUss_tilde = np.loadtxt(filename2)  
-            ax1[2].plot( shellmax, sigma_dUss_tilde[0,:], '-s', color='C2', label='with all neighbours in EPIs')
-            ax1[2].plot( shellmax, sigma_dUss_tilde[1,:], '-o', color='C4', label='with first two neighbours in EPIs')
+            ax1[2].plot( shellmax, sigma_dUss_tilde[:,0], '-s', color='C2', label='with all neighbours in EPIs')
+            ax1[2].plot( shellmax, sigma_dUss_tilde[:,1], '-o', color='C4', label='with first two neighbours in EPIs')
 
 
         ax1[1].legend( fontsize=6 )       

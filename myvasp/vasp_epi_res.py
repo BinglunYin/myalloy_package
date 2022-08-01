@@ -4,6 +4,9 @@ import numpy as np
 from myvasp import vasp_func as vf 
 
 
+
+
+
 class epi_res:
     def __init__(self, epi_type, ntrain, shellmax, beta, R2, X, E, E_p):
         self.epi_type = epi_type
@@ -102,17 +105,17 @@ class epi_res:
 
         #=================================
 
-        str3 = '# of structures: train=%d, test=%d\n\nE_train=$%.3f \pm %.3f$\nE_train_p=$%.3f \pm %.3f$\nRMSE=%.3f, pe=%.3f' \
+        str3 = '# of structures: train=%d, test=%d\n\nE_train = $%.3f \pm %.3f$\nE_train_p = $%.3f \pm %.3f$\nRMSE = %.3f, pe = %.3f' \
             %( len(E_train), len(E_test),    \
                 np.mean(E_train), np.std(E_train),   np.mean(E_train_p), np.std(E_train_p), \
                 self.rmse_train, self.pe_train  )
-        vf.my_text(ax1[1], str3, 1.08, 0.7 )
+        vf.my_text(ax1[1], str3, 1.08, 0.6 )
 
         if self.ntest > 0.9:
-            str3 = 'E_test=$%.3f \pm %.3f$\nE_test_p=$%.3f \pm %.3f$\nRMSE=%.3f, pe=%.3f' \
+            str3 = 'E_test = $%.3f \pm %.3f$\nE_test_p = $%.3f \pm %.3f$\nRMSE = %.3f, pe = %.3f' \
                 %( np.mean(E_test), np.std(E_test),   np.mean(E_test_p), np.std(E_test_p), \
                     self.rmse_test, self.pe_test  )
-            vf.my_text(ax1[1], str3, 1.08, -0.1 )
+            vf.my_text(ax1[1], str3, 1.08, -0.2 )
 
   
         # fitting error
