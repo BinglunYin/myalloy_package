@@ -417,7 +417,15 @@ class epi_fit:
             yi = temp[mask] 
 
             str1 = '$d_{%d}$'  %(j)
-            ax1[0].plot( xi, yi, '-.', label=str1) 
+
+            if j < 2.1:
+                alpha = 1 
+            elif j < 5.1:
+                alpha = 0.8
+            else:
+                alpha = 0.4 
+
+            ax1[0].plot( xi, yi, '-o', label=str1, alpha=alpha)  
 
         ax1[0].plot( fig_xlim, [0, 0], '--', color='gray' ) 
 
@@ -435,8 +443,8 @@ class epi_fit:
 
 
         ax1[0].legend( fontsize=6, loc='lower left', ncol=2)       
-        ax1[1].legend( fontsize=6 )       
-        ax1[2].legend( fontsize=6 )       
+        ax1[1].legend( fontsize=6, loc='lower left' )       
+        ax1[2].legend( fontsize=6, loc='lower left' )       
 
         ax1[2].set_xlim( fig_xlim )
 
