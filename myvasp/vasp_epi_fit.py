@@ -343,7 +343,7 @@ class epi_fit:
     #============================================
 
 
-    def plot_lepi_res_shellmax(self, filename):      
+    def plot_lepi_res_shellmax_2(self, filename):      
         lepi_res = vf.my_read_pkl(filename) 
 
         fig_wh = [3, 2.2]
@@ -370,14 +370,14 @@ class epi_fit:
         str1 = 'EPI $n_\\mathrm{train}=%d$' %( lepi_res[0].ntrain ) 
         vf.my_text(ax1, str1, 0.5, 0.9, ha='center' )
 
-        figname = '%s.pdf' %(filename[0:-4])
+        figname = '%s_2.pdf' %(filename[0:-4])
         plt.savefig(figname)
         plt.close('all')
 
 
 
 
-    def plot_lepi_res_shellmax_2(self, filename):      
+    def plot_lepi_res_shellmax(self, filename):      
         lepi_res = vf.my_read_pkl(filename) 
 
         ntrain   = np.array([])
@@ -388,6 +388,8 @@ class epi_fit:
         sE_train = np.array([])
         sE_test  = np.array([])
 
+        beta = np.ones([ len(lepi_res), lepi_res[-1].shellmax +1 ]) *1e6
+
         for i in np.arange( len(lepi_res) ):
             ntrain   = np.append( ntrain,   lepi_res[i].ntrain    )  
             shellmax = np.append( shellmax, lepi_res[i].shellmax  )
@@ -397,6 +399,9 @@ class epi_fit:
             sE_train = np.append( sE_train, lepi_res[i].E_train.std() )    
             sE_test  = np.append( sE_test,  lepi_res[i].E_test.std()  )    
 
+            beta[i, 0:(lepi_res[i].shellmax+1) ] = lepi_res[i].beta.copy()  
+
+
         vf.confirm_0( ntrain.std()   )
         vf.confirm_0( sE_train.std() )
         vf.confirm_0( sE_test.std()  )
@@ -404,7 +409,18 @@ class epi_fit:
         ax1 = create_ax1() 
         fig_xlim = [shellmax[0], shellmax[-1]]
 
-        ax1[0].plot( shellmax, R2, '-o', color='k')
+
+        for j in np.arange(1, beta.shape[1]):           
+            temp = beta[:,j]
+            mask = ( temp != 1e6 ) 
+            xi = shellmax[mask]
+            yi = temp[mask] 
+
+            str1 = '$d_{%d}$'  %(j)
+            ax1[0].plot( xi, yi, '-.', label=str1) 
+
+        ax1[0].plot( fig_xlim, [0, 0], '--', color='gray' ) 
+
 
         str1 = 'training set, std = %.3f meV/atom'  %(sE_train[0])
         str2 =  'testing set, std = %.3f meV/atom'  %(sE_test[0])
@@ -418,6 +434,7 @@ class epi_fit:
             ax1[2].plot( shellmax, sigma_dUss_tilde[:,1], '-o', color='C4', label='with first two neighbours in EPIs')
 
 
+        ax1[0].legend( fontsize=6, loc='lower left', ncol=2)       
         ax1[1].legend( fontsize=6 )       
         ax1[2].legend( fontsize=6 )       
 
@@ -433,11 +450,11 @@ class epi_fit:
 
         ax1[2].set_xlabel('$d_\\mathrm{max}$')
 
-        ax1[0].set_ylim([0, 1]) 
+        ax1[0].set_ylim([-0.06, 0.04]) 
         ax1[1].set_ylim([0, 1]) 
         ax1[2].set_ylim([0, 0.06]) 
 
-        ax1[0].set_ylabel('$R^2$')
+        ax1[0].set_ylabel('EPI $V_{\\mathrm{AuNi}, d}$ (eV)')
         ax1[1].set_ylabel('percent error')
         ax1[2].set_ylabel('theoretical $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $ (eV)')
 
@@ -447,7 +464,7 @@ class epi_fit:
 
         create_abc(ax1)
 
-        figname = '%s_2.pdf' %(filename[0:-4])
+        figname = '%s.pdf' %(filename[0:-4])
         plt.savefig(figname)
         plt.close('all')
 
