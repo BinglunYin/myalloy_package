@@ -421,7 +421,7 @@ class epi_fit:
             if j < 2.1:
                 alpha = 1 
             elif j < 5.1:
-                alpha = 0.8
+                alpha = 0.7
             else:
                 alpha = 0.4 
 

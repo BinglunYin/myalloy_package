@@ -126,7 +126,7 @@ class epi_res:
         vf.confirm_0( (temp[1,1]    - np.std(e_train)**2   )/10 , str1='cov 1'   )
         vf.confirm_0( (np.sum(temp) - np.std(E_train)**2   )/10 , str1='cov sum' )
 
-        str3 = 'fitting error:\ne_train=$%.3f \pm %.3f$\ncov=%.3f' \
+        str3 = 'fitting error:\ne_train = $%.3f \pm %.3f$\ncov = %.3f' \
             %( np.mean(e_train), np.std(e_train),       temp[0,1]  )                    
         vf.my_text(ax1[1], str3, 1.08, 0.2 )
 
