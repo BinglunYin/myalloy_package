@@ -304,9 +304,9 @@ def calc_model(alpha, b, mu111, muV, nuV, delta, At, AE):
     k101  = np.pi * 2**(-10/3) * 3**(-1/3) * (2**(5/2) -1)
     k122  =         2**(-5/3)  * 3**(-1/6) * (2**(5/2) -1)
     
-    vf.confirm_0( zetac - kzeta * ( Gamma**( 2) * b       * wc**( 4) * dEpsd**(-2) )**(1/3)  ) 
-    vf.confirm_0( ty0   - k101  * ( Gamma**(-1) * b**(-5) * wc**(-5) * dEpsd**( 4) )**(1/3)  ) 
-    vf.confirm_0( dEb   - k122  * ( Gamma       * b**(-1) * wc**( 2) * dEpsd**( 2) )**(1/3)  ) 
+    vf.confirm_0( kzeta * ( Gamma**( 2) * b       * wc**( 4) * dEpsd**(-2) )**(1/3) / zetac -1, str1='zetac' ) 
+    vf.confirm_0( k101  * ( Gamma**(-1) * b**(-5) * wc**(-5) * dEpsd**( 4) )**(1/3) / ty0   -1, str1='ty0'   ) 
+    vf.confirm_0( k122  * ( Gamma       * b**(-1) * wc**( 2) * dEpsd**( 2) )**(1/3) / dEb   -1, str1='dEb'   ) 
 
     return ty0, dEb, wc, zetac, sigma_dUsd, dEpsd 
 
