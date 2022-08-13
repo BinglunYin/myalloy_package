@@ -91,6 +91,25 @@ def calc_sigma_dUss_tilde(self, t='fcc_partial'):
 
 
 
+def calc_dEpss(self, wc, t='fcc_partial'):
+    b = self.b 
+
+    if t=='fcc_partial':
+        tk = 2
+
+    elif t=='fcc_full':
+        tk = 1
+
+    sigma_dUss_tilde = calc_sigma_dUss_tilde(self, t=t)
+
+    dEpss = np.sqrt( tk * wc/(b/2) ) * sigma_dUss_tilde
+    return dEpss 
+            
+
+
+
+
+
 def calc_sigma_dUss(self, wc, zetac, t='fcc_partial'):
     b = self.b 
 

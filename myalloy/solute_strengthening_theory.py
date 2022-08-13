@@ -74,21 +74,19 @@ def calc_yield_strength(self, param={}):
 
 
     #-------------------
-    Gamma = alpha * mu111 * b**2
-    P = muV*(1+nuV)/(1-nuV)
-    ty0 = At *(Gamma/b**2)**(-1/3)       *P**(4/3) *delta**(4/3) *1000  # [MPa]
-    dEb = AE *(Gamma/b**2)**( 1/3) *b**3 *P**(2/3) *delta**(2/3) *1e-21 # [J]
-  
-    ty = calc_ty(et0, T, et, ty0, dEb)
-    sigmay = 3.06 * ty
+    
+    ty0, dEb, wc, zetac, sigma_dUsd, dEpsd = calc_model(alpha, b, mu111, muV, nuV, delta, At, AE)
+
+    ty0   = ty0  *1e-6
+    wc    = wc   *1e-10
+    zetac = zetac*1e-10
+    sigma_dUsd = sigma_dUsd / self.qe
+    dEpsd      = dEpsd / self.qe
+
+
+    sigmay = calc_sigmay(et0, T, et, ty0, dEb)
     print(sigmay)
 
-    #-------------------
-    wc = (np.pi/(2**(5/2) -1))**(1/3) *(dEb**2/(Gamma*b*ty0))**(1/3) *1e15  # [Ang]
-    zetac = np.pi *dEb /( 2 *wc *b *ty0) *1e24   # [Ang]
-    sigma_dUsd = ( 4 / (2**(5/2)-1) ) *dEb /self.qe   # [eV]
-    
-    
 
     #-------------------
     if 'filename' in param: 
@@ -127,20 +125,20 @@ def calc_yield_strength(self, param={}):
         f.write('%16.4f %16.8f \n\n' \
         %(ty0, dEb/self.qe) )
 
-        f.write('%16s %16s \n' \
-        %('ty (MPa)', 'sigmay (MPa)' ) )
-        f.write('%16.4f %16.4f \n\n' \
-        %(ty, sigmay) )
+        f.write('%16s \n' \
+        %('sigmay (MPa)' ) )
+        f.write('%16.4f \n\n' \
+        %(sigmay) )
 
         f.write('%16s %16s %16s %16s \n' \
         %('wc (Ang)', 'wc/b', 'zetac (Ang)', 'zetac/b' ) )
         f.write('%16.4f %16.4f %16.4f %16.4f \n\n' \
         %(wc, wc/b, zetac, zetac/b) )
 
-        f.write('%16s \n' \
-        %('sigma_dUsd (eV)' ) )
-        f.write('%16.4f \n\n' \
-        %(sigma_dUsd) )
+        f.write('%16s %16s \n' \
+        %('sigma_dUsd (eV)', 'dEpsd (eV)' ) )
+        f.write('%16.4f %16.4f \n\n' \
+        %(sigma_dUsd, dEpsd) )
 
 
 
@@ -148,27 +146,22 @@ def calc_yield_strength(self, param={}):
 
             from myalloy import solute_strengthening_theory_EPI as sstEPI 
 
-            sigma_dUss = sstEPI.calc_sigma_dUss(self, wc, zetac, t='fcc_partial')
+            dEpss = sstEPI.calc_dEpss(self, wc, t='fcc_partial')    # [eV]
 
-            sigma_dUtot = np.sqrt( sigma_dUsd**2 + sigma_dUss**2 )
-            sigma_ratio = sigma_dUtot / sigma_dUsd
+            dEp_tot = np.sqrt( dEpsd**2 + dEpss**2 )
+            dEp_ratio = dEp_tot / dEpsd 
+
+            ty0_tot = ty0 * dEp_ratio**(4/3)
+            dEb_tot = dEb * dEp_ratio**(2/3)
+            sigmay_tot = calc_sigmay(et0, T, et, ty0_tot, dEb_tot)
 
 
             f.write('\n# With solute-solute interaction strengthening in ideal random alloy: \n' )
 
-            f.write('%16s %16s \n' \
-            %('sigma_dUss', 'sigma_dUtot') )
-            f.write('%16.4f %16.4f \n\n' \
-            %(sigma_dUss, sigma_dUtot) )
-
             f.write('%16s %16s %16s \n' \
-            %('sigma_ratio', 'ratio**(4/3)', 'ratio**(2/3)') )
+            %('dEpss (eV)', 'dEp_tot (eV)', 'dEp_ratio' ) )
             f.write('%16.4f %16.4f %16.4f \n\n' \
-            %(sigma_ratio, sigma_ratio**(4/3), sigma_ratio**(2/3)) )
-
-            ty0_tot = ty0*sigma_ratio**(4/3)
-            dEb_tot = dEb*sigma_ratio**(2/3)
-            sigmay_tot = 3.06*calc_ty(et0, T, et, ty0_tot, dEb_tot)
+            %(dEpss, dEp_tot, dEp_ratio) )         
 
             f.write('%16s %16s %16s \n' \
             %('ty0_tot (MPa)', 'dEb_tot (eV)', 'sigmay_tot (MPa)' ) )
@@ -285,10 +278,46 @@ def calc_yield_strength(self, param={}):
 #==============================
 
 
-def calc_ty(et0, T, et, ty0, dEb):
+
+
+def calc_model(alpha, b, mu111, muV, nuV, delta, At, AE):
+    from myvasp import vasp_func as vf 
+    
+    b     = b*1e-10
+    mu111 = mu111*1e9
+    muV   = muV*1e9
+
+    Gamma = alpha * mu111 * b**2    
+    P = muV*(1+nuV)/(1-nuV)  
+
+    ty0 = At *(Gamma/b**2)**(-1/3)       *P**(4/3) *delta**(4/3) 
+    dEb = AE *(Gamma/b**2)**( 1/3) *b**3 *P**(2/3) *delta**(2/3) 
+
+    #-------------------
+    wc = (np.pi/(2**(5/2) -1))**(1/3) * (dEb**2/(Gamma*b*ty0))**(1/3) 
+    zetac = np.pi *dEb /(2 *wc *b *ty0) 
+    sigma_dUsd = ( 4 / (2**(5/2)-1) ) *dEb      
+    dEpsd = ( zetac / (np.sqrt(3)*b) )**(-1/2) * sigma_dUsd 
+    
+    #-------------------
+    kzeta = (4*np.sqrt(3))**(-1/3)
+    k101  = np.pi * 2**(-10/3) * 3**(-1/3) * (2**(5/2) -1)
+    k122  =         2**(-5/3)  * 3**(-1/6) * (2**(5/2) -1)
+    
+    vf.confirm_0( zetac - kzeta * ( Gamma**( 2) * b       * wc**( 4) * dEpsd**(-2) )**(1/3)  ) 
+    vf.confirm_0( ty0   - k101  * ( Gamma**(-1) * b**(-5) * wc**(-5) * dEpsd**( 4) )**(1/3)  ) 
+    vf.confirm_0( dEb   - k122  * ( Gamma       * b**(-1) * wc**( 2) * dEpsd**( 2) )**(1/3)  ) 
+
+    return ty0, dEb, wc, zetac, sigma_dUsd, dEpsd 
+
+
+
+
+
+def calc_sigmay(et0, T, et, ty0, dEb):
     k = 1.380649e-23
-    ty = ty0 *(1 - (k*T/dEb *np.log(et0/et))**(2/3) )  # [MPa]
-    return ty
+    sigmay = 3.06* ty0 *(1 - (k*T/dEb *np.log(et0/et))**(2/3) )  # [MPa]
+    return sigmay  
 
 
 
