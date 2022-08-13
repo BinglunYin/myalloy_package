@@ -300,7 +300,7 @@ def calc_model(alpha, b, mu111, muV, nuV, delta, At, AE):
     dEpsd = ( zetac / (np.sqrt(3)*b) )**(-1/2) * sigma_dUsd 
     
     #-------------------
-    kzeta = (4*np.sqrt(3))**(-1/3)
+    kzeta = (4*np.sqrt(3))**(1/3)
     k101  = np.pi * 2**(-10/3) * 3**(-1/3) * (2**(5/2) -1)
     k122  =         2**(-5/3)  * 3**(-1/6) * (2**(5/2) -1)
     
