@@ -77,9 +77,9 @@ def calc_yield_strength(self, param={}):
     
     ty0, dEb, wc, zetac, sigma_dUsd, dEpsd = calc_model(alpha, b, mu111, muV, nuV, delta, At, AE)
 
-    ty0   = ty0  *1e-6
-    wc    = wc   *1e-10
-    zetac = zetac*1e-10
+    ty0   = ty0   *1e-6
+    wc    = wc    *1e10
+    zetac = zetac *1e10
     sigma_dUsd = sigma_dUsd / self.qe
     dEpsd      = dEpsd / self.qe
 
