@@ -259,7 +259,7 @@ def phy_const(sym):
 
 
 
-def vasp_read_post_data(filename='y_post_data'):
+def vasp_read_post_data(filename='y_post_data.txt'):
     jobn = []
     Etot = np.array([])
     Eent = np.array([])
