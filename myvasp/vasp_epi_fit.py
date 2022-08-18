@@ -254,7 +254,8 @@ class epi_fit:
         filename2 = '%s.full_slip.txt' %(filename[0:-4])
         if os.path.exists(filename2) and self.epi_type == 'diff':
             sigma_dUss_tilde = np.loadtxt(filename2)  
-            ax1[2].plot( ntrain, sigma_dUss_tilde[:,0], '-', color='C2', label='EPI-based theoretical $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $')
+            ax1[2].plot( ntrain, sigma_dUss_tilde[:,0], '-',  color='C2', label='analytical $\\widetilde{\\sigma}_{{\\Delta U_{s-s}}, f}$')
+            ax1[2].plot( ntrain, sigma_dUss_tilde[:,1], '--', color='C2', label='analytical $\\widetilde{\\sigma}_{{\\Delta U_{s-s}}, f}$ (first two shells)')
 
       
         ax1[0].legend( fontsize=6, loc='lower left', ncol=2)       
