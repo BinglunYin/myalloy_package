@@ -146,6 +146,10 @@ def calc_yield_strength(self, param={}):
 
             from myalloy import solute_strengthening_theory_EPI as sstEPI 
 
+            sigma_dUss_tilde_f = sstEPI.calc_sigma_dUss_tilde(self,  t='fcc_full')    
+            sigma_dUss_tilde_p = sstEPI.calc_sigma_dUss_tilde(self,  t='fcc_partial')   
+
+
             dEpss = sstEPI.calc_dEpss(self, wc, t='fcc_partial')    # [eV]
 
             dEp_tot = np.sqrt( dEpsd**2 + dEpss**2 )
@@ -157,6 +161,15 @@ def calc_yield_strength(self, param={}):
 
 
             f.write('\n# With solute-solute interaction strengthening in ideal random alloy: \n' )
+            f.write('# - slip: \n' )
+
+            f.write('%30s %30s \n' \
+            %('sigma_dUss_tilde_f (eV)', 'sigma_dUss_tilde_p (eV)' ) )
+            f.write('%30.4f %30.4f \n\n' \
+            %(sigma_dUss_tilde_f, sigma_dUss_tilde_p) )         
+
+
+            f.write('# - strengthening: \n' )
 
             f.write('%16s %16s %16s \n' \
             %('dEpss (eV)', 'dEp_tot (eV)', 'dEp_ratio' ) )
