@@ -34,6 +34,11 @@ class epi_fit:
     def routine_1(self, sd, tt=0.8, shellmax=5, fname_suffix=''):
         ntrain = np.around( self.X.shape[0] * tt )
 
+        if fname_suffix == 'pslip':
+            islip = 'fcc_partial'
+        else:
+            islip = 'fcc_full'
+
         self.plot_binary_deta(fname_suffix=fname_suffix)
 
         epi_res1 = self.calc_epi(ntrain=ntrain, shellmax=shellmax) 
@@ -42,14 +47,14 @@ class epi_fit:
         temp = np.ceil( (shellmax+2)/10 )*10 
         self.calc_lepi_res_ntrain(ntrain_range=np.arange(temp, ntrain+1), shellmax=shellmax, fname_suffix=fname_suffix) 
         fname1 = 'lepi_res_ntrain_%s.pkl'  %(fname_suffix)
-        self.calc_nag_full_slip(filename=fname1) 
+        self.calc_sdUss_tilde(filename=fname1, islip = islip) 
         self.plot_lepi_res_ntrain(filename=fname1, sd=sd) 
         self.plot_lepi_res_ntrain_2(filename=fname1) 
 
-        # temp = self.X.shape[1]
-        self.calc_lepi_res_shellmax(ntrain=ntrain, shellmax_range=np.arange(2, 11), fname_suffix=fname_suffix) 
+        temp = np.min([ self.X.shape[1], 11 ])
+        self.calc_lepi_res_shellmax(ntrain=ntrain, shellmax_range=np.arange(2, temp), fname_suffix=fname_suffix) 
         fname2 = 'lepi_res_shellmax_%s.pkl'  %(fname_suffix)
-        self.calc_nag_full_slip(filename=fname2) 
+        self.calc_sdUss_tilde(filename=fname2, islip = islip) 
         self.plot_lepi_res_shellmax(filename=fname2) 
         self.plot_lepi_res_shellmax_2(filename=fname2) 
 
@@ -172,7 +177,7 @@ class epi_fit:
 
 
 
-    def calc_nag_full_slip(self, filename, cn=np.array([1, 1]) ):
+    def calc_sdUss_tilde(self, filename, cn=np.array([1, 1]), islip='fcc_full' ):
         from myalloy import main 
         a1 = main.alloy_class(name='fcc_alloy', cn=cn, brav_latt='fcc')
 
@@ -182,14 +187,14 @@ class epi_fit:
 
         for i in np.arange( len(lepi_res) ):
             a1.set_EPI( lepi_res[i].beta[1:] )
-            temp = a1.calc_sigma_dUss_tilde(t='fcc_full')  
+            temp = a1.calc_sigma_dUss_tilde(t = islip)  
             sigma_dUss_tilde = np.append( sigma_dUss_tilde, temp ) 
 
             a1.set_EPI( lepi_res[i].beta[1:3] )
-            temp = a1.calc_sigma_dUss_tilde(t='fcc_full')  
+            temp = a1.calc_sigma_dUss_tilde(t = islip)  
             sigma_dUss_tilde_2 = np.append( sigma_dUss_tilde_2, temp ) 
 
-        filename2 = '%s.full_slip.txt' %(filename[0:-4])
+        filename2 = '%s.sdUss_tilde.txt' %(filename[0:-4])
         temp = np.hstack([ sigma_dUss_tilde[:,np.newaxis], sigma_dUss_tilde_2[:,np.newaxis] ])
         np.savetxt(filename2, temp)
 
@@ -251,7 +256,7 @@ class epi_fit:
         ax1[2].plot( ntrain, sE_train  /1e3 *Ntot2, '-', color='k',  label='from atomistically computed energies ')
         ax1[2].plot( ntrain, sE_train_p/1e3 *Ntot2, '-', color='C3', label='from EPI-predicted energies')
 
-        filename2 = '%s.full_slip.txt' %(filename[0:-4])
+        filename2 = '%s.sdUss_tilde.txt' %(filename[0:-4])
         if os.path.exists(filename2) and self.epi_type == 'diff':
             sigma_dUss_tilde = np.loadtxt(filename2)  
             ax1[2].plot( ntrain, sigma_dUss_tilde[:,0], '-',  color='C2', label='analytical $\\widetilde{\\sigma}_{{\\Delta U_{s-s}}, f}$')
@@ -436,7 +441,7 @@ class epi_fit:
         ax1[1].plot( shellmax, pe_train, '-s', color='C0',  label=str1)
         ax1[1].plot( shellmax, pe_test,  '-o', color='C1',  label=str2)
       
-        filename2 = '%s.full_slip.txt' %(filename[0:-4])
+        filename2 = '%s.sdUss_tilde.txt' %(filename[0:-4])
         if os.path.exists(filename2):
             sigma_dUss_tilde = np.loadtxt(filename2)  
             ax1[2].plot( shellmax, sigma_dUss_tilde[:,0], '-s', color='C2', label='with all neighbours in EPIs')
