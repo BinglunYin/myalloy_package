@@ -51,12 +51,13 @@ class epi_fit:
         self.plot_lepi_res_ntrain(filename=fname1, sd=sd) 
         self.plot_lepi_res_ntrain_2(filename=fname1) 
 
-        temp = np.min([ self.X.shape[1], 11 ])
-        self.calc_lepi_res_shellmax(ntrain=ntrain, shellmax_range=np.arange(2, temp), fname_suffix=fname_suffix) 
-        fname2 = 'lepi_res_shellmax_%s.pkl'  %(fname_suffix)
-        self.calc_sdUss_tilde(filename=fname2, islip = islip) 
-        self.plot_lepi_res_shellmax(filename=fname2) 
-        self.plot_lepi_res_shellmax_2(filename=fname2) 
+        if islip == 'fcc_full':
+            temp = np.min([ self.X.shape[1], 11 ])
+            self.calc_lepi_res_shellmax(ntrain=ntrain, shellmax_range=np.arange(2, temp), fname_suffix=fname_suffix) 
+            fname2 = 'lepi_res_shellmax_%s.pkl'  %(fname_suffix)
+            self.calc_sdUss_tilde(filename=fname2, islip = islip) 
+            self.plot_lepi_res_shellmax(filename=fname2) 
+            self.plot_lepi_res_shellmax_2(filename=fname2) 
 
 
    
@@ -181,6 +182,8 @@ class epi_fit:
         from myalloy import main 
         a1 = main.alloy_class(name='fcc_alloy', cn=cn, brav_latt='fcc')
 
+        print('islip:', islip)
+
         lepi_res = vf.my_read_pkl(filename) 
         sigma_dUss_tilde = np.array([]) 
         sigma_dUss_tilde_2 = np.array([]) 
@@ -257,7 +260,7 @@ class epi_fit:
         ax1[2].plot( ntrain, sE_train_p/1e3 *Ntot2, '-', color='C3', label='from EPI-predicted energies')
 
         filename2 = '%s.sdUss_tilde.txt' %(filename[0:-4])
-        if os.path.exists(filename2) and self.epi_type == 'diff':
+        if os.path.exists(filename2) :
             sigma_dUss_tilde = np.loadtxt(filename2)  
             ax1[2].plot( ntrain, sigma_dUss_tilde[:,0], '-',  color='C2', label='analytical $\\widetilde{\\sigma}_{{\\Delta U_{s-s}}, f}$')
             ax1[2].plot( ntrain, sigma_dUss_tilde[:,1], '--', color='C2', label='analytical $\\widetilde{\\sigma}_{{\\Delta U_{s-s}}, f}$ (first two shells)')
@@ -272,6 +275,7 @@ class epi_fit:
 
         ax1[0].set_ylabel('EPI $V_{\\mathrm{AuNi}, d}$ (eV)')
         ax1[0].set_ylim([-0.06, 0.04]) 
+        ax1[1].set_ylim([-0.02, 0.02]) 
 
         if self.epi_type == 'normal':
             ax1[1].set_ylabel('mean of $( \\widetilde{E}_\\mathrm{tot} - \\widetilde{E}^\\mathrm{rand}_\\mathrm{tot} )$ (eV)')
@@ -281,7 +285,6 @@ class epi_fit:
             ax1[1].set_ylabel('mean of $  \\Delta( \\widetilde{E}_\\mathrm{tot} )$ (eV)')
             ax1[2].set_ylabel( 'std of $  \\Delta( \\widetilde{E}_\\mathrm{tot} )$ (eV)')
 
-            ax1[1].set_ylim([-0.02, 0.02 ]) 
             ax1[2].set_ylim([0, 0.06]) 
 
         vf.confirm_0( shellmax.std() )
