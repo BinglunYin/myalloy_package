@@ -107,16 +107,15 @@ class alloy_class:
 
 
     # get EPI
-    def get_EPI_from_file(self, filename='y_post_EPI.beta2_4.txt'):
-        beta2 = np.loadtxt(filename)
-        self.set_EPI(beta2) 
+    # def get_EPI_from_file(self, filename='y_post_EPI.beta2_4.txt'):
+    #     beta2 = np.loadtxt(filename)
+    #     self.set_EPI(beta2) 
 
 
 
-    def set_EPI(self, beta2):
-        EPI, shellmax = EPI_reshape(self.nelem, beta2)
-        self.EPI = EPI 
-        self.shellmax = shellmax 
+    def set_EPI(self, epi):
+        self.EPI = epi 
+        self.shellmax = epi.shape[0]  
 
 
 
