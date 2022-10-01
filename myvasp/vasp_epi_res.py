@@ -37,20 +37,26 @@ class class_epi_res:
         self.pe_test  = self.rmse_test  / self.E_test.std() 
 
 
-        beta = self.lstsq_res[0]
+        self.rank = self.lstsq_res[2]
+
         epi_rank = int( self.nelem*(self.nelem-1)/2 * self.dmax ) 
-        vf.confirm_0( len(beta) - epi_rank -1 -(self.nelem-1)*self.dmax )
 
         eta_X = self.X[:, 0:epi_rank].copy()  
         temp1 = np.linalg.matrix_rank( eta_X )
         vf.confirm_0( temp1 - epi_rank )
         self.epi_rank = epi_rank 
 
+        temp = self.X[:, epi_rank:].copy()  
+        self.other_rank = np.linalg.matrix_rank( temp )
+        vf.confirm_0( self.rank - self.epi_rank - self.other_rank, str1='wrong rank.' )
+
+        beta = self.lstsq_res[0]
+        vf.confirm_0( len(beta) - self.epi_rank -1 -(self.nelem-1)*self.dmax )
+
         self.epi = self.reform_epi_1_to_3( beta[0:epi_rank] )  
         self.U1t = beta[epi_rank]  
         self.dU  = self.reform_dU_1_to_2( beta[epi_rank+1:] )
 
-        self.rank = self.lstsq_res[2]
 
 
 
@@ -115,10 +121,10 @@ class class_epi_res:
             %(self.ntrain, self.ntest, self.dmax ) )
 
 
-        f.write('%16s %16s \n' \
-            %('rank', 'epi_rank' ) )
-        f.write('%16d %16d \n\n' \
-            %(self.rank, self.epi_rank) )
+        f.write('%16s %16s %16s \n' \
+            %('rank', 'epi_rank', 'other_rank' ) )
+        f.write('%16d %16d %16d \n\n' \
+            %(self.rank, self.epi_rank, self.other_rank) )
 
 
         f.write('%16s %16s %16s %16s \n' \
