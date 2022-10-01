@@ -35,7 +35,8 @@ class class_epi_fit:
         print('ntrain:', ntrain) 
 
         epi_res1 = self.calc_epi(dmax=dmax, ntrain=ntrain) 
-        epi_res1.write_res(fname_suffix=fname_suffix) 
+        epi_res1.save_epi_res(fname_suffix=fname_suffix) 
+        epi_res1.write_epi_res(fname_suffix=fname_suffix) 
 
         print('==> scan ntrain')
         self.calc_epi(dmax=dmax, ntrain=ntrain, scan_ntrain=True, fname_suffix=fname_suffix) 

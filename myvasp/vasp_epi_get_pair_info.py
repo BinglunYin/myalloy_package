@@ -130,6 +130,32 @@ def calc_lpairs_from_latoms(latoms_in):
 
 
 
+def calc_diff_lpairs(lpairs1, lpairs2):
+    r1    = lpairs1.r_shell.copy()      # bulk, short
+    r2    = lpairs2.r_shell.copy()      # sf,   long
+
+    leta1 = lpairs1.leta.copy()
+    leta2 = lpairs2.leta.copy()
+
+    k = 0
+    for d2 in np.arange( len(r2) ):
+        d1 =  np.asarray( np.where(r1 == r2[d2]) ) 
+
+        if d1.size == 1:
+            k = k + 1
+            d1 = d1[0, 0]  
+            vf.confirm_0( r1[d1] - r2[d2] )  
+            for i in np.arange( len(leta2) ):
+                leta2[i][d2] = leta2[i][d2] - leta1[i][d1] 
+    
+    vf.confirm_0( k - len(r1) )
+    return class_lpairs(r2, leta2) 
+
+
+
+
+
+
 
 
 

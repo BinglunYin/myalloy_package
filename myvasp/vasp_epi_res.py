@@ -89,7 +89,17 @@ class class_epi_res:
 
 
 
-    def write_res(self, fname_suffix=''):
+    def save_epi_res(self, fname_suffix=''):
+        if fname_suffix != '':
+            filename = 'epi_res_%s.pkl'  %(fname_suffix) 
+        else:
+            filename = 'epi_res.pkl'   
+        vf.my_save_pkl(self, filename)  
+
+
+
+
+    def write_epi_res(self, fname_suffix=''):
 
         if fname_suffix != '':
             filename = 'epi_res_%s.txt'  %(fname_suffix) 
