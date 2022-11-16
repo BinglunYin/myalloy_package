@@ -24,9 +24,15 @@ def vasp_create_fcc_111(a, ncell, bp=0):
     atoms = vf.create_supercell(latt, motif, ncell)
     atoms.pos_a0 = a 
 
-    if bp == 33:
+    if bp == 33 or bp == 1:
         atoms.positions = atoms.positions + np.array([0, 0, 0.1]) *a 
         atoms.wrap()
+
+    if bp == 1:
+        latt2 = atoms.get_cell()[:]
+        latt2[2,:] = latt2[2,:] + np.array([0.5, 0.5/np.sqrt(3), 0]) * a/np.sqrt(2)           
+        atoms.set_cell(latt2)
+        atoms.wrap() 
 
     vf.my_write_vasp(atoms, filename='POSCAR', vasp5=True)
 
