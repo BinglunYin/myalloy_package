@@ -156,7 +156,7 @@ def calc_yield_strength(self, param={}):
         if hasattr(self, 'sigma_dUss_tilde_p'):
             f.write('\n# With solute-solute interactions, based on sigma_dUss_tilde_p: \n' )
 
-            f.write('\n# - slip and strengthening: \n' )
+            f.write('# - slip and strengthening: \n' )
 
             dEpss = np.sqrt( 4*wc/b * self.sigma_dUss_tilde_p**2 )
             dEp_ratio, ty0_tot, dEb_tot = calc_ss_scale(dEpsd, dEpss, ty0, dEb) 
@@ -178,13 +178,13 @@ def calc_yield_strength(self, param={}):
             %(ty0_tot, dEb_tot/self.qe, sigmay_tot) )
 
 
-            f.write('\n# - only solute-solute interactions: \n' )
+            f.write('# - only solute-solute interactions: \n' )
             w_control, sigma_yss = calc_pure_ss(self.qe, et0, T, et, alpha, mu111, b, self.sigma_dUss_tilde_p) 
 
-            f.write('%16s %16s \n' \
-            %('w_control (Ang)', 'sigma_yss (MPa)' ) )
-            f.write('%16.4f %16.4f \n\n' \
-            %(w_control, sigma_yss) )     
+            f.write('%16s %16s %16s \n' \
+            %('w_control (Ang)', 'w_control/b', 'sigma_yss (MPa)' ) )
+            f.write('%16.4f %16.4f %16.4f \n\n' \
+            %(w_control, w_control/b, sigma_yss) )     
 
 
 
