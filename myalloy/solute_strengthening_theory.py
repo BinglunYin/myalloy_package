@@ -165,7 +165,7 @@ def calc_yield_strength(self, param={}):
             f.write('%30s \n' \
             %('sigma_dUss_tilde_p (eV)' ) )
             f.write('%30.4f \n\n' \
-            %(sigma_dUss_tilde_p) )         
+            %(self.sigma_dUss_tilde_p) )         
 
             f.write('%16s %16s \n' \
             %('dEpss (eV)', 'dEp_ratio' ) )
@@ -179,7 +179,7 @@ def calc_yield_strength(self, param={}):
 
 
             f.write('\n# - only solute-solute interactions: \n' )
-            w_control, sigma_yss = calc_pure_ss(self.qe, et0, T, et, alpha, mu111, b, sigma_dUss_tilde_p) 
+            w_control, sigma_yss = calc_pure_ss(self.qe, et0, T, et, alpha, mu111, b, self.sigma_dUss_tilde_p) 
 
             f.write('%16s %16s \n' \
             %('w_control (Ang)', 'sigma_yss (MPa)' ) )
