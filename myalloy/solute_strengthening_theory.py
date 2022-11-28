@@ -142,44 +142,50 @@ def calc_yield_strength(self, param={}):
 
 
 
-        if hasattr(self, 'EPI'):
+
+
+
+        if hasattr(self, 'EPI') and ~( hasattr(self, 'sigma_dUss_tilde_p') ):
 
             from myalloy import solute_strengthening_theory_EPI as sstEPI 
 
-            sigma_dUss_tilde_f = sstEPI.calc_sigma_dUss_tilde(self,  t='fcc_full')    
             sigma_dUss_tilde_p = sstEPI.calc_sigma_dUss_tilde(self,  t='fcc_partial')   
+            self.sigma_dUss_tilde_p = sigma_dUss_tilde_p
 
 
-            dEpss = sstEPI.calc_dEpss(self, wc, t='fcc_partial')    # [eV]
+        if hasattr(self, 'sigma_dUss_tilde_p'):
+            f.write('\n# With solute-solute interactions, based on sigma_dUss_tilde_p: \n' )
 
-            dEp_tot = np.sqrt( dEpsd**2 + dEpss**2 )
-            dEp_ratio = dEp_tot / dEpsd 
+            f.write('\n# - slip and strengthening: \n' )
 
-            ty0_tot = ty0 * dEp_ratio**(4/3)
-            dEb_tot = dEb * dEp_ratio**(2/3)
+            dEpss = np.sqrt( 4*wc/b * self.sigma_dUss_tilde_p**2 )
+            dEp_ratio, ty0_tot, dEb_tot = calc_ss_scale(dEpsd, dEpss, ty0, dEb) 
             sigmay_tot = calc_sigmay(et0, T, et, ty0_tot, dEb_tot)
+           
+            f.write('%30s \n' \
+            %('sigma_dUss_tilde_p (eV)' ) )
+            f.write('%30.4f \n\n' \
+            %(sigma_dUss_tilde_p) )         
 
-
-            f.write('\n# With solute-solute interaction strengthening in ideal random alloy: \n' )
-            f.write('# - slip: \n' )
-
-            f.write('%30s %30s \n' \
-            %('sigma_dUss_tilde_f (eV)', 'sigma_dUss_tilde_p (eV)' ) )
-            f.write('%30.4f %30.4f \n\n' \
-            %(sigma_dUss_tilde_f, sigma_dUss_tilde_p) )         
-
-
-            f.write('# - strengthening: \n' )
-
-            f.write('%16s %16s %16s \n' \
-            %('dEpss (eV)', 'dEp_tot (eV)', 'dEp_ratio' ) )
-            f.write('%16.4f %16.4f %16.4f \n\n' \
-            %(dEpss, dEp_tot, dEp_ratio) )         
+            f.write('%16s %16s \n' \
+            %('dEpss (eV)', 'dEp_ratio' ) )
+            f.write('%16.4f %16.4f \n\n' \
+            %(dEpss, dEp_ratio) )         
 
             f.write('%16s %16s %16s \n' \
             %('ty0_tot (MPa)', 'dEb_tot (eV)', 'sigmay_tot (MPa)' ) )
             f.write('%16.4f %16.4f %16.4f \n\n' \
             %(ty0_tot, dEb_tot/self.qe, sigmay_tot) )
+
+
+            f.write('\n# - only solute-solute interactions: \n' )
+            w_control, sigma_yss = calc_pure_ss(self.qe, et0, T, et, alpha, mu111, b, sigma_dUss_tilde_p) 
+
+            f.write('%16s %16s \n' \
+            %('w_control (Ang)', 'sigma_yss (MPa)' ) )
+            f.write('%16.4f %16.4f \n\n' \
+            %(w_control, sigma_yss) )     
+
 
 
 
@@ -331,6 +337,34 @@ def calc_sigmay(et0, T, et, ty0, dEb):
     k = 1.380649e-23
     sigmay = 3.06* ty0 *(1 - (k*T/dEb *np.log(et0/et))**(2/3) )  # [MPa]
     return sigmay  
+
+
+
+
+
+
+def calc_ss_scale(dEpsd, dEpss, ty0, dEb):
+    dEp_tot = np.sqrt( dEpsd**2 + dEpss**2 )
+    dEp_ratio = dEp_tot / dEpsd 
+
+    ty0_tot = ty0 * dEp_ratio**(4/3)
+    dEb_tot = dEb * dEp_ratio**(2/3)
+
+    return dEp_ratio, ty0_tot, dEb_tot 
+
+
+
+
+
+def calc_pure_ss(qe, et0, T, et, alpha, mu111, b, sigma_dUss_tilde_p):
+    k = 1.380649e-23
+
+    A1 = (k*T * np.log(et0/et))
+
+    w_control = 1.11* (sigma_dUss_tilde_p**2 * alpha* mu111 )**(-1/3) * A1        *  (qe**2*1e9)**(-1/3)*1e10  
+    sigma_yss = 2.80* (sigma_dUss_tilde_p**2 / b**3 )                 * A1**(-1)  *  (qe**2/1e-30)/1e6  
+
+    return w_control, sigma_yss 
 
 
 
