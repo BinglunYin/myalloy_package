@@ -7,11 +7,10 @@ import numpy as np
 
 
 
-def confirm_111_o_bulk_latt(latoms_in, sd):
+def confirm_111_o_bulk_latt(latoms_in, sd, a=3.810):
     latoms = copy.deepcopy(latoms_in)
 
     njobs = len(latoms)
-    a = latoms[0].pos_a0
     b = a/np.sqrt(2)
 
     latt_sd = np.array([  
