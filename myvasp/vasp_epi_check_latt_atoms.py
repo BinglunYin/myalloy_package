@@ -156,8 +156,8 @@ def calc_lurms(latoms1_in, latoms2_in):
         u, urms = calc_urms( latoms1[i], latoms2[i])
         lurms = np.append(lurms, urms)
     
-        if u.max() > 0.8:
-            print('\nWARNING: u.max() is larger than 0.8 Ang!')
+        if u.max() > 1:
+            print('\nWARNING: u.max() is larger than 1 Ang!')
             print('i, u.max(), urms :')
             print( i, u.max(), urms)
 
