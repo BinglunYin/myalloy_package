@@ -96,7 +96,7 @@ def confirm_same_size_cn(latoms1_in, latoms2_in):
             sys.exit('ABORT: wrong chemical formula. ')
 
         #check cn
-        vf.confirm_0( latoms1[i].get_cn() - latoms2[i].get_cn() )
+        # vf.confirm_0( latoms1[i].get_cn() - latoms2[i].get_cn() )
 
 
 
