@@ -33,7 +33,9 @@ def routine_1(latoms_1, latoms_2, dlatt_type='zero', relax_type='relaxed'):
     lurms = calc_lurms(latoms_1, latoms_2 ) 
 
     if relax_type == 'relaxed':
-        print('max urms:', lurms.max() ) 
+        print('lurms.mean(), lurms.std(), lurms.max()' ) 
+        print( lurms.mean(), lurms.std(), lurms.max()  ) 
+
     elif relax_type == 'unrelaxed':
         vf.confirm_0(lurms)
 
