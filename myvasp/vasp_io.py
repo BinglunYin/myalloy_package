@@ -215,7 +215,11 @@ def my_write_vasp(atoms_in, filename='POSCAR', vasp5=True):
     from ase.io.vasp import write_vasp
 
     atoms = copy.deepcopy(atoms_in)
-    pos_a0 = atoms.pos_a0
+
+    if hasattr(atoms, 'pos_a0'):
+        pos_a0 = atoms.pos_a0
+    else:
+        pos_a0 = 1 
 
     atoms.set_cell( atoms.get_cell()/pos_a0 )
     atoms.set_positions( atoms.get_positions()/pos_a0, \
