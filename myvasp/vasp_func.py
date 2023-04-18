@@ -42,6 +42,14 @@ def create_twin(*args, **kwargs):
 # vasp_io.py
 
 
+def get_cn(*args, **kwargs):
+    from myvasp import vasp_io as tmp 
+    cn = tmp.get_cn(*args, **kwargs)
+    return cn 
+
+
+
+
 def bestsqs_to_POSCAR(*args, **kwargs):
     from myvasp import vasp_io as tmp 
     tmp.bestsqs_to_POSCAR(*args, **kwargs)
