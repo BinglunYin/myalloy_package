@@ -46,11 +46,10 @@ def routine_1(latoms_1, latoms_2, dlatt_type='zero', relax_type='relaxed'):
 #===============================
 
 
-def confirm_dlatt(latoms1_in, latoms2_in, dlatt_type='zero'):
+def confirm_dlatt(latoms1_in, latoms2_in, dlatt_type='zero', a=3.810):
     latoms1 = copy.deepcopy(latoms1_in)
     latoms2 = copy.deepcopy(latoms2_in)
     njobs = len(latoms1)
-    a = latoms1[0].pos_a0
     b = a/np.sqrt(2)
 
     bp1 = np.array([ b/2, b/2/np.sqrt(3), 0 ])
