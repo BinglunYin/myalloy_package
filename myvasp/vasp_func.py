@@ -48,6 +48,11 @@ def get_cn(*args, **kwargs):
     return cn 
 
 
+def get_nelem(*args, **kwargs):
+    from myvasp import vasp_io as tmp 
+    nelem = tmp.get_nelem(*args, **kwargs)
+    return nelem 
+
 
 
 def bestsqs_to_POSCAR(*args, **kwargs):

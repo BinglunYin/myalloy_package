@@ -171,8 +171,8 @@ def calc_eta(atoms_in):
     natoms = atoms.get_positions().shape[0]
     V0 = atoms.get_volume() / natoms
     a0 = (V0*4)**(1/3)
-    cn = atoms.get_cn() 
-    nelem = atoms.get_nelem() 
+    cn = vf.get_cn(atoms) 
+    nelem = vf.get_nelem(atoms)  
    
     cc_scale = calc_cc_scale(cn)
 
