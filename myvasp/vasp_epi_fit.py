@@ -133,7 +133,7 @@ class class_epi_fit:
     # plot lepi_res - ntrain 
     #============================================
 
-    def plot_lepi_res_ntrain(self, filename, sd):      
+    def plot_lepi_res_ntrain_2(self, filename, sd):      
         lepi_res = vf.my_read_pkl(filename) 
         
         Ntot = np.prod(sd)*6
@@ -205,58 +205,80 @@ class class_epi_fit:
         
 
         vf.confirm_0( dmax.std() )
-        str1 = 'EPI $N_d = %d$' %( dmax[0] ) 
+        str1 = 'with $N_d = %d$' %( dmax[0] ) 
         vf.my_text(ax1[0], str1, 0.5, 0.9, ha='center' )
 
         create_abc(ax1)
 
-        figname = '%s.pdf' %(filename[0:-4])
+        figname = '%s_2.pdf' %(filename[0:-4])
         plt.savefig(figname)
         plt.close('all')
 
 
 
 
-    def plot_lepi_res_ntrain_2(self, filename):      
+    def plot_lepi_res_ntrain(self, filename):      
         lepi_res = vf.my_read_pkl(filename) 
         
         dmax   = np.array([])
         ntrain = np.array([])
+ 
+        pe_train = np.array([])
+        pe_test  = np.array([])
         
         Vnm = np.zeros(lepi_res[0].dmax)   # a specific pair nm 
-        
+ 
         for i in np.arange( len(lepi_res) ):
             dmax   = np.append( dmax,   lepi_res[i].dmax   )  
             ntrain = np.append( ntrain, lepi_res[i].ntrain )  
-            
+ 
+            pe_train = np.append( pe_train, lepi_res[i].pe_train  )    
+            pe_test  = np.append( pe_test,  lepi_res[i].pe_test   )            
+          
             Vnm = np.vstack([Vnm, lepi_res[i].epi[:,0,1]])
-        Vnm=np.delete(Vnm, 0, 0) 
-        
-        
-        ax1 = create_ax2() 
+        Vnm=np.delete(Vnm, 0, 0)         
+    
+    
+        ax1 = create_ax1() 
         fig_xlim = [0, ntrain[-1]]
-        print(fig_xlim) 
 
         for j in np.arange(Vnm.shape[1]):
             str1 = '$d_{%d}$'  %(j+1)
-            ax1.plot( ntrain, Vnm[:,j], '-', label=str1 )        
-        ax1.plot( fig_xlim, [0, 0], '--', color='gray' ) 
+            ax1[0].plot( ntrain, Vnm[:,j], '-', label=str1 )
+        ax1[0].plot( fig_xlim, [0, 0], '--', color='gray' ) 
+              
+        ax1[1].plot( ntrain, pe_train, '-', color='C0',  label='training set')
+        ax1[1].plot( ntrain, pe_test,  '-', color='C1',  label='testing set')
         
+        filename2 = '%s.sdUss_tilde.txt' %(filename[0:-4])
+        if os.path.exists(filename2) :
+            sigma_dUss_tilde = np.loadtxt(filename2)  
+            ax1[2].plot( ntrain, sigma_dUss_tilde, '-',  color='C2')
+      
 
-        ax1.legend( fontsize=6, loc='lower left', ncol=2)            
-        
-        ax1.set_xlim( fig_xlim )
-        ax1.set_xlabel('$N_\\mathrm{train}$')
-        
-        ax1.set_ylim([-0.06, 0.04]) 
-        ax1.set_ylabel('EPI $V_{\\mathrm{AuNi}, d}$ (eV)')           
-        
+        ax1[0].legend( fontsize=6, loc='lower left', ncol=2)       
+        ax1[1].legend( fontsize=6, loc='lower left' )       
+        # ax1[2].legend( fontsize=6, loc='lower left' )       
 
-        vf.confirm_0( dmax.std() )          
-        str1 = 'EPI $N_d = %d$' %( dmax[0] ) 
-        vf.my_text(ax1, str1, 0.5, 0.9, ha='center' )
-        
-        figname = '%s_2.pdf' %(filename[0:-4])
+        ax1[2].set_xlim( fig_xlim )
+        ax1[2].set_xlabel('$N_\\mathrm{train}$')
+
+        ax1[0].set_ylim([-0.06, 0.04]) 
+        ax1[1].set_ylim([0, 1])      
+        ax1[2].set_ylim([0, 0.06]) 
+
+        ax1[0].set_ylabel('EPI $V_{\\mathrm{AuNi}, d}$ (eV)')
+        ax1[1].set_ylabel('percent error')
+        ax1[2].set_ylabel('EPI-based $\\widetilde{\\sigma}_{\\Delta U_{s-s}}$ (eV)')         
+
+
+        vf.confirm_0( dmax.std() )
+        str1 = 'with $N_d = %d$' %( dmax[0] ) 
+        vf.my_text(ax1[0], str1, 0.5, 0.9, ha='center' )
+
+        create_abc(ax1)
+
+        figname = '%s.pdf' %(filename[0:-4])
         plt.savefig(figname)
         plt.close('all')
 
@@ -349,10 +371,10 @@ class class_epi_fit:
 
         ax1[0].set_ylabel('EPI $V_{\\mathrm{AuNi}, d}$ (eV)')
         ax1[1].set_ylabel('percent error')
-        ax1[2].set_ylabel('analytical $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $ (eV)')
+        ax1[2].set_ylabel('EPI-based $ \\widetilde{\\sigma}_{\\Delta U_{s-s}} $ (eV)')
 
 
-        str1 = 'EPI $N_\\mathrm{train} = %d$' %( ntrain[0] ) 
+        str1 = 'with $N_\\mathrm{train} = %d$' %( ntrain[0] ) 
         vf.my_text(ax1[0], str1, 0.5, 0.9, ha='center' )
 
         create_abc(ax1)
