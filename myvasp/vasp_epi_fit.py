@@ -42,9 +42,9 @@ class class_epi_fit:
         self.calc_epi(dmax=dmax, ntrain=ntrain, scan_ntrain=True, fname_suffix=fname_suffix) 
         fname1 = 'lepi_res_ntrain_%s.pkl'  %(fname_suffix)
         self.calc_sdUss_tilde(filename=fname1, islip = islip) 
-        self.plot_lepi_res_ntrain(filename=fname1, sd=sd) 
+        self.plot_lepi_res_ntrain(filename=fname1) 
         if fname_suffix == 'ssf':
-            self.plot_lepi_res_ntrain_2(filename=fname1) 
+            self.plot_lepi_res_ntrain_2(filename=fname1, sd=sd) 
 
         print('==> scan dmax')
         dmax_max = np.min([ self.lpairs.shellmax, 11 ])
