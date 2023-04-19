@@ -43,7 +43,7 @@ class class_epi_fit:
         fname1 = 'lepi_res_ntrain_%s.pkl'  %(fname_suffix)
         self.calc_sdUss_tilde(filename=fname1, islip = islip) 
         self.plot_lepi_res_ntrain(filename=fname1) 
-        if fname_suffix == 'ssf':
+        if fname_suffix == 'slip':
             self.plot_lepi_res_ntrain_2(filename=fname1, sd=sd) 
 
         print('==> scan dmax')
