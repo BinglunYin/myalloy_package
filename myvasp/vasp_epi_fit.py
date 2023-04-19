@@ -217,7 +217,7 @@ class class_epi_fit:
 
 
 
-    def plot_lepi_res_ntrain_2(filename):      
+    def plot_lepi_res_ntrain_2(self, filename):      
         lepi_res = vf.my_read_pkl(filename) 
         
         dmax   = np.array([])
