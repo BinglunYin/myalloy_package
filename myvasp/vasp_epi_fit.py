@@ -30,7 +30,7 @@ class class_epi_fit:
 
     #-----------------------------
     
-    def routine_1(self, sd, tt=0.8, dmax=5, islip='fcc_partial', fname_suffix=''):
+    def routine_1(self, sd, tt=0.8, dmax=5, islip='fcc_partial', dmax_max=11, fname_suffix=''):
         ntrain = np.around( len(self.lpairs.leta) * tt )
         print('ntrain:', ntrain) 
 
@@ -47,7 +47,7 @@ class class_epi_fit:
             self.plot_lepi_res_ntrain_2(filename=fname1, sd=sd) 
 
         print('==> scan dmax')
-        dmax_max = np.min([ self.lpairs.shellmax, 11 ])
+        dmax_max = np.min([ self.lpairs.shellmax, dmax_max ])
         self.scan_dmax(dmax_range=np.arange(2, dmax_max), ntrain=ntrain, fname_suffix=fname_suffix) 
         fname2 = 'lepi_res_dmax_%s.pkl'  %(fname_suffix)
         self.calc_sdUss_tilde(filename=fname2, islip = islip) 
