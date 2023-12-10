@@ -303,7 +303,7 @@ def my_read_doscar(fname="DOSCAR"):
         sys.exit('ABORT: wrong tdos_all.')
     
     # to compare with the output idos 
-    idos2 = integrate.cumulative_trapezoid( tdos, Ei, axis=0, initial=0)
+    idos2 = integrate.cumtrapz( tdos, Ei, axis=0, initial=0)
 
     return atoms_dos(Ei, tdos, idos, idos2, lpdos)  
 
