@@ -302,6 +302,23 @@ def calc_n3(n_shell, nelem):
 
 
      
+def calc_wc_sro(atoms_in):
+    atoms = copy.deepcopy( atoms_in )
+    
+    cn = vf.get_cn(atoms) 
+    nelem = len(cn)
 
+    temp1 = cn[:, np.newaxis]
+    temp2 = cn[np.newaxis, :]
+    cncm = np.matmul(temp1, temp2) 
+
+    r_shell, eta = calc_eta(atoms) 
+
+    alpha = eta.copy() 
+    for i in np.arange( len(r_shell) ):
+        alpha[i] = 1 - np.divide( eta[i]/np.sum(eta[i]) , cncm)
+
+    vf.confirm_0( alpha.shape - np.array([ len(r_shell), nelem, nelem ]), str1='wrong dimension of alpha' )
+    return r_shell, alpha  
 
 
