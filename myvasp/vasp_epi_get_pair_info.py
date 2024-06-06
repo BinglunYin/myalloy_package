@@ -302,7 +302,7 @@ def calc_n3(n_shell, nelem):
 
 
      
-def calc_wc_sro(atoms_in):
+def calc_wc_sro(atoms_in, struc='fcc'):
     atoms = copy.deepcopy( atoms_in )
     
     cn = vf.get_cn(atoms) 
@@ -313,6 +313,13 @@ def calc_wc_sro(atoms_in):
     cncm = np.matmul(temp1, temp2) 
 
     r_shell, eta = calc_eta(atoms) 
+
+
+    if struc == 'fcc'  or  struc == 'bcc' :
+        r_bulk, n_bulk = vf.crystal_shell(struc)   
+        for i in np.arange( len(r_shell) ):
+            vf.confirm_0( n_bulk[i] -  np.sum(eta[i]), str1='wrong eta for bulk' )
+
 
     alpha = eta.copy() 
     for i in np.arange( len(r_shell) ):
