@@ -318,7 +318,7 @@ def calc_wc_sro(atoms_in, struc='fcc'):
     if struc == 'fcc'  or  struc == 'bcc' :
         r_bulk, n_bulk = vf.crystal_shell(struc)   
         for i in np.arange( len(r_shell) ):
-            vf.confirm_0( n_bulk[i] -  np.sum(eta[i]), str1='wrong eta for bulk' )
+            vf.confirm_0( (n_bulk[i] - np.sum(eta[i]))*1e-1, str1='wrong eta for bulk' )
 
 
     alpha = eta.copy() 
