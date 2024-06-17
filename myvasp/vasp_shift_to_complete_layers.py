@@ -101,17 +101,22 @@ def calc_natomsl_nlayers_nmiss(dz, dz_b):
     
     intp_id.sort()
 
-    d_intp_id = np.diff(intp_id)
-    vf.confirm_int(d_intp_id)
-
-    # use the most frequent value as the natoms per layer
-    natomsl = np.bincount( d_intp_id.astype(int) ).argmax() 
-    # natomsl = calc_natomsl(d_intp_id)
-
-
-    vf.confirm_int( d_intp_id/natomsl  )
-
     natoms = len(dz)+1
+    
+    if len(intp_id) == 1:
+        natomsl = natoms/2 
+    else:
+
+        d_intp_id = np.diff(intp_id)
+        vf.confirm_int(d_intp_id)
+    
+        # use the most frequent value as the natoms per layer
+        natomsl = np.bincount( d_intp_id.astype(int) ).argmax() 
+        # natomsl = calc_natomsl(d_intp_id)
+    
+    
+        vf.confirm_int( d_intp_id/natomsl  )
+
     nlayers = natoms / natomsl 
 
     temp = np.ceil( (intp_id[0]+1)/natomsl )
