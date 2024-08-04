@@ -274,6 +274,11 @@ def calc_n_shell(r, n):
 
     r_shell = r_shell / k 
     n_shell = np.delete(n_shell, 0, 0)
+    
+    # Delete the last peak since it might be incomplete.
+    r_shell = np.delete(r_shell, -1, 0)
+    n_shell = np.delete(n_shell, -1, 0)
+
     vf.confirm_0( r_shell.shape[0] - n_shell.shape[0], str1='wrong r_shell')
     return r_shell, n_shell
 
